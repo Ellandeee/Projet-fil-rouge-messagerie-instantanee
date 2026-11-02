@@ -69,6 +69,8 @@ flowchart TD
 
 ## Visuel
 
-La couleur principale est un violet (#7c3aed) pour les boutons, les liens et nos propres messages. Tout ce qui concerne les points est en or (#f5b301). Le fond des pages est un lavande très clair (#f6f4fb) et le texte est presque noir (#1f1d2b). Le rouge (#dc2626) est réservé aux erreurs et à la suppression du compte.
+La couleur principale est une prune (#563a8f) pour les boutons, les liens et nos propres messages. On l'a choisie plus sombre que le violet qu'on avait au départ, qui était le violet par défaut de beaucoup de sites. Tout ce qui concerne les points est en or (#d4a017). Le fond des pages est un blanc cassé chaud (#f5f2ec), un peu comme du papier, et les blocs posés dessus sont blancs. Le texte est presque noir (#24212b) et le rouge (#b42318) est réservé aux erreurs et à la suppression du compte.
 
-Le site utilise une seule police simple et lisible, celle du système (Segoe UI, Roboto ou Arial selon l'appareil). Les polices plus originales sont réservées aux articles de la boutique. Les éléments ont des coins arrondis et des ombres légères.
+Le site utilise une seule police, celle du système (Segoe UI sur Windows, Roboto sur Android, San Francisco sur Apple). Elle est lisible et n'a rien à télécharger, donc les pages s'affichent vite. Les polices plus originales sont réservées aux articles de la boutique.
+
+On a gardé un style sobre. Les coins sont peu arrondis (6 à 10 pixels), les blocs ont une bordure fine plutôt qu'une ombre, et seules les fenêtres (boutique, nouvelle discussion) ont une ombre parce qu'elles passent au-dessus de la page. Les animations se limitent au changement de couleur des boutons et des liens, et elles sont coupées si la personne a demandé moins d'animations dans son système.
