@@ -1,0 +1,197 @@
+/*
+  Les articles de la boutique
+  Chaque article est une classe qui a le même nom que son id dans la table articles
+  Le JS met les classes équipées sur #discussion-ouverte
+  Dans la boutique il met aussi la classe sur .article-apercu pour montrer le rendu
+  Ces styles ne sont visibles que par la personne qui a acheté l'article
+*/
+
+/* ===== Aperçu dans la boutique ===== */
+
+/* Petit cadre avec un faux message pour voir le rendu avant d'acheter */
+.article-apercu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espace-2);
+  height: 80px;
+  padding: var(--espace-2);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-petit);
+  background-color: var(--couleur-fond);
+}
+
+.apercu-bulle {
+  padding: 4px 10px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: 12px 12px 12px 4px;
+  font-size: 0.8125rem;
+  background-color: var(--couleur-surface);
+}
+
+/* ===== Fonds de discussion ===== */
+
+.fond-coucher-soleil .liste-messages,
+.article-apercu.fond-coucher-soleil {
+  background: linear-gradient(180deg, #f6a35b, #e0607e);
+}
+
+.fond-ocean .liste-messages,
+.article-apercu.fond-ocean {
+  background: linear-gradient(180deg, #2b6f9e, #163a5c);
+}
+
+/* Les étoiles sont des petits points dessinés avec des dégradés ronds */
+.fond-nuit-etoilee .liste-messages,
+.article-apercu.fond-nuit-etoilee {
+  background-color: #1d1b33;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, transparent),
+    radial-gradient(1px 1px at 90px 70px, #ffffff, transparent),
+    radial-gradient(1.5px 1.5px at 150px 20px, #fff6d5, transparent),
+    radial-gradient(1px 1px at 60px 110px, #ffffff, transparent),
+    radial-gradient(1px 1px at 130px 140px, #ffffff, transparent);
+  background-size: 180px 160px;
+}
+
+/* Damier fait avec un dégradé conique qui se répète */
+.fond-damier .liste-messages,
+.article-apercu.fond-damier {
+  background: repeating-conic-gradient(#ece6f5 0% 25%, #f8f6fb 0% 50%) 0 0 / 40px 40px;
+}
+
+/* Le seul fond qui bouge, très lentement */
+.fond-aurore .liste-messages,
+.article-apercu.fond-aurore {
+  background: linear-gradient(120deg, #1f6f78, #563a8f, #b5487a, #1f6f78);
+  background-size: 300% 300%;
+  animation: aurore 24s ease-in-out infinite alternate;
+}
+
+@keyframes aurore {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+/* Sur un fond foncé les petits textes gris deviennent illisibles */
+:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) :is(.separateur-date, .indicateur-ecriture) {
+  color: #f1eef6;
+}
+
+:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) .separateur-date {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== Forme des bulles ===== */
+
+.bulle-arrondie .bulle,
+.bulle-arrondie .apercu-bulle,
+.bulle-arrondie .message.moi .bulle {
+  border-radius: 22px;
+}
+
+/* Style bande dessinée : gros contour noir et ombre décalée */
+.bulle-bd .bulle,
+.bulle-bd .apercu-bulle {
+  border: 2px solid #24212b;
+  box-shadow: 3px 3px 0 #24212b;
+}
+
+.bulle-neon .bulle,
+.bulle-neon .apercu-bulle,
+.bulle-neon .message.moi .bulle {
+  color: #e9fbf8;
+  background-color: #1c1a22;
+  border: 1.5px solid #5fd3c4;
+  box-shadow: 0 0 10px rgba(95, 211, 196, 0.45);
+}
+
+.bulle-doree .bulle,
+.bulle-doree .apercu-bulle,
+.bulle-doree .message.moi .bulle {
+  color: #3b2a00;
+  background: linear-gradient(180deg, #f7e3a1, #e2b33c);
+  border: 1px solid #b8860b;
+}
+
+.bulle-doree .message.moi .message-infos {
+  color: #6b5200;
+}
+
+/* ===== Cadre des photos de profil ===== */
+
+.cadre-anneau .avatar,
+.article-apercu.cadre-anneau .avatar {
+  box-shadow: 0 0 0 2px var(--couleur-surface), 0 0 0 4px var(--couleur-principale);
+}
+
+.cadre-story .avatar,
+.article-apercu.cadre-story .avatar {
+  box-shadow: 0 0 0 2px var(--couleur-surface), 0 0 0 4px #f58529, 0 0 0 6px #dd2a7b;
+}
+
+.cadre-halo .avatar,
+.article-apercu.cadre-halo .avatar {
+  box-shadow: 0 0 0 3px var(--couleur-or-claire), 0 0 12px 2px rgba(212, 160, 23, 0.6);
+}
+
+/* Une couronne posée au-dessus de la photo */
+.cadre-couronne .avatar::before,
+.article-apercu.cadre-couronne .avatar::before {
+  content: "♛";
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--couleur-or);
+  transform: translateX(-50%);
+}
+
+/* ===== Polices ===== */
+
+/* Polices déjà installées sur les ordinateurs, rien à télécharger */
+.police-manuscrite .liste-messages,
+.article-apercu.police-manuscrite {
+  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+}
+
+.police-machine .liste-messages,
+.article-apercu.police-machine {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.police-arrondie .liste-messages,
+.article-apercu.police-arrondie {
+  font-family: ui-rounded, "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+}
+
+/* ===== Couleur de mes bulles ===== */
+
+.couleur-emeraude .message.moi .bulle,
+.article-apercu.couleur-emeraude .apercu-bulle {
+  color: #ffffff;
+  background-color: #1f7a5a;
+  border-color: #1f7a5a;
+}
+
+.couleur-corail .message.moi .bulle,
+.article-apercu.couleur-corail .apercu-bulle {
+  color: #ffffff;
+  background-color: #d9534f;
+  border-color: #d9534f;
+}
+
+.couleur-saphir .message.moi .bulle,
+.article-apercu.couleur-saphir .apercu-bulle {
+  color: #ffffff;
+  background-color: #2457a6;
+  border-color: #2457a6;
+}
+
+.couleur-arc-en-ciel .message.moi .bulle,
+.article-apercu.couleur-arc-en-ciel .apercu-bulle {
+  color: #ffffff;
+  background: linear-gradient(90deg, #d9534f, #e39b2d, #2f7d4f, #2457a6, #563a8f);
+  border-color: transparent;
+}
