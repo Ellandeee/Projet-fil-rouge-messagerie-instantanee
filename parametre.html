@@ -1,0 +1,131 @@
+<!doctype html>
+<!--
+  Page des paramètres du compte
+  On peut changer son profil et son mot de passe
+  On peut aussi se déconnecter ou supprimer son compte
+  Tout est géré par parametre.js
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Paramètres de votre compte Messagerie Custom.">
+  <title>Messagerie Custom – Paramètres</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/parametre.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/commun.js" defer></script>
+  <script src="js/parametre.js" defer></script>
+</head>
+<body class="page-parametre">
+
+  <!-- Menu du haut avec le logo et le nom de la personne connectée -->
+  <header class="entete-site">
+    <a class="logo" href="conversation.html">
+      <img src="images/logo.svg" alt="" width="32" height="32">
+      <span>Messagerie Custom</span>
+    </a>
+    <nav class="navigation" aria-label="Navigation principale">
+      <ul>
+        <li><a href="conversation.html">Discussions</a></li>
+        <li><a href="contact.html">Contacts</a></li>
+        <li><a href="classement.html">Classement</a></li>
+        <li><a href="parametre.html" aria-current="page">Paramètres</a></li>
+      </ul>
+    </nav>
+    <p class="entete-utilisateur">
+      <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
+      <span id="nom-utilisateur">…</span>
+    </p>
+  </header>
+
+  <main class="page-contenu page-etroite">
+    <h1>Paramètres</h1>
+
+    <!-- Affiché quand on arrive depuis l'e-mail de mot de passe oublié -->
+    <p id="bandeau-recuperation" class="bandeau" role="alert" hidden>
+      Choisissez maintenant un nouveau mot de passe dans la section « Sécurité ».
+    </p>
+
+    <!-- Modifier son profil -->
+    <section class="carte" aria-labelledby="titre-profil">
+      <h2 id="titre-profil">Mon profil</h2>
+      <form id="form-profil" class="formulaire">
+        <div class="apercu-profil">
+          <span class="avatar avatar-grand" id="apercu-avatar" aria-hidden="true"></span>
+          <p>
+            <strong id="apercu-nom"></strong><br>
+            <span id="apercu-email" class="aide"></span>
+          </p>
+        </div>
+
+        <p class="champ">
+          <label for="profil-nom">Nom d'utilisateur</label>
+          <input type="text" id="profil-nom" name="nom-utilisateur" minlength="3" maxlength="20"
+                 pattern="[A-Za-z0-9_\-]{3,20}" aria-describedby="aide-profil-nom" required>
+          <small id="aide-profil-nom" class="aide">3 à 20 caractères : lettres, chiffres, « _ » ou « - ».</small>
+        </p>
+
+        <p class="champ champ-couleur">
+          <label for="profil-couleur">Couleur de mon avatar</label>
+          <input type="color" id="profil-couleur" name="couleur-avatar" value="#7c3aed">
+        </p>
+
+        <button type="submit" class="bouton bouton-plein">Enregistrer le profil</button>
+        <p id="message-profil" class="message-etat" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Changer son mot de passe -->
+    <section class="carte" aria-labelledby="titre-securite">
+      <h2 id="titre-securite">Sécurité</h2>
+      <form id="form-mdp" class="formulaire">
+        <p class="champ">
+          <label for="nouveau-mdp">Nouveau mot de passe</label>
+          <input type="password" id="nouveau-mdp" name="nouveau-mdp" autocomplete="new-password" minlength="6" required>
+        </p>
+        <p class="champ">
+          <label for="nouveau-mdp-confirmation">Confirmation</label>
+          <input type="password" id="nouveau-mdp-confirmation" name="nouveau-mdp-confirmation" autocomplete="new-password" minlength="6" required>
+        </p>
+        <button type="submit" class="bouton bouton-plein">Changer le mot de passe</button>
+        <p id="message-mdp" class="message-etat" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Déconnexion -->
+    <section class="carte" aria-labelledby="titre-session">
+      <h2 id="titre-session">Session</h2>
+      <p>Vous quitterez Messagerie Custom sur cet appareil. Vos discussions et vos points sont conservés.</p>
+      <button type="button" id="bouton-deconnexion" class="bouton bouton-secondaire">Se déconnecter</button>
+    </section>
+
+    <!-- Suppression du compte (attention c'est définitif) -->
+    <section class="carte carte-danger" aria-labelledby="titre-suppression">
+      <h2 id="titre-suppression">Supprimer mon compte</h2>
+      <p>
+        Cette action est <strong>définitive</strong> : vos messages, vos contacts, vos points
+        et vos achats seront effacés.
+      </p>
+      <form id="form-suppression" class="formulaire">
+        <p class="champ">
+          <label for="confirmation-suppression">Pour confirmer, écrivez <strong>SUPPRIMER</strong></label>
+          <input type="text" id="confirmation-suppression" name="confirmation" autocomplete="off" required>
+        </p>
+        <button type="submit" class="bouton bouton-danger">Supprimer définitivement mon compte</button>
+        <p id="message-suppression" class="message-etat" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <!-- Pied de page (le même partout) -->
+  <footer class="pied-page">
+    <p>&copy; 2026 Messagerie Custom — Projet fil rouge 8WEB101, UQAC — Ellande Cros et Émeric Aubert</p>
+  </footer>
+
+</body>
+</html>

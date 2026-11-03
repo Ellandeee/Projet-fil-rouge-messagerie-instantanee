@@ -1,0 +1,236 @@
+<!doctype html>
+<!--
+  Page principale de la messagerie (comme sur notre croquis)
+  À gauche la liste des discussions et à droite la discussion ouverte
+  La discussion se ferme toute seule après 1 minute sans message envoyé
+  Écrire au clavier remet aussi le chrono à zéro
+  Quand une discussion privée est ouverte on gagne des points avec ce contact
+  et on peut les dépenser dans la boutique (la fenêtre en bas de la page)
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Vos discussions sur Messagerie Custom : messages en temps réel, points et personnalisation.">
+  <title>Messagerie Custom – Discussions</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+
+  <!-- Style commun puis style de la page puis thèmes de la boutique -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/conversation.css">
+  <link rel="stylesheet" href="css/personnalisation.css">
+
+  <!-- defer pour lancer les scripts dans l'ordre une fois la page chargée -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/commun.js" defer></script>
+  <script src="js/points.js" defer></script>
+  <script src="js/boutique.js" defer></script>
+  <script src="js/conversation.js" defer></script>
+</head>
+<body class="page-conversation">
+
+  <!-- Menu du haut avec le logo et le nom de la personne connectée -->
+  <header class="entete-site">
+    <a class="logo" href="conversation.html">
+      <img src="images/logo.svg" alt="" width="32" height="32">
+      <span>Messagerie Custom</span>
+    </a>
+    <nav class="navigation" aria-label="Navigation principale">
+      <ul>
+        <li><a href="conversation.html" aria-current="page">Discussions</a></li>
+        <li><a href="contact.html">Contacts</a></li>
+        <li><a href="classement.html">Classement</a></li>
+        <li><a href="parametre.html">Paramètres</a></li>
+      </ul>
+    </nav>
+    <p class="entete-utilisateur">
+      <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
+      <span id="nom-utilisateur">…</span>
+    </p>
+  </header>
+
+  <main class="disposition-conversation">
+
+    <!-- Colonne de gauche avec toutes les discussions -->
+    <aside class="colonne-discussions" aria-labelledby="titre-discussions">
+      <div class="colonne-discussions-entete">
+        <h1 id="titre-discussions">Discussions</h1>
+        <button type="button" id="bouton-nouvelle-discussion" class="bouton bouton-petit">+ Nouvelle</button>
+      </div>
+
+      <p class="champ champ-recherche">
+        <label for="recherche-discussion" class="visuellement-cache">Rechercher une discussion</label>
+        <input type="search" id="recherche-discussion" placeholder="Rechercher une discussion…">
+      </p>
+
+      <!-- La liste est remplie par conversation.js -->
+      <ul id="liste-salons" class="liste-salons"></ul>
+
+      <p id="aucune-discussion" class="aide" hidden>
+        Aucune discussion pour l'instant. Ajoutez des <a href="contact.html">contacts</a>
+        puis cliquez sur « + Nouvelle ».
+      </p>
+    </aside>
+
+    <!-- Colonne de droite avec la discussion ouverte -->
+    <section id="panneau-discussion" class="panneau-discussion" aria-label="Discussion ouverte">
+
+      <!-- Affiché quand aucune discussion n'est ouverte -->
+      <div id="etat-vide" class="etat-vide">
+        <img src="images/logo.svg" alt="" width="96" height="96">
+        <h2>Aucune discussion ouverte</h2>
+        <p>Choisissez une discussion dans la liste pour commencer à discuter.</p>
+        <details class="regles">
+          <summary>Comment fonctionnent les points ?</summary>
+          <ul>
+            <li>Une discussion privée ouverte rapporte <strong>1 point toutes les 10 secondes</strong> avec ce contact.</li>
+            <li>Sans message envoyé pendant <strong>1 minute</strong>, la discussion se ferme toute seule.</li>
+            <li>Écrire un long message garde la discussion ouverte : ce temps donne des points <strong>en attente</strong>, crédités à l'envoi du message (12 points maximum par message).</li>
+            <li>Dépensez vos points dans la <strong>boutique</strong> pour personnaliser la discussion : ces changements ne sont visibles que par vous.</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- Cachée tant qu'on n'a pas cliqué sur une discussion -->
+      <article id="discussion-ouverte" class="discussion-ouverte" hidden>
+
+        <header class="discussion-entete">
+          <button type="button" id="bouton-retour-liste" class="bouton-icone bouton-retour" aria-label="Revenir à la liste des discussions">←</button>
+          <span class="avatar" id="avatar-discussion" aria-hidden="true"></span>
+          <div class="discussion-titres">
+            <h2 id="titre-discussion"></h2>
+            <p id="statut-discussion" class="statut-discussion"></p>
+          </div>
+
+          <!-- Nos points avec ce contact (seulement en privé) -->
+          <p id="zone-points" class="zone-points" hidden>
+            <span class="zone-points-solde"><strong id="solde-points">0</strong> pts</span>
+            <span id="points-attente-zone" class="zone-points-attente" hidden>+<span id="points-attente">0</span> en attente</span>
+          </p>
+          <button type="button" id="bouton-boutique" class="bouton bouton-petit" hidden>🎨 Boutique</button>
+          <button type="button" id="bouton-fermer-discussion" class="bouton-icone" aria-label="Fermer la discussion">✕</button>
+        </header>
+
+        <!-- Barre du chrono avant la fermeture -->
+        <div class="minuteur" aria-hidden="true">
+          <div id="barre-minuteur" class="minuteur-barre"></div>
+        </div>
+        <p id="texte-minuteur" class="minuteur-texte">Fermeture dans 60 s sans message</p>
+
+        <!-- Les messages sont ajoutés ici par conversation.js -->
+        <ol id="liste-messages" class="liste-messages" aria-live="polite"></ol>
+
+        <p id="indicateur-ecriture" class="indicateur-ecriture" hidden></p>
+
+        <!-- Zone pour écrire (500 caractères max contre la triche) -->
+        <form id="form-message" class="form-message">
+          <label for="champ-message" class="visuellement-cache">Votre message</label>
+          <textarea id="champ-message" name="message" rows="1" maxlength="500"
+                    placeholder="Écrivez un message…" aria-describedby="compteur-caracteres" required></textarea>
+          <span id="compteur-caracteres" class="compteur-caracteres">0 / 500</span>
+          <button type="submit" class="bouton bouton-plein">Envoyer</button>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <!-- Fenêtre pour créer une nouvelle discussion -->
+  <dialog id="dialogue-nouvelle-discussion" class="dialogue" aria-labelledby="titre-nouvelle-discussion">
+    <form id="form-nouvelle-discussion" class="formulaire">
+      <h2 id="titre-nouvelle-discussion">Nouvelle discussion</h2>
+      <p class="aide">
+        Cochez <strong>un</strong> contact pour une discussion privée (avec points),
+        ou <strong>plusieurs</strong> pour un salon de groupe.
+      </p>
+
+      <fieldset>
+        <legend>Participants</legend>
+        <!-- Une case à cocher par contact -->
+        <ul id="choix-participants" class="choix-participants"></ul>
+      </fieldset>
+
+      <!-- Affiché seulement si on coche plusieurs contacts -->
+      <p id="zone-nom-salon" class="champ" hidden>
+        <label for="nom-salon">Nom du salon de groupe</label>
+        <input type="text" id="nom-salon" name="nom-salon" maxlength="40" placeholder="Ex. : Équipe 8WEB101">
+      </p>
+
+      <p id="message-nouvelle-discussion" class="message-etat" role="status" aria-live="polite"></p>
+
+      <div class="actions-dialogue">
+        <button type="button" id="bouton-annuler-discussion" class="bouton bouton-secondaire">Annuler</button>
+        <button type="submit" class="bouton bouton-plein">Commencer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Fenêtre de la boutique -->
+  <dialog id="boutique" class="dialogue boutique" aria-labelledby="titre-boutique">
+    <header class="boutique-entete">
+      <div>
+        <h2 id="titre-boutique">Boutique</h2>
+        <p class="aide">
+          Personnalisez votre discussion avec <strong id="boutique-nom-contact"></strong>.
+          Ces changements ne sont visibles que par vous.
+        </p>
+      </div>
+      <p class="boutique-solde"><strong id="boutique-solde">0</strong> pts</p>
+      <button type="button" id="bouton-fermer-boutique" class="bouton-icone" aria-label="Fermer la boutique">✕</button>
+    </header>
+
+    <!-- boutique.js crée une section pour chaque catégorie d'articles -->
+    <div id="boutique-categories" class="boutique-categories"></div>
+
+    <p id="message-boutique" class="message-etat" role="status" aria-live="polite"></p>
+  </dialog>
+
+  <!-- Modèles que le JavaScript copie pour créer les éléments -->
+
+  <!-- Une discussion dans la colonne de gauche -->
+  <template id="modele-salon">
+    <li>
+      <button type="button" class="salon">
+        <span class="avatar salon-avatar" aria-hidden="true"></span>
+        <span class="salon-textes">
+          <span class="salon-nom"></span>
+          <span class="salon-apercu"></span>
+        </span>
+        <span class="salon-badge" hidden></span>
+      </button>
+    </li>
+  </template>
+
+  <!-- Un message dans la discussion ouverte -->
+  <template id="modele-message">
+    <li class="message">
+      <span class="avatar message-avatar" aria-hidden="true"></span>
+      <div class="bulle">
+        <p class="message-auteur"></p>
+        <p class="message-contenu"></p>
+        <p class="message-infos">
+          <time class="message-heure"></time>
+          <span class="message-statut"></span>
+        </p>
+      </div>
+    </li>
+  </template>
+
+  <!-- Un article de la boutique -->
+  <template id="modele-article">
+    <li class="article">
+      <div class="article-apercu" aria-hidden="true"></div>
+      <h4 class="article-nom"></h4>
+      <p class="article-description"></p>
+      <p class="article-prix"></p>
+      <button type="button" class="bouton bouton-petit article-action"></button>
+    </li>
+  </template>
+
+  <!-- Pied de page (le même partout) -->
+  <footer class="pied-page">
+    <p>&copy; 2026 Messagerie Custom — Projet fil rouge 8WEB101, UQAC — Ellande Cros et Émeric Aubert</p>
+  </footer>
+
+</body>
+</html>

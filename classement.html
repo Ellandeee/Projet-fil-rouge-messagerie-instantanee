@@ -1,0 +1,100 @@
+<!doctype html>
+<!--
+  Page du classement
+  Montre avec quels contacts on discute le plus
+  On classe avec les points gagnés et pas avec le solde
+  comme ça acheter dans la boutique ne fait pas descendre un contact
+  Le tableau est rempli par classement.js
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Classement de Messagerie Custom : vos contacts triés selon les points gagnés en discutant.">
+  <title>Messagerie Custom – Classement</title>
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/classement.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/commun.js" defer></script>
+  <script src="js/classement.js" defer></script>
+</head>
+<body class="page-classement">
+
+  <!-- Menu du haut avec le logo et le nom de la personne connectée -->
+  <header class="entete-site">
+    <a class="logo" href="conversation.html">
+      <img src="images/logo.svg" alt="" width="32" height="32">
+      <span>Messagerie Custom</span>
+    </a>
+    <nav class="navigation" aria-label="Navigation principale">
+      <ul>
+        <li><a href="conversation.html">Discussions</a></li>
+        <li><a href="contact.html">Contacts</a></li>
+        <li><a href="classement.html" aria-current="page">Classement</a></li>
+        <li><a href="parametre.html">Paramètres</a></li>
+      </ul>
+    </nav>
+    <p class="entete-utilisateur">
+      <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
+      <span id="nom-utilisateur">…</span>
+    </p>
+  </header>
+
+  <main class="page-contenu">
+    <h1>Classement</h1>
+    <p class="introduction">Les contacts avec qui vous discutez le plus. Plus une discussion reste ouverte, plus vous gagnez de points avec ce contact.</p>
+
+    <!-- Podium des 3 premiers -->
+    <ol id="podium" class="podium" aria-label="Podium des trois premiers contacts"></ol>
+
+    <!-- Tableau avec tous les contacts -->
+    <section class="carte" aria-labelledby="titre-tableau">
+      <h2 id="titre-tableau">Tous mes contacts</h2>
+      <table class="tableau-classement">
+        <caption class="visuellement-cache">Contacts triés par points gagnés, du plus grand au plus petit</caption>
+        <thead>
+          <tr>
+            <th scope="col">Rang</th>
+            <th scope="col">Contact</th>
+            <th scope="col">Points gagnés</th>
+            <th scope="col">Solde à dépenser</th>
+            <th scope="col">Articles achetés</th>
+          </tr>
+        </thead>
+        <tbody id="corps-classement"></tbody>
+      </table>
+      <p id="classement-vide" class="aide" hidden>
+        Aucun point pour l'instant. Ouvrez une <a href="conversation.html">discussion privée</a> pour commencer à en gagner !
+      </p>
+    </section>
+
+    <!-- Petit rappel des règles des points -->
+    <aside class="carte" aria-labelledby="titre-regles">
+      <h2 id="titre-regles">Règles des points</h2>
+      <details>
+        <summary>Comment gagner des points ?</summary>
+        <ul>
+          <li>Une discussion privée ouverte rapporte 1 point toutes les 10 secondes avec ce contact.</li>
+          <li>La discussion se ferme après 1 minute sans message envoyé : il faut participer pour continuer à gagner.</li>
+          <li>Le temps passé à écrire un long message donne des points en attente, crédités à l'envoi (12 points maximum par message, 500 caractères maximum).</li>
+          <li>Chaque personne a ses propres points : la plus active d'une discussion en gagne davantage.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>À quoi servent les points ?</summary>
+        <p>Dans la boutique d'une discussion, achetez des fonds, des bulles, des cadres de photo, des polices et des couleurs. Chaque achat vaut pour ce contact uniquement et n'est visible que par vous.</p>
+      </details>
+    </aside>
+  </main>
+
+  <!-- Pied de page (le même partout) -->
+  <footer class="pied-page">
+    <p>&copy; 2026 Messagerie Custom — Projet fil rouge 8WEB101, UQAC — Ellande Cros et Émeric Aubert</p>
+  </footer>
+
+</body>
+</html>
