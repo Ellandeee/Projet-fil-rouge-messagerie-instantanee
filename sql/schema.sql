@@ -489,6 +489,14 @@ grant  execute on function public.supprimer_mon_compte()            to authentic
 -- Sauf celle-là qu'on utilise avant d'être connecté
 grant  execute on function public.nom_disponible(text)              to anon, authenticated;
 
+-- creer_profil sert seulement au déclencheur d'inscription, personne ne doit l'appeler
+-- est_membre et sont_contacts servent aux règles de sécurité des personnes connectées
+revoke execute on function public.creer_profil()                    from public, anon, authenticated;
+revoke execute on function public.est_membre(bigint)                from public, anon;
+revoke execute on function public.sont_contacts(uuid)               from public, anon;
+grant  execute on function public.est_membre(bigint)                to authenticated;
+grant  execute on function public.sont_contacts(uuid)               to authenticated;
+
 
 -- ===== 5. Temps réel =====
 -- Le site est prévenu tout de suite des nouveaux messages, des lectures et des invitations
