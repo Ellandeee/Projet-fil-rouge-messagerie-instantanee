@@ -1,0 +1,617 @@
+/*
+  Style de la page des discussions (conversation.html)
+  La page prend toute la hauteur de l'écran comme une appli
+  Liste des discussions à gauche et discussion ouverte à droite
+  Les classes ajoutées par le JS sont notées en commentaire
+*/
+
+/* ===== Disposition générale ===== */
+
+.page-conversation {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.disposition-conversation {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  min-height: 0;
+}
+
+/* Pied de page plus discret ici pour laisser la place aux messages */
+.page-conversation .pied-page {
+  padding: 6px var(--espace-4);
+  font-size: 0.75rem;
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+/* ===== Colonne de gauche ===== */
+
+.colonne-discussions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  min-height: 0;
+  padding: var(--espace-5) var(--espace-4);
+  overflow-y: auto;
+  background-color: var(--couleur-surface);
+  border-right: 1px solid var(--couleur-bordure);
+}
+
+.colonne-discussions-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.colonne-discussions-entete h1 {
+  font-size: 1.375rem;
+}
+
+.champ-recherche input {
+  border-color: transparent;
+  background-color: var(--couleur-fond);
+}
+
+.liste-salons {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  list-style: none;
+}
+
+/* Une discussion de la liste (bouton créé par le JS) */
+.salon {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-3);
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: var(--arrondi-petit);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  cursor: pointer;
+}
+
+.salon:hover {
+  background-color: var(--couleur-fond);
+}
+
+/* Discussion ouverte à droite (le JS met la classe actif) */
+.salon.actif {
+  background-color: var(--couleur-principale-claire);
+}
+
+.salon-textes {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.salon-nom {
+  font-weight: 600;
+}
+
+/* Aperçu du dernier message sur une seule ligne avec des ... */
+.salon-apercu {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Messages pas encore lus (le JS met la classe non-lu) */
+.salon.non-lu .salon-nom {
+  font-weight: 700;
+}
+
+.salon.non-lu .salon-apercu {
+  color: var(--couleur-texte);
+}
+
+.salon-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--arrondi-rond);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--couleur-principale);
+}
+
+/* ===== Colonne de droite ===== */
+
+.panneau-discussion {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background-color: var(--couleur-fond);
+}
+
+/* Quand aucune discussion n'est ouverte */
+.etat-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-3);
+  max-width: 460px;
+  margin: auto;
+  padding: var(--espace-6);
+  text-align: center;
+}
+
+.etat-vide p {
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Encadré qui explique les points */
+.regles {
+  width: 100%;
+  margin-top: var(--espace-3);
+  padding: var(--espace-4) var(--espace-5);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-moyen);
+  text-align: left;
+  background-color: var(--couleur-surface);
+}
+
+.regles summary {
+  font-weight: 600;
+  color: var(--couleur-principale);
+  cursor: pointer;
+}
+
+.regles ul {
+  display: grid;
+  gap: var(--espace-2);
+  margin-top: var(--espace-3);
+  padding-left: var(--espace-5);
+  font-size: 0.9375rem;
+}
+
+/* Discussion ouverte */
+.discussion-ouverte {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.discussion-entete {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-3);
+  padding: var(--espace-3) var(--espace-6);
+  background-color: var(--couleur-surface);
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.discussion-titres {
+  flex: 1;
+  min-width: 0;
+}
+
+.discussion-titres h2 {
+  font-size: 1.0625rem;
+}
+
+.statut-discussion {
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Le JS met la classe en-ligne quand le contact est connecté */
+.statut-discussion.en-ligne {
+  color: var(--couleur-succes);
+}
+
+/* La flèche retour sert seulement sur téléphone */
+.bouton-retour {
+  display: none;
+}
+
+/* Nos points avec ce contact */
+.zone-points {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+}
+
+.zone-points-solde {
+  padding: 2px 10px;
+  border-radius: var(--arrondi-rond);
+  font-size: 0.875rem;
+  color: var(--couleur-or-texte);
+  background-color: var(--couleur-or-claire);
+}
+
+.zone-points-attente {
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* ===== Minuteur de fermeture ===== */
+
+.minuteur {
+  height: 3px;
+  background-color: var(--couleur-surface-douce);
+}
+
+/* Le JS change la largeur chaque seconde (100% = 60 s restantes) */
+.minuteur-barre {
+  width: 100%;
+  height: 100%;
+  background-color: var(--couleur-principale);
+  transition: width 1s linear;
+}
+
+.minuteur-texte {
+  padding: 4px var(--espace-6);
+  font-size: 0.75rem;
+  color: var(--couleur-texte-discret);
+  background-color: var(--couleur-surface);
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+/* Moins de 10 secondes (classe bientot ajoutée par le JS) */
+.minuteur-barre.bientot {
+  background-color: var(--couleur-danger);
+}
+
+.minuteur-texte.bientot {
+  color: var(--couleur-danger);
+  background-color: var(--couleur-danger-claire);
+}
+
+/* Pendant que la personne écrit (classe ecriture) */
+.minuteur-texte.ecriture {
+  color: var(--couleur-principale);
+}
+
+/* ===== Messages ===== */
+
+.liste-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--espace-6) var(--espace-8);
+  overflow-y: auto;
+  list-style: none;
+}
+
+/* Séparateur « Aujourd'hui », « Hier »... (li ajouté par le JS) */
+.separateur-date {
+  align-self: center;
+  padding: 2px 10px;
+  border-radius: var(--arrondi-rond);
+  font-size: 0.75rem;
+  color: var(--couleur-texte-secondaire);
+  background-color: var(--couleur-surface-douce);
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espace-2);
+  max-width: 72%;
+}
+
+/* Mes messages sont à droite (classe moi ajoutée par le JS) */
+.message.moi {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+
+.message-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 0.6875rem;
+}
+
+.message.moi .message-avatar {
+  display: none;
+}
+
+.bulle {
+  padding: 8px 12px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: 14px 14px 14px 4px;
+  background-color: var(--couleur-surface);
+}
+
+.message.moi .bulle {
+  color: #ffffff;
+  background-color: var(--couleur-principale);
+  border-color: var(--couleur-principale);
+  border-radius: 14px 14px 4px 14px;
+}
+
+/* Nom de l'auteur, utile seulement dans les salons de groupe */
+.message-auteur {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--couleur-principale);
+}
+
+.message-auteur:empty {
+  display: none;
+}
+
+/* Garde les retours à la ligne et coupe les liens trop longs */
+.message-contenu {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.message-infos {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 0.6875rem;
+  color: var(--couleur-texte-discret);
+}
+
+.message.moi .message-infos {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Image partagée dans un message */
+.message-image {
+  max-width: 260px;
+  margin-top: var(--espace-1);
+  border-radius: var(--arrondi-petit);
+}
+
+.indicateur-ecriture {
+  padding: 0 var(--espace-8) var(--espace-2);
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* ===== Zone d'écriture ===== */
+
+.form-message {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: var(--espace-3) var(--espace-6);
+  background-color: var(--couleur-surface);
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+.form-message textarea {
+  flex: 1;
+  max-height: 140px;
+  line-height: 1.4;
+  resize: none;
+}
+
+.compteur-caracteres {
+  align-self: center;
+  min-width: 64px;
+  font-size: 0.75rem;
+  color: var(--couleur-texte-discret);
+  text-align: right;
+}
+
+/* Près de la limite des 500 caractères (classe limite) */
+.compteur-caracteres.limite {
+  color: var(--couleur-danger);
+}
+
+/* ===== Fenêtre nouvelle discussion ===== */
+
+.dialogue fieldset {
+  padding: 0;
+  border: 0;
+}
+
+.dialogue legend {
+  margin-bottom: var(--espace-2);
+  font-weight: 600;
+}
+
+.choix-participants {
+  display: grid;
+  gap: 2px;
+  max-height: 260px;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.choix-participants label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--espace-2);
+  border-radius: var(--arrondi-petit);
+  cursor: pointer;
+}
+
+.choix-participants label:hover {
+  background-color: var(--couleur-fond);
+}
+
+/* ===== Boutique ===== */
+
+.boutique {
+  max-width: 860px;
+}
+
+.boutique-entete {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espace-4);
+}
+
+.boutique-entete > div {
+  flex: 1;
+}
+
+.boutique-solde {
+  padding: 4px 12px;
+  border-radius: var(--arrondi-rond);
+  font-weight: 600;
+  color: var(--couleur-or-texte);
+  background-color: var(--couleur-or-claire);
+  white-space: nowrap;
+}
+
+.boutique-categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-6);
+  max-height: 60vh;
+  margin: var(--espace-4) 0;
+  overflow-y: auto;
+}
+
+.boutique-categorie h3 {
+  margin-bottom: var(--espace-3);
+  font-size: 1rem;
+}
+
+.liste-articles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--espace-3);
+  padding: 0;
+  list-style: none;
+}
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--espace-3);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-moyen);
+  background-color: var(--couleur-surface);
+}
+
+/* Article porté en ce moment (classe equipe ajoutée par le JS) */
+.article.equipe {
+  border-color: var(--couleur-principale);
+  outline: 1px solid var(--couleur-principale);
+}
+
+.article-nom {
+  font-size: 0.9375rem;
+}
+
+.article-description {
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+.article-prix {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--couleur-or-texte);
+}
+
+/* Le bouton reste en bas même si la description est courte */
+.article-action {
+  margin-top: auto;
+}
+
+/* ===== Téléphone ===== */
+
+@media (max-width: 768px) {
+  .page-conversation {
+    height: calc(100dvh - var(--hauteur-navigation-mobile));
+  }
+
+  .page-conversation .pied-page {
+    display: none;
+  }
+
+  .disposition-conversation {
+    grid-template-columns: 1fr;
+  }
+
+  /* Par défaut on voit la liste. Quand une discussion est ouverte
+     le JS ajoute discussion-active et on montre seulement la discussion */
+  .panneau-discussion {
+    display: none;
+  }
+
+  .disposition-conversation.discussion-active .colonne-discussions {
+    display: none;
+  }
+
+  .disposition-conversation.discussion-active .panneau-discussion {
+    display: flex;
+  }
+
+  .colonne-discussions {
+    border-right: 0;
+  }
+
+  .bouton-retour {
+    display: inline-grid;
+  }
+
+  .discussion-entete {
+    flex-wrap: wrap;
+    padding: var(--espace-2) var(--espace-3);
+  }
+
+  .zone-points-attente {
+    display: none;
+  }
+
+  /* Le nom et le statut restent sur une ligne avec des ... si c'est trop long */
+  .discussion-titres h2,
+  .statut-discussion {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .liste-messages {
+    padding: var(--espace-4);
+  }
+
+  .message {
+    max-width: 85%;
+  }
+
+  .indicateur-ecriture {
+    padding: 0 var(--espace-4) var(--espace-2);
+  }
+
+  .form-message {
+    padding: var(--espace-2) var(--espace-3);
+  }
+
+  /* On cache le compteur sur petit écran pour gagner de la place */
+  .compteur-caracteres {
+    display: none;
+  }
+
+  .boutique-categories {
+    max-height: 65vh;
+  }
+
+  .liste-articles {
+    grid-template-columns: 1fr 1fr;
+  }
+}

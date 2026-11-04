@@ -1,0 +1,103 @@
+/*
+  Style de la page des contacts (contact.html)
+  Recherche en haut, invitations au milieu, liste des contacts en bas
+*/
+
+/* Champ de recherche et bouton sur la même ligne */
+.form-ligne {
+  display: flex;
+  gap: var(--espace-2);
+}
+
+.form-ligne input {
+  flex: 1;
+}
+
+.form-ligne + .message-etat {
+  margin-top: var(--espace-3);
+}
+
+/* Invitations reçues et envoyées côte à côte */
+.grille-contacts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espace-6);
+}
+
+.liste-contacts {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  list-style: none;
+}
+
+/* Si la liste contient quelque chose on cache le message « aucun... » */
+.liste-contacts:not(:empty) + .aide {
+  display: none;
+}
+
+/* Une personne : simple ligne séparée par un trait, pas une carte de plus */
+.ligne-contact {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-3);
+  padding: var(--espace-3) 0;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.ligne-contact:last-child {
+  border-bottom: 0;
+}
+
+.ligne-contact-textes {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ligne-contact-nom {
+  font-weight: 600;
+}
+
+.ligne-contact-detail {
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Le JS met la classe en-ligne quand le contact est connecté */
+.ligne-contact-detail.en-ligne {
+  color: var(--couleur-succes);
+}
+
+.ligne-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Le bouton supprimer est discret pour éviter les clics par erreur */
+.bouton-supprimer-contact {
+  color: var(--couleur-danger);
+  background: none;
+}
+
+.bouton-supprimer-contact:hover {
+  background-color: var(--couleur-danger-claire);
+}
+
+@media (max-width: 768px) {
+  .grille-contacts {
+    grid-template-columns: 1fr;
+  }
+
+  .ligne-contact {
+    flex-wrap: wrap;
+  }
+
+  /* Les boutons passent sous le nom pour ne pas écraser le texte */
+  .ligne-contact-actions {
+    width: 100%;
+    padding-left: 52px;
+  }
+}

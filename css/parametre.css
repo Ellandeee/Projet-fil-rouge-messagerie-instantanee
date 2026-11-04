@@ -1,0 +1,54 @@
+/*
+  Style de la page des paramètres (parametre.html)
+  Une carte par sujet et la suppression du compte bien séparée en bas
+*/
+
+/* Bandeau qui apparaît après le lien de mot de passe oublié */
+.bandeau {
+  padding: var(--espace-3) var(--espace-4);
+  border-radius: var(--arrondi-petit);
+  color: var(--couleur-or-texte);
+  background-color: var(--couleur-or-claire);
+}
+
+/* Les boutons gardent leur taille au lieu de prendre toute la largeur */
+.page-parametre .formulaire .bouton {
+  align-self: flex-start;
+}
+
+.carte > p {
+  margin-bottom: var(--espace-4);
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Avatar, pseudo et e-mail en haut du profil */
+.apercu-profil {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-4);
+}
+
+.champ-couleur {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--espace-3);
+}
+
+.champ-couleur input[type="color"] {
+  width: 56px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-petit);
+  background-color: var(--couleur-surface);
+  cursor: pointer;
+}
+
+/* La zone de suppression est en rouge pour qu'on fasse attention */
+.carte-danger {
+  border-color: #efc4bf;
+}
+
+.carte-danger h2 {
+  color: var(--couleur-danger);
+}

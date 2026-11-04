@@ -1,0 +1,635 @@
+/*
+  Style commun à toutes les pages de Messagerie Custom
+  On met ici les variables, les boutons, les formulaires, l'en-tête et le pied de page
+  Chaque page a ensuite son propre fichier css pour ce qui lui est spécifique
+*/
+
+/* ===== Variables ===== */
+
+:root {
+  /* Couleur principale (prune) et ses variantes */
+  --couleur-principale: #563a8f;
+  --couleur-principale-foncee: #3f2a6b;
+  --couleur-principale-claire: #ece6f5;
+  --couleur-principale-tres-claire: #f6f3fa;
+
+  /* L'or est réservé à tout ce qui touche aux points */
+  --couleur-or: #d4a017;
+  --couleur-or-claire: #fbf1d3;
+  --couleur-or-texte: #7a5a00;
+
+  /* Fonds et textes */
+  --couleur-fond: #f5f2ec;
+  --couleur-surface: #ffffff;
+  --couleur-surface-douce: #ede9e1;
+  --couleur-texte: #24212b;
+  --couleur-texte-secondaire: #615b6b;
+  --couleur-texte-discret: #8f8998;
+  --couleur-bordure: #ddd7cc;
+
+  /* Messages d'état */
+  --couleur-danger: #b42318;
+  --couleur-danger-claire: #fdecea;
+  --couleur-succes: #2f7d4f;
+  --couleur-succes-claire: #e7f4ec;
+
+  /* Espacements (toujours les mêmes valeurs partout) */
+  --espace-1: 4px;
+  --espace-2: 8px;
+  --espace-3: 12px;
+  --espace-4: 16px;
+  --espace-5: 20px;
+  --espace-6: 24px;
+  --espace-8: 32px;
+  --espace-12: 48px;
+
+  /* Arrondis (petits exprès, on ne veut pas tout en pilule) */
+  --arrondi-petit: 6px;
+  --arrondi-moyen: 10px;
+  --arrondi-rond: 999px;
+
+  /* Police du système : rien à télécharger donc la page s'affiche vite */
+  --police: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --hauteur-entete: 60px;
+  --hauteur-navigation-mobile: 60px;
+}
+
+/* ===== Remise à zéro ===== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1, h2, h3, h4,
+p, ul, ol, figure, fieldset {
+  margin: 0;
+}
+
+/* Sans ça un display: flex écrase l'attribut hidden et l'élément reste visible */
+[hidden] {
+  display: none !important;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--police);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--couleur-texte);
+  background-color: var(--couleur-fond);
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+a {
+  color: var(--couleur-principale);
+}
+
+a:hover {
+  color: var(--couleur-principale-foncee);
+}
+
+/* Contour bien visible quand on navigue au clavier */
+:focus-visible {
+  outline: 2px solid var(--couleur-principale);
+  outline-offset: 2px;
+}
+
+/* Caché à l'écran mais lu par les lecteurs d'écran */
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== Boutons ===== */
+
+/* Bouton de base : fond prune clair */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espace-2);
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--arrondi-petit);
+  font: inherit;
+  font-weight: 600;
+  color: var(--couleur-principale);
+  background-color: var(--couleur-principale-claire);
+  cursor: pointer;
+  transition: background-color 120ms, color 120ms;
+}
+
+.bouton:hover {
+  background-color: #e0d6ef;
+}
+
+/* Action principale de la page */
+.bouton-plein {
+  color: #ffffff;
+  background-color: var(--couleur-principale);
+}
+
+.bouton-plein:hover {
+  background-color: var(--couleur-principale-foncee);
+}
+
+.bouton-secondaire {
+  color: var(--couleur-texte);
+  background-color: var(--couleur-surface);
+  border-color: var(--couleur-bordure);
+}
+
+.bouton-secondaire:hover {
+  background-color: var(--couleur-fond);
+}
+
+.bouton-danger {
+  color: #ffffff;
+  background-color: var(--couleur-danger);
+}
+
+.bouton-danger:hover {
+  background-color: #8f1c13;
+}
+
+/* Bouton qui coûte des points */
+.bouton-or {
+  color: var(--couleur-texte);
+  background-color: var(--couleur-or);
+}
+
+.bouton-or:hover {
+  background-color: #bd8d0f;
+}
+
+.bouton-petit {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+}
+
+/* Bouton qui ressemble à un lien (ex : mot de passe oublié) */
+.bouton-lien {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--couleur-principale);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.bouton-lien:hover {
+  color: var(--couleur-principale-foncee);
+}
+
+/* Bouton carré avec seulement un symbole (fermer, retour) */
+.bouton-icone {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--arrondi-petit);
+  font-size: 1.125rem;
+  color: var(--couleur-texte-secondaire);
+  background: none;
+  cursor: pointer;
+}
+
+.bouton-icone:hover {
+  color: var(--couleur-texte);
+  background-color: var(--couleur-surface-douce);
+}
+
+.bouton:disabled,
+.bouton-icone:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== Formulaires ===== */
+
+.formulaire,
+.formulaire fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-4);
+}
+
+.formulaire fieldset {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.formulaire legend {
+  padding: 0;
+  margin-bottom: var(--espace-4);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* Un champ = une étiquette + une zone de saisie + parfois une aide */
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.champ label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-petit);
+  font: inherit;
+  color: var(--couleur-texte);
+  background-color: var(--couleur-surface);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--couleur-texte-discret);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--couleur-principale);
+  outline: 2px solid var(--couleur-principale-claire);
+  outline-offset: 0;
+}
+
+/* Champ mal rempli, seulement après que la personne y a touché */
+input:user-invalid {
+  border-color: var(--couleur-danger);
+}
+
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--couleur-principale);
+}
+
+/* Case à cocher avec son texte sur la même ligne */
+.champ-case label {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.aide {
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Zone où le JavaScript écrit les erreurs et les confirmations */
+.message-etat {
+  padding: 10px 12px;
+  border-radius: var(--arrondi-petit);
+  font-size: 0.875rem;
+  color: var(--couleur-texte-secondaire);
+  background-color: var(--couleur-surface-douce);
+}
+
+/* Vide = on ne montre rien */
+.message-etat:empty {
+  display: none;
+}
+
+.message-etat.erreur {
+  color: var(--couleur-danger);
+  background-color: var(--couleur-danger-claire);
+}
+
+.message-etat.succes {
+  color: var(--couleur-succes);
+  background-color: var(--couleur-succes-claire);
+}
+
+/* ===== En-tête du site ===== */
+
+.entete-site {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-6);
+  height: var(--hauteur-entete);
+  padding: 0 var(--espace-6);
+  background-color: var(--couleur-surface);
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--couleur-texte);
+  text-decoration: none;
+}
+
+.logo:hover {
+  color: var(--couleur-texte);
+}
+
+.navigation ul {
+  display: flex;
+  gap: var(--espace-1);
+  padding: 0;
+  list-style: none;
+}
+
+.navigation a {
+  display: block;
+  padding: 8px 14px;
+  border-radius: var(--arrondi-petit);
+  font-weight: 500;
+  color: var(--couleur-texte-secondaire);
+  text-decoration: none;
+}
+
+.navigation a:hover {
+  color: var(--couleur-texte);
+  background-color: var(--couleur-fond);
+}
+
+/* La page où on est (aria-current est mis dans le HTML) */
+.navigation a[aria-current="page"] {
+  color: var(--couleur-principale);
+  background-color: var(--couleur-principale-claire);
+}
+
+.entete-utilisateur {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+  font-weight: 500;
+}
+
+/* ===== Avatar ===== */
+
+/* Rond avec les initiales, la couleur vient du profil (mise en style par le JS) */
+.avatar {
+  position: relative;
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--couleur-principale);
+}
+
+.avatar-petit {
+  width: 30px;
+  height: 30px;
+  font-size: 0.75rem;
+}
+
+.avatar-grand {
+  width: 72px;
+  height: 72px;
+  font-size: 1.5rem;
+}
+
+/* Petit point vert quand la personne est en ligne */
+.avatar.en-ligne::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--couleur-surface);
+  border-radius: 50%;
+  background-color: var(--couleur-succes);
+}
+
+/* ===== Blocs réutilisés ===== */
+
+/* Contenu des pages Contacts, Classement et Paramètres */
+.page-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-6);
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--espace-8) var(--espace-6);
+}
+
+.page-etroite {
+  max-width: 640px;
+}
+
+/* Bloc blanc avec une bordure fine, sans ombre */
+.carte {
+  padding: var(--espace-6);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-moyen);
+  background-color: var(--couleur-surface);
+}
+
+.carte > h2 {
+  margin-bottom: var(--espace-4);
+}
+
+/* Petit rond avec un nombre (messages non lus, invitations) */
+.pastille-nombre {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--arrondi-rond);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  background-color: var(--couleur-principale);
+  vertical-align: middle;
+}
+
+/* Les points sont toujours affichés en or */
+.points {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-1);
+  padding: 2px 10px;
+  border-radius: var(--arrondi-rond);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--couleur-or-texte);
+  background-color: var(--couleur-or-claire);
+}
+
+/* ===== Fenêtres (dialog) ===== */
+
+.dialogue {
+  width: calc(100% - 32px);
+  max-width: 520px;
+  padding: var(--espace-6);
+  border: 0;
+  border-radius: var(--arrondi-moyen);
+  color: var(--couleur-texte);
+  background-color: var(--couleur-surface);
+  /* Seul endroit avec une vraie ombre : la fenêtre passe au-dessus de la page */
+  box-shadow: 0 20px 50px rgba(36, 33, 43, 0.25);
+}
+
+.dialogue::backdrop {
+  background-color: rgba(36, 33, 43, 0.45);
+}
+
+.actions-dialogue {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espace-2);
+}
+
+/* ===== Notification de nouveau message (créée par le JS) ===== */
+
+.notification {
+  position: fixed;
+  top: calc(var(--hauteur-entete) + 12px);
+  right: var(--espace-4);
+  z-index: 30;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: min(340px, calc(100% - 32px));
+  padding: var(--espace-3) 14px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-moyen);
+  background-color: var(--couleur-surface);
+  box-shadow: 0 8px 24px rgba(36, 33, 43, 0.15);
+}
+
+.notification-textes {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+}
+
+.notification-titre {
+  font-weight: 600;
+}
+
+/* ===== Pied de page ===== */
+
+.pied-page {
+  padding: var(--espace-4) var(--espace-6);
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-discret);
+  text-align: center;
+}
+
+.pied-page a {
+  color: inherit;
+}
+
+/* ===== Téléphone (moins de 768 px) ===== */
+
+@media (max-width: 768px) {
+  .entete-site {
+    padding: 0 var(--espace-4);
+  }
+
+  /* Sur téléphone le nom du site et le pseudo prennent trop de place */
+  .logo span,
+  #nom-utilisateur {
+    display: none;
+  }
+
+  /* Le menu descend en bas de l'écran pour être sous le pouce */
+  .navigation {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+    height: var(--hauteur-navigation-mobile);
+    background-color: var(--couleur-surface);
+    border-top: 1px solid var(--couleur-bordure);
+  }
+
+  .navigation ul {
+    height: 100%;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .navigation a {
+    padding: 8px 10px;
+    font-size: 0.8125rem;
+  }
+
+  /* Place pour que le menu du bas ne cache pas la fin de la page */
+  body:not(.page-connexion) {
+    padding-bottom: var(--hauteur-navigation-mobile);
+  }
+
+  .page-contenu {
+    padding: var(--espace-6) var(--espace-4);
+  }
+
+  .carte {
+    padding: var(--espace-4);
+  }
+}
+
+/* Si la personne a demandé moins d'animations dans son système */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

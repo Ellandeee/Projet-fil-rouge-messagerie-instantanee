@@ -1,0 +1,179 @@
+/*
+  Style de la page du classement (classement.html)
+  Un podium pour les 3 premiers puis un tableau avec tout le monde
+*/
+
+.introduction {
+  max-width: 60ch;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* ===== Podium ===== */
+
+/* Le 1er au milieu et plus haut, le 2e à gauche, le 3e à droite */
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: end;
+  gap: var(--espace-4);
+  padding: 0;
+  list-style: none;
+}
+
+.podium:empty {
+  display: none;
+}
+
+.podium-place {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--espace-5) var(--espace-3);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-moyen);
+  text-align: center;
+  background-color: var(--couleur-surface);
+}
+
+.podium-place:nth-child(1) {
+  order: 2;
+  padding-top: var(--espace-8);
+  padding-bottom: var(--espace-8);
+}
+
+.podium-place:nth-child(2) {
+  order: 1;
+}
+
+.podium-place:nth-child(3) {
+  order: 3;
+}
+
+/* Rond avec le numéro : or, argent et bronze */
+.podium-rang {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.podium-place:nth-child(1) .podium-rang {
+  background-color: var(--couleur-or);
+}
+
+.podium-place:nth-child(2) .podium-rang {
+  background-color: #9a9ca3;
+}
+
+.podium-place:nth-child(3) .podium-rang {
+  background-color: #a8693a;
+}
+
+.podium-nom {
+  font-weight: 600;
+}
+
+/* ===== Tableau ===== */
+
+/* Le tableau peut défiler sur les petits écrans */
+.carte:has(.tableau-classement) {
+  overflow-x: auto;
+}
+
+.tableau-classement {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.tableau-classement th {
+  padding: var(--espace-2) var(--espace-3);
+  border-bottom: 1px solid var(--couleur-bordure);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--couleur-texte-secondaire);
+  text-align: left;
+}
+
+.tableau-classement td {
+  padding: var(--espace-3);
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.tableau-classement tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Les colonnes avec des nombres sont alignées à droite */
+.tableau-classement th:nth-child(n+3),
+.tableau-classement td:nth-child(n+3) {
+  text-align: right;
+}
+
+.tableau-classement td:first-child {
+  width: 56px;
+  font-weight: 700;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Contact avec son avatar dans la 2e colonne */
+.cellule-contact {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-3);
+  font-weight: 600;
+}
+
+.colonne-points {
+  font-weight: 700;
+}
+
+.colonne-solde {
+  color: var(--couleur-or-texte);
+}
+
+/* ===== Règles ===== */
+
+aside.carte details + details {
+  margin-top: var(--espace-3);
+}
+
+aside.carte summary {
+  font-weight: 600;
+  color: var(--couleur-principale);
+  cursor: pointer;
+}
+
+aside.carte ul,
+aside.carte details p {
+  margin-top: var(--espace-2);
+  color: var(--couleur-texte-secondaire);
+}
+
+aside.carte ul {
+  display: grid;
+  gap: 6px;
+  padding-left: var(--espace-5);
+}
+
+@media (max-width: 768px) {
+  .podium {
+    gap: var(--espace-2);
+  }
+
+  .podium-place {
+    padding: var(--espace-3) var(--espace-2);
+    font-size: 0.875rem;
+  }
+
+  /* On enlève la colonne des articles achetés pour gagner de la place */
+  .tableau-classement th:nth-child(5),
+  .tableau-classement td:nth-child(5) {
+    display: none;
+  }
+}
