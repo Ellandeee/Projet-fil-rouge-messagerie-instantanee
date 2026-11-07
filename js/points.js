@@ -3,7 +3,7 @@
   Règles :
   - la discussion se ferme toute seule après 60 s sans message envoyé
   - écrire au clavier garde aussi la discussion ouverte
-  - en privé on gagne 1 point toutes les 10 s si l'onglet est visible
+  - dans chaque discussion (privée ou de groupe) on gagne 1 point toutes les 10 s si l'onglet est visible
   - le temps gagné grâce à la frappe donne des points en attente
     qui sont ajoutés seulement quand on envoie le message (12 max)
   La base vérifie aussi de son côté (1 point par 10 s max) donc on ne peut pas tricher
@@ -12,11 +12,12 @@
 const DUREE_OUVERTURE = 60; // secondes sans message avant la fermeture
 const SECONDES_PAR_POINT = 10;
 const MAX_EN_ATTENTE = 12;
+const AFFICHER_TEXTE_A = 15; // le texte du minuteur apparaît dans les 15 dernières secondes
 
 // État du chrono pour la discussion ouverte
 const chrono = {
   minuterie: null,
-  contactId: null, // null si c'est un salon de groupe (pas de points)
+  salonId: null,
   dernierEnvoi: 0,
   derniereFrappe: 0,
   secondesVisibles: 0,
@@ -27,9 +28,9 @@ const chrono = {
 const barreMinuteur = document.querySelector("#barre-minuteur");
 const texteMinuteur = document.querySelector("#texte-minuteur");
 
-function demarrerChrono({ contactId, quandFerme }) {
+function demarrerChrono({ salonId, quandFerme }) {
   arreterChrono();
-  chrono.contactId = contactId;
+  chrono.salonId = salonId;
   chrono.quandFerme = quandFerme;
   chrono.dernierEnvoi = Date.now(); // ouvrir la discussion lance la première minute
   chrono.derniereFrappe = 0;
@@ -52,12 +53,12 @@ function tic() {
 
   if (maintenant - derniereActivite >= DUREE_OUVERTURE * 1000) {
     arreterChrono();
-    if (chrono.quandFerme) chrono.quandFerme();
+    if (chrono.quandFerme) chrono.quandFerme(true);
     return;
   }
 
   // Les points ne comptent que si la discussion est vraiment à l'écran
-  if (chrono.contactId && document.visibilityState === "visible") {
+  if (document.visibilityState === "visible") {
     chrono.secondesVisibles++;
     if (chrono.secondesVisibles >= SECONDES_PAR_POINT) {
       chrono.secondesVisibles = 0;
@@ -82,7 +83,7 @@ function gagnerUnPoint() {
 
 async function crediterPoints(nombre) {
   const { data, error } = await client.rpc("crediter_points", {
-    p_contact: chrono.contactId,
+    p_salon: chrono.salonId,
     p_points: nombre
   });
   if (!error && data) {
@@ -100,7 +101,7 @@ function signalerFrappe(evenement) {
 async function signalerEnvoi() {
   chrono.dernierEnvoi = Date.now();
   chrono.derniereFrappe = 0;
-  if (chrono.contactId && chrono.enAttente > 0) {
+  if (chrono.enAttente > 0) {
     const nombre = chrono.enAttente;
     chrono.enAttente = 0;
     afficherAttente();
@@ -116,19 +117,20 @@ function mettreAJourMinuteur() {
   const derniereActivite = Math.max(chrono.dernierEnvoi, chrono.derniereFrappe);
   const restant = Math.max(0, DUREE_OUVERTURE - Math.floor((maintenant - derniereActivite) / 1000));
   const prolongeParFrappe = maintenant - chrono.dernierEnvoi >= DUREE_OUVERTURE * 1000;
+  const bientot = restant <= 10;
 
   barreMinuteur.style.width = (restant / DUREE_OUVERTURE) * 100 + "%";
-  const bientot = restant <= 10;
   barreMinuteur.classList.toggle("bientot", bientot);
   texteMinuteur.classList.toggle("bientot", bientot);
   texteMinuteur.classList.toggle("ecriture", prolongeParFrappe && !bientot);
 
+  // La plupart du temps la barre suffit, le texte reste vide (donc caché par le CSS)
   if (prolongeParFrappe && !bientot) {
     texteMinuteur.textContent = "Vous écrivez, la discussion reste ouverte";
-  } else if (bientot) {
-    texteMinuteur.textContent = "Fermeture dans " + restant + " s : envoyez un message pour rester";
+  } else if (restant <= AFFICHER_TEXTE_A) {
+    texteMinuteur.textContent = "Fermeture dans " + restant + " s, envoyez un message pour rester";
   } else {
-    texteMinuteur.textContent = "Fermeture dans " + restant + " s sans message";
+    texteMinuteur.textContent = "";
   }
 }
 

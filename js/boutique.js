@@ -1,27 +1,32 @@
 /*
   Boutique de personnalisation
-  On achète des articles avec les points gagnés avec un contact
-  Un article acheté vaut seulement pour ce contact et seule la personne qui l'a acheté le voit
+  On achète des articles avec les points gagnés dans une discussion (privée ou de groupe)
+  Un article acheté vaut seulement pour cette discussion et seule la personne qui l'a acheté le voit
   Le nom de chaque article (id) est aussi sa classe CSS dans personnalisation.css
 */
 
 const NOMS_CATEGORIES = {
-  fond: "Fond de la discussion",
-  bulle: "Forme des bulles",
-  cadre: "Cadre des photos",
-  police: "Police",
-  couleur: "Couleur de mes bulles"
+  fond: "Fonds",
+  bulle: "Bulles",
+  cadre: "Cadres",
+  police: "Polices",
+  couleur: "Couleurs"
 };
 
 const fenetreBoutique = document.querySelector("#boutique");
-const zoneCategories = document.querySelector("#boutique-categories");
+const zoneOnglets = document.querySelector("#boutique-onglets");
+const listeArticles = document.querySelector("#boutique-articles");
 const messageBoutique = document.querySelector("#message-boutique");
 
 // Liste de tous les articles (chargée une seule fois)
 let articles = [];
 
-// Contact de la discussion pour laquelle la boutique est ouverte
-let contactBoutique = null;
+// Discussion pour laquelle la boutique est ouverte et onglet choisi
+let salonBoutique = null;
+let categorieChoisie = "fond";
+
+// Ce qu'on sait de la discussion ouverte (rechargé à chaque achat)
+let etatBoutique = { solde: 0, achetes: new Set(), equipes: new Set() };
 
 async function chargerArticles() {
   if (articles.length > 0) return articles;
@@ -32,7 +37,7 @@ async function chargerArticles() {
 
 // ===== Appliquer les articles équipés sur la discussion =====
 
-async function appliquerPersonnalisation(contactId) {
+async function appliquerPersonnalisation(salonId) {
   await chargerArticles();
   const discussion = document.querySelector("#discussion-ouverte");
 
@@ -41,13 +46,10 @@ async function appliquerPersonnalisation(contactId) {
     discussion.classList.remove(article.id);
   }
 
-  // Pas de personnalisation dans les salons de groupe
-  if (!contactId) return;
-
   const { data } = await client
     .from("personnalisations")
     .select("article_id")
-    .eq("contact_id", contactId);
+    .eq("salon_id", salonId);
 
   for (const ligne of data || []) {
     discussion.classList.add(ligne.article_id);
@@ -56,11 +58,14 @@ async function appliquerPersonnalisation(contactId) {
 
 // ===== Ouvrir la boutique =====
 
-async function ouvrirBoutique(contact) {
-  contactBoutique = contact;
-  document.querySelector("#boutique-nom-contact").textContent = contact.nom_utilisateur;
+// salon = { id, nom, profil } avec profil l'avatar affiché pour la discussion
+async function ouvrirBoutique(salon) {
+  salonBoutique = salon;
+  document.querySelector("#boutique-nom-contact").textContent = salon.nom;
   afficherEtatBoutique("");
-  await afficherBoutique();
+  await chargerEtatBoutique();
+  dessinerOnglets();
+  dessinerArticles();
   fenetreBoutique.showModal();
 }
 
@@ -68,47 +73,61 @@ document.querySelector("#bouton-fermer-boutique").addEventListener("click", () =
   fenetreBoutique.close();
 });
 
-// Recharge le solde, les achats et les articles équipés puis dessine la boutique
-async function afficherBoutique() {
+// Solde, articles achetés et articles équipés pour la discussion
+async function chargerEtatBoutique() {
   await chargerArticles();
-  const contactId = contactBoutique.id;
+  const salonId = salonBoutique.id;
 
   const [reponsePoints, reponseAchats, reponseEquipes] = await Promise.all([
-    client.from("points").select("solde").eq("contact_id", contactId).maybeSingle(),
-    client.from("achats").select("article_id").eq("contact_id", contactId),
-    client.from("personnalisations").select("article_id").eq("contact_id", contactId)
+    client.from("points").select("solde").eq("salon_id", salonId).maybeSingle(),
+    client.from("achats").select("article_id").eq("salon_id", salonId),
+    client.from("personnalisations").select("article_id").eq("salon_id", salonId)
   ]);
 
-  const solde = reponsePoints.data ? reponsePoints.data.solde : 0;
-  const achetes = new Set((reponseAchats.data || []).map((ligne) => ligne.article_id));
-  const equipes = new Set((reponseEquipes.data || []).map((ligne) => ligne.article_id));
+  etatBoutique = {
+    solde: reponsePoints.data ? reponsePoints.data.solde : 0,
+    achetes: new Set((reponseAchats.data || []).map((ligne) => ligne.article_id)),
+    equipes: new Set((reponseEquipes.data || []).map((ligne) => ligne.article_id))
+  };
 
-  document.querySelector("#boutique-solde").textContent = solde;
-  afficherSolde(solde);
-  zoneCategories.textContent = "";
+  document.querySelector("#boutique-solde").textContent = etatBoutique.solde;
+  afficherSolde(etatBoutique.solde); // met aussi à jour le bouton dans la discussion
+}
 
-  // Une section par catégorie
+// ===== Affichage =====
+
+function dessinerOnglets() {
+  zoneOnglets.textContent = "";
   for (const [categorie, titre] of Object.entries(NOMS_CATEGORIES)) {
-    const section = document.createElement("section");
-    section.className = "boutique-categorie";
-    const h3 = document.createElement("h3");
-    h3.textContent = titre;
-    const liste = document.createElement("ul");
-    liste.className = "liste-articles";
-    section.append(h3, liste);
-
-    for (const article of articles.filter((a) => a.categorie === categorie)) {
-      liste.append(creerCarteArticle(article, solde, achetes.has(article.id), equipes.has(article.id)));
-    }
-    zoneCategories.append(section);
+    const onglet = document.createElement("button");
+    onglet.type = "button";
+    onglet.className = "onglet-boutique";
+    onglet.textContent = titre;
+    onglet.setAttribute("aria-pressed", categorie === categorieChoisie);
+    onglet.addEventListener("click", () => {
+      categorieChoisie = categorie;
+      dessinerOnglets();
+      dessinerArticles();
+    });
+    zoneOnglets.append(onglet);
   }
 }
 
-function creerCarteArticle(article, solde, achete, equipe) {
+function dessinerArticles() {
+  listeArticles.textContent = "";
+  for (const article of articles.filter((a) => a.categorie === categorieChoisie)) {
+    listeArticles.append(creerCarteArticle(article));
+  }
+}
+
+function creerCarteArticle(article) {
   const modele = document.querySelector("#modele-article").content.cloneNode(true);
   const carte = modele.querySelector(".article");
   const apercu = modele.querySelector(".article-apercu");
   const bouton = modele.querySelector(".article-action");
+  const prix = modele.querySelector(".article-prix");
+  const achete = etatBoutique.achetes.has(article.id);
+  const equipe = etatBoutique.equipes.has(article.id);
 
   modele.querySelector(".article-nom").textContent = article.nom;
   modele.querySelector(".article-description").textContent = article.description;
@@ -118,8 +137,7 @@ function creerCarteArticle(article, solde, achete, equipe) {
   if (article.categorie === "cadre") {
     const avatar = document.createElement("span");
     avatar.className = "avatar";
-    avatar.textContent = initiales(contactBoutique.nom_utilisateur);
-    avatar.style.backgroundColor = contactBoutique.couleur_avatar;
+    remplirAvatar(avatar, salonBoutique.profil);
     apercu.append(avatar);
   } else {
     const bulle = document.createElement("span");
@@ -128,24 +146,24 @@ function creerCarteArticle(article, solde, achete, equipe) {
     apercu.append(bulle);
   }
 
-  const prix = modele.querySelector(".article-prix");
   if (equipe) {
     carte.classList.add("equipe");
     prix.textContent = "Équipé";
     bouton.textContent = "Retirer";
+    bouton.classList.add("bouton-secondaire");
     bouton.addEventListener("click", () => retirerArticle(article));
   } else if (achete) {
     prix.textContent = "Acheté";
     bouton.textContent = "Équiper";
     bouton.addEventListener("click", () => equiperArticle(article));
-  } else if (solde >= article.prix) {
+  } else if (etatBoutique.solde >= article.prix) {
     prix.textContent = article.prix + " pts";
     bouton.textContent = "Acheter";
     bouton.classList.add("bouton-or");
     bouton.addEventListener("click", () => acheterArticle(article));
   } else {
-    prix.textContent = article.prix + " pts (il manque " + (article.prix - solde) + ")";
-    bouton.textContent = "Acheter";
+    prix.textContent = article.prix + " pts";
+    bouton.textContent = "Encore " + (article.prix - etatBoutique.solde) + " pts";
     bouton.disabled = true;
   }
 
@@ -154,10 +172,18 @@ function creerCarteArticle(article, solde, achete, equipe) {
 
 // ===== Actions =====
 
+// Après chaque action on recharge l'état puis on redessine
+async function apresAction(texte) {
+  afficherEtatBoutique(texte, "succes");
+  await chargerEtatBoutique();
+  dessinerArticles();
+  await appliquerPersonnalisation(salonBoutique.id);
+}
+
 // Les vérifications (solde, prix) sont faites par la base dans acheter_article
 async function acheterArticle(article) {
   const { error } = await client.rpc("acheter_article", {
-    p_contact: contactBoutique.id,
+    p_salon: salonBoutique.id,
     p_article: article.id
   });
   if (error) {
@@ -165,39 +191,33 @@ async function acheterArticle(article) {
     return;
   }
   // Un article qu'on vient d'acheter est équipé directement
-  await client.rpc("equiper_article", { p_contact: contactBoutique.id, p_article: article.id });
-  afficherEtatBoutique("« " + article.nom + " » acheté et équipé !", "succes");
-  await afficherBoutique();
-  await appliquerPersonnalisation(contactBoutique.id);
+  await client.rpc("equiper_article", { p_salon: salonBoutique.id, p_article: article.id });
+  await apresAction(article.nom + " acheté et équipé.");
 }
 
 async function equiperArticle(article) {
   const { error } = await client.rpc("equiper_article", {
-    p_contact: contactBoutique.id,
+    p_salon: salonBoutique.id,
     p_article: article.id
   });
   if (error) {
     afficherEtatBoutique(error.message, "erreur");
     return;
   }
-  afficherEtatBoutique("« " + article.nom + " » équipé.", "succes");
-  await afficherBoutique();
-  await appliquerPersonnalisation(contactBoutique.id);
+  await apresAction(article.nom + " équipé.");
 }
 
 async function retirerArticle(article) {
   const { error } = await client
     .from("personnalisations")
     .delete()
-    .eq("contact_id", contactBoutique.id)
+    .eq("salon_id", salonBoutique.id)
     .eq("categorie", article.categorie);
   if (error) {
     afficherEtatBoutique(error.message, "erreur");
     return;
   }
-  afficherEtatBoutique("« " + article.nom + " » retiré.", "succes");
-  await afficherBoutique();
-  await appliquerPersonnalisation(contactBoutique.id);
+  await apresAction(article.nom + " retiré.");
 }
 
 function afficherEtatBoutique(texte, type = "") {

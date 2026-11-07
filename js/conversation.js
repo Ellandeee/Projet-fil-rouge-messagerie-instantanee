@@ -17,6 +17,9 @@ let salonOuvert = null;
 const messagesAffiches = new Set();
 let dernierJourAffiche = "";
 
+// Dernier message affiché, pour coller les messages qui se suivent du même auteur
+let dernierAffiche = null;
+
 // Canal temps réel pour « en train d'écrire » du salon ouvert
 let canalEcriture = null;
 let minuterieEcriture = null;
@@ -140,6 +143,9 @@ function afficherSalons() {
     remplirAvatar(avatar, profilAffiche(salon));
     modele.querySelector(".salon-nom").textContent = salon.nom;
     modele.querySelector(".salon-apercu").textContent = apercuSalon(salon);
+    if (salon.dernier) {
+      modele.querySelector(".salon-heure").textContent = formaterDateCourte(salon.dernier.cree_le);
+    }
 
     if (salonOuvert && salonOuvert.id === salon.id) {
       bouton.classList.add("actif");
@@ -173,7 +179,7 @@ function apercuSalon(salon) {
     const auteur = cacheProfils.get(salon.dernier.auteur_id);
     debut = auteur ? auteur.nom_utilisateur + " : " : "";
   }
-  return debut + salon.dernier.contenu + " · " + formaterDateCourte(salon.dernier.cree_le);
+  return debut + salon.dernier.contenu;
 }
 
 rechercheDiscussion.addEventListener("input", afficherSalons);
@@ -193,29 +199,23 @@ async function ouvrirSalon(id) {
   disposition.classList.add("discussion-active"); // sur téléphone on cache la liste
   mettreAJourEnTeteDiscussion();
 
-  // Points et boutique seulement en privé
-  document.querySelector("#zone-points").hidden = !salon.est_prive;
-  document.querySelector("#bouton-boutique").hidden = !salon.est_prive;
-  if (salon.est_prive) {
-    const { data } = await client.from("points").select("solde").eq("contact_id", salon.autre.id).maybeSingle();
-    afficherSolde(data ? data.solde : 0);
-  }
-  await appliquerPersonnalisation(salon.est_prive ? salon.autre.id : null);
+  // Nos points dans cette discussion (privée ou de groupe)
+  const { data } = await client.from("points").select("solde").eq("salon_id", salon.id).maybeSingle();
+  afficherSolde(data ? data.solde : 0);
+  await appliquerPersonnalisation(salon.id);
 
   await chargerMessages(salon.id);
   marquerCommeLu();
   ecouterEcriture(salon.id);
 
-  demarrerChrono({
-    contactId: salon.est_prive ? salon.autre.id : null,
-    quandFerme: fermerDiscussion
-  });
+  demarrerChrono({ salonId: salon.id, quandFerme: fermerDiscussion });
 
   afficherSalons();
   champMessage.focus();
 }
 
-function fermerDiscussion() {
+// automatique = true quand c'est le chrono qui ferme (on explique pourquoi)
+function fermerDiscussion(automatique = false) {
   arreterChrono();
   if (canalEcriture) {
     client.removeChannel(canalEcriture);
@@ -223,6 +223,12 @@ function fermerDiscussion() {
   }
   const fenetre = document.querySelector("#boutique");
   if (fenetre.open) fenetre.close();
+
+  const infoFermeture = document.querySelector("#info-fermeture");
+  infoFermeture.hidden = !automatique;
+  if (automatique && salonOuvert) {
+    infoFermeture.textContent = "La discussion « " + salonOuvert.nom + " » s'est fermée après 1 minute sans message.";
+  }
 
   salonOuvert = null;
   discussionOuverte.hidden = true;
@@ -232,10 +238,11 @@ function fermerDiscussion() {
   afficherSalons();
 }
 
-document.querySelector("#bouton-fermer-discussion").addEventListener("click", fermerDiscussion);
-document.querySelector("#bouton-retour-liste").addEventListener("click", fermerDiscussion);
+document.querySelector("#bouton-fermer-discussion").addEventListener("click", () => fermerDiscussion());
+document.querySelector("#bouton-retour-liste").addEventListener("click", () => fermerDiscussion());
 document.querySelector("#bouton-boutique").addEventListener("click", () => {
-  if (salonOuvert && salonOuvert.autre) ouvrirBoutique(salonOuvert.autre);
+  if (!salonOuvert) return;
+  ouvrirBoutique({ id: salonOuvert.id, nom: salonOuvert.nom, profil: profilAffiche(salonOuvert) });
 });
 
 function mettreAJourEnTeteDiscussion() {
@@ -261,6 +268,7 @@ async function chargerMessages(salonId) {
   listeMessages.textContent = "";
   messagesAffiches.clear();
   dernierJourAffiche = "";
+  dernierAffiche = null;
 
   // Les 100 derniers messages (on les prend du plus récent puis on remet dans l'ordre)
   const { data, error } = await client
@@ -274,6 +282,17 @@ async function chargerMessages(salonId) {
     console.error(error);
     return;
   }
+  // Discussion encore vide : une petite phrase pour lancer la conversation
+  if (data.length === 0) {
+    const vide = document.createElement("li");
+    vide.className = "message-vide";
+    vide.textContent = salonOuvert.est_prive
+      ? "Envoyez le premier message à " + salonOuvert.nom + "."
+      : "Envoyez le premier message du groupe.";
+    listeMessages.append(vide);
+    return;
+  }
+
   data.reverse().forEach(afficherMessage);
   descendreEnBas();
 }
@@ -281,6 +300,10 @@ async function chargerMessages(salonId) {
 function afficherMessage(message) {
   if (messagesAffiches.has(message.id)) return;
   messagesAffiches.add(message.id);
+
+  // Le premier message remplace la phrase « Envoyez le premier message »
+  const vide = listeMessages.querySelector(".message-vide");
+  if (vide) vide.remove();
 
   // Séparateur quand on change de jour
   const jour = formaterJour(message.cree_le);
@@ -290,12 +313,20 @@ function afficherMessage(message) {
     separateur.textContent = jour;
     listeMessages.append(separateur);
     dernierJourAffiche = jour;
+    dernierAffiche = null;
   }
 
   const modele = document.querySelector("#modele-message").content.cloneNode(true);
   const ligne = modele.querySelector(".message");
   const deMoi = message.auteur_id === utilisateur.id;
   const auteur = cacheProfils.get(message.auteur_id) || { nom_utilisateur: "?", couleur_avatar: "#8f8998" };
+
+  // Même auteur que le message d'avant et moins de 5 minutes d'écart : on colle les deux
+  const ecart = dernierAffiche ? new Date(message.cree_le) - new Date(dernierAffiche.cree_le) : Infinity;
+  if (dernierAffiche && dernierAffiche.auteur_id === message.auteur_id && ecart < 5 * 60 * 1000) {
+    ligne.classList.add("suite");
+  }
+  dernierAffiche = message;
 
   ligne.dataset.date = message.cree_le;
   if (deMoi) {
@@ -362,9 +393,10 @@ document.addEventListener("visibilitychange", () => {
 // ===== Écrire et envoyer =====
 
 champMessage.addEventListener("input", () => {
+  // Le compteur n'apparaît qu'en approchant de la limite des 500 caractères
   const longueur = champMessage.value.length;
-  compteurCaracteres.textContent = longueur + " / 500";
-  compteurCaracteres.classList.toggle("limite", longueur > 450);
+  compteurCaracteres.textContent = longueur >= 400 ? longueur + " / 500" : "";
+  compteurCaracteres.classList.toggle("limite", longueur >= 480);
 
   // La zone grandit avec le texte (jusqu'à la hauteur max du CSS)
   champMessage.style.height = "auto";
@@ -406,7 +438,7 @@ formMessage.addEventListener("submit", async (evenement) => {
 
   champMessage.value = "";
   champMessage.style.height = "auto";
-  compteurCaracteres.textContent = "0 / 500";
+  compteurCaracteres.textContent = "";
   compteurCaracteres.classList.remove("limite");
 
   afficherMessage(data);
@@ -521,7 +553,7 @@ document.querySelector("#bouton-nouvelle-discussion").addEventListener("click", 
 
   const contacts = (await chargerContacts()).filter((c) => c.statut === "accepte");
   if (contacts.length === 0) {
-    afficherEtat(messageNouvelle, "Vous n'avez pas encore de contact. Invitez quelqu'un depuis la page Contacts.", "erreur");
+    afficherEtat(messageNouvelle, "Ajoutez d'abord un contact depuis la page Contacts.", "erreur");
   }
 
   for (const contact of contacts) {
@@ -563,7 +595,7 @@ formNouvelle.addEventListener("submit", async (evenement) => {
     return;
   }
   if (ids.length > 1 && nomSalon === "") {
-    afficherEtat(messageNouvelle, "Donnez un nom au salon de groupe.", "erreur");
+    afficherEtat(messageNouvelle, "Donnez un nom au groupe.", "erreur");
     return;
   }
 

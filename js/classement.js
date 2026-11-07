@@ -1,7 +1,8 @@
 /*
   Page du classement (classement.html)
-  On classe nos contacts avec les points gagnés (ils ne baissent jamais)
-  Le solde et le nombre d'articles achetés sont affichés en plus
+  On classe nos discussions (privées et de groupe) avec les points gagnés
+  Les points gagnés ne baissent jamais, le solde et les articles sont affichés en plus
+  Un clic sur une discussion l'ouvre dans la page Discussions
 */
 
 demarrerClassement();
@@ -10,32 +11,50 @@ async function demarrerClassement() {
   await pagePrete;
   if (!utilisateur) return;
 
-  const [contacts, reponsePoints, reponseAchats] = await Promise.all([
-    chargerContacts(),
-    client.from("points").select("contact_id, points_gagnes, solde"),
-    client.from("achats").select("contact_id")
+  const [reponseSalons, reponsePoints, reponseAchats] = await Promise.all([
+    client.from("salons").select("id, nom, est_prive, membres_salon(membre_id, profils(id, nom_utilisateur, couleur_avatar))"),
+    client.from("points").select("salon_id, points_gagnes, solde"),
+    client.from("achats").select("salon_id")
   ]);
 
   const points = reponsePoints.data || [];
   const achats = reponseAchats.data || [];
 
-  // Une ligne par contact accepté, même ceux à 0 point
-  const lignes = contacts
-    .filter((c) => c.statut === "accepte")
-    .map((c) => {
-      const ligne = points.find((p) => p.contact_id === c.autre.id);
+  // Une ligne par discussion, même celles à 0 point
+  const lignes = (reponseSalons.data || [])
+    .map((salon) => {
+      const ligne = points.find((p) => p.salon_id === salon.id);
       return {
-        profil: c.autre,
+        salonId: salon.id,
+        ...nomEtAvatar(salon),
         gagnes: ligne ? ligne.points_gagnes : 0,
         solde: ligne ? ligne.solde : 0,
-        articles: achats.filter((a) => a.contact_id === c.autre.id).length
+        articles: achats.filter((a) => a.salon_id === salon.id).length
       };
     })
-    .sort((a, b) => b.gagnes - a.gagnes || a.profil.nom_utilisateur.localeCompare(b.profil.nom_utilisateur));
+    .sort((a, b) => b.gagnes - a.gagnes || a.nom.localeCompare(b.nom));
 
   afficherPodium(lignes.filter((l) => l.gagnes > 0).slice(0, 3));
   afficherTableau(lignes);
   document.querySelector("#classement-vide").hidden = lignes.some((l) => l.gagnes > 0);
+}
+
+// En privé on montre l'autre personne, en groupe le nom du groupe
+function nomEtAvatar(salon) {
+  if (salon.est_prive) {
+    const autre = salon.membres_salon.find((m) => m.membre_id !== utilisateur.id);
+    if (autre) return { nom: autre.profils.nom_utilisateur, profil: autre.profils };
+  }
+  const nom = salon.nom || "Groupe";
+  return { nom, profil: { id: null, nom_utilisateur: nom, couleur_avatar: "#3f2a6b" } };
+}
+
+// Lien vers la discussion avec son nom
+function lienDiscussion(ligne) {
+  const lien = document.createElement("a");
+  lien.href = "conversation.html?salon=" + ligne.salonId;
+  lien.textContent = ligne.nom;
+  return lien;
 }
 
 function afficherPodium(premiers) {
@@ -56,7 +75,7 @@ function afficherPodium(premiers) {
 
     const nom = document.createElement("strong");
     nom.className = "podium-nom";
-    nom.textContent = ligne.profil.nom_utilisateur;
+    nom.append(lienDiscussion(ligne));
 
     const pts = document.createElement("span");
     pts.className = "points";
@@ -78,16 +97,14 @@ function afficherTableau(lignes) {
     rang.textContent = index + 1;
 
     // Avatar et nom dans la même cellule
-    const contact = document.createElement("td");
+    const discussion = document.createElement("td");
     const cellule = document.createElement("div");
     cellule.className = "cellule-contact";
     const avatar = document.createElement("span");
     avatar.className = "avatar avatar-petit";
     remplirAvatar(avatar, ligne.profil);
-    const nom = document.createElement("span");
-    nom.textContent = ligne.profil.nom_utilisateur;
-    cellule.append(avatar, nom);
-    contact.append(cellule);
+    cellule.append(avatar, lienDiscussion(ligne));
+    discussion.append(cellule);
 
     const gagnes = document.createElement("td");
     gagnes.className = "colonne-points";
@@ -98,9 +115,9 @@ function afficherTableau(lignes) {
     solde.textContent = ligne.solde + " pts";
 
     const articles = document.createElement("td");
-    articles.textContent = ligne.articles + (ligne.articles > 1 ? " articles" : " article");
+    articles.textContent = ligne.articles;
 
-    tr.append(rang, contact, gagnes, solde, articles);
+    tr.append(rang, discussion, gagnes, solde, articles);
     corps.append(tr);
   });
 }
