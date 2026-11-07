@@ -10,9 +10,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Classement de Messagerie Custom : vos discussions triées selon les points gagnés.">
-  <title>Classement | Messagerie Custom</title>
+  <meta name="description" content="Classement de TimeChat : vos discussions triées selon les grains gagnés.">
+  <title>Classement | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+
+  <!-- Polices du site : Young Serif pour les titres et Atkinson Hyperlegible pour le texte -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/classement.css">
@@ -28,7 +33,7 @@
   <header class="entete-site">
     <a class="logo" href="conversation.html">
       <img src="images/logo.svg" alt="" width="32" height="32">
-      <span>Messagerie Custom</span>
+      <span>TimeChat</span>
     </a>
     <nav class="navigation" aria-label="Navigation principale">
       <ul>
@@ -45,21 +50,21 @@
 
   <main class="page-contenu">
     <h1>Classement</h1>
-    <p class="introduction">Vos discussions rangées selon les points que vous y avez gagnés.</p>
+    <p class="introduction">Vos discussions rangées selon les grains que vous y avez gagnés.</p>
 
     <!-- Podium des 3 premiers -->
-    <ol id="podium" class="podium" aria-label="Les trois discussions où vous avez le plus de points"></ol>
+    <ol id="podium" class="podium" aria-label="Les trois discussions où vous avez le plus de grains"></ol>
 
     <!-- Tableau avec toutes les discussions -->
     <section class="carte" aria-labelledby="titre-tableau">
       <h2 id="titre-tableau">Toutes mes discussions</h2>
       <table class="tableau-classement">
-        <caption class="visuellement-cache">Discussions triées par points gagnés, du plus grand au plus petit</caption>
+        <caption class="visuellement-cache">Discussions triées par grains gagnés, du plus grand au plus petit</caption>
         <thead>
           <tr>
             <th scope="col">Rang</th>
             <th scope="col">Discussion</th>
-            <th scope="col">Points gagnés</th>
+            <th scope="col">Grains gagnés</th>
             <th scope="col">Solde</th>
             <th scope="col">Articles</th>
           </tr>
@@ -67,14 +72,14 @@
         <tbody id="corps-classement"></tbody>
       </table>
       <p id="classement-vide" class="aide" hidden>
-        Pas encore de points. <a href="conversation.html">Ouvrez une discussion</a> pour en gagner.
+        Pas encore de grains. <a href="conversation.html">Ouvrez une discussion</a> pour en gagner.
       </p>
     </section>
   </main>
 
   <!-- Pied de page (le même partout) -->
   <footer class="pied-page">
-    <p>&copy; 2026 Messagerie Custom, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
+    <p>&copy; 2026 TimeChat, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
   </footer>
 
 </body>

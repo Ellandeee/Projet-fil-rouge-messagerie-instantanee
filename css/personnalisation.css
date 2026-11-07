@@ -24,7 +24,7 @@
 .apercu-bulle {
   padding: 4px 10px;
   border: 1px solid var(--couleur-bordure);
-  border-radius: 12px 12px 12px 4px;
+  border-radius: 2px 12px 12px 12px;
   font-size: 0.8125rem;
   background-color: var(--couleur-surface);
 }
@@ -38,7 +38,7 @@
 
 .fond-ocean .liste-messages,
 .article-apercu.fond-ocean {
-  background: linear-gradient(180deg, #2b6f9e, #163a5c);
+  background: linear-gradient(180deg, #245f88, #163a5c);
 }
 
 /* Les étoiles sont des petits points dessinés avec des dégradés ronds */
@@ -57,13 +57,13 @@
 /* Damier fait avec un dégradé conique qui se répète */
 .fond-damier .liste-messages,
 .article-apercu.fond-damier {
-  background: repeating-conic-gradient(#ece6f5 0% 25%, #f8f6fb 0% 50%) 0 0 / 40px 40px;
+  background: repeating-conic-gradient(#e3e6ee 0% 25%, #fffcf6 0% 50%) 0 0 / 40px 40px;
 }
 
 /* Le seul fond qui bouge, très lentement */
 .fond-aurore .liste-messages,
 .article-apercu.fond-aurore {
-  background: linear-gradient(120deg, #1f6f78, #563a8f, #b5487a, #1f6f78);
+  background: linear-gradient(120deg, #1f6f78, #1f2a44, #9c3a68, #1f6f78);
   background-size: 300% 300%;
   animation: aurore 24s ease-in-out infinite alternate;
 }
@@ -73,13 +73,24 @@
   to { background-position: 100% 50%; }
 }
 
-/* Sur un fond foncé les petits textes gris deviennent illisibles */
+/* Sur un fond foncé les petits textes gris deviennent illisibles, on les passe en papier */
 :is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) :is(.separateur-date, .indicateur-ecriture) {
-  color: #f1eef6;
+  color: var(--couleur-fond);
 }
 
-:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) .separateur-date {
-  background-color: rgba(0, 0, 0, 0.3);
+:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) .separateur-date::before,
+:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) .separateur-date::after {
+  background-color: rgba(244, 239, 230, 0.4);
+}
+
+/* Sur le coucher de soleil le gris est trop pâle, on prend la couleur du texte */
+.fond-coucher-soleil :is(.separateur-date, .indicateur-ecriture) {
+  color: var(--couleur-texte);
+}
+
+.fond-coucher-soleil .separateur-date::before,
+.fond-coucher-soleil .separateur-date::after {
+  background-color: rgba(35, 32, 28, 0.35);
 }
 
 /* ===== Forme des bulles ===== */
@@ -93,8 +104,8 @@
 /* Style bande dessinée : gros contour noir et ombre décalée */
 .bulle-bd .bulle,
 .bulle-bd .apercu-bulle {
-  border: 2px solid #24212b;
-  box-shadow: 3px 3px 0 #24212b;
+  border: 2px solid var(--couleur-texte);
+  box-shadow: 3px 3px 0 var(--couleur-texte);
 }
 
 .bulle-neon .bulle,
@@ -106,6 +117,16 @@
   box-shadow: 0 0 10px rgba(95, 211, 196, 0.45);
 }
 
+/* Le nom et l'heure doivent rester lisibles sur la bulle noire */
+.bulle-neon .message-auteur {
+  color: #5fd3c4;
+}
+
+.bulle-neon .message-infos,
+.bulle-neon .message.moi .message-infos {
+  color: #a9e6dd;
+}
+
 .bulle-doree .bulle,
 .bulle-doree .apercu-bulle,
 .bulle-doree .message.moi .bulle {
@@ -114,8 +135,10 @@
   border: 1px solid #b8860b;
 }
 
+/* L'heure en brun foncé, sinon elle ne se lit pas sur l'or */
+.bulle-doree .message-infos,
 .bulle-doree .message.moi .message-infos {
-  color: #6b5200;
+  color: #4a3700;
 }
 
 /* ===== Cadre des photos de profil ===== */
@@ -132,7 +155,7 @@
 
 .cadre-halo .avatar,
 .article-apercu.cadre-halo .avatar {
-  box-shadow: 0 0 0 3px var(--couleur-or-claire), 0 0 12px 2px rgba(212, 160, 23, 0.6);
+  box-shadow: 0 0 0 3px var(--couleur-or-claire), 0 0 12px 2px rgba(200, 146, 58, 0.6);
 }
 
 /* Une couronne posée au-dessus de la photo */
@@ -167,6 +190,7 @@
 }
 
 /* ===== Couleur de mes bulles ===== */
+/* Couleurs assez foncées pour que le texte blanc se lise (4,5:1 minimum) */
 
 .couleur-emeraude .message.moi .bulle,
 .article-apercu.couleur-emeraude .apercu-bulle {
@@ -178,8 +202,8 @@
 .couleur-corail .message.moi .bulle,
 .article-apercu.couleur-corail .apercu-bulle {
   color: #ffffff;
-  background-color: #d9534f;
-  border-color: #d9534f;
+  background-color: #b8403c;
+  border-color: #b8403c;
 }
 
 .couleur-saphir .message.moi .bulle,
@@ -192,6 +216,11 @@
 .couleur-arc-en-ciel .message.moi .bulle,
 .article-apercu.couleur-arc-en-ciel .apercu-bulle {
   color: #ffffff;
-  background: linear-gradient(90deg, #d9534f, #e39b2d, #2f7d4f, #2457a6, #563a8f);
+  background: linear-gradient(90deg, #b8403c, #a4661a, #2f6b4a, #2457a6, #1f2a44);
   border-color: transparent;
+}
+
+/* L'heure en blanc sur les bulles de couleur pour garder assez de contraste */
+:is(.couleur-emeraude, .couleur-corail, .couleur-saphir, .couleur-arc-en-ciel) .message.moi .message-infos {
+  color: #ffffff;
 }

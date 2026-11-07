@@ -157,13 +157,13 @@ function creerCarteArticle(article) {
     bouton.textContent = "Équiper";
     bouton.addEventListener("click", () => equiperArticle(article));
   } else if (etatBoutique.solde >= article.prix) {
-    prix.textContent = article.prix + " pts";
+    prix.textContent = article.prix + " grains";
     bouton.textContent = "Acheter";
     bouton.classList.add("bouton-or");
     bouton.addEventListener("click", () => acheterArticle(article));
   } else {
-    prix.textContent = article.prix + " pts";
-    bouton.textContent = "Encore " + (article.prix - etatBoutique.solde) + " pts";
+    prix.textContent = article.prix + " grains";
+    bouton.textContent = "Encore " + (article.prix - etatBoutique.solde) + " grains";
     bouton.disabled = true;
   }
 

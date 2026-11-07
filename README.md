@@ -1,4 +1,4 @@
-# Projet fil-rouge - Messagerie Instantanée
+# Projet fil-rouge - TimeChat, messagerie instantanée
 
 ## Membres du projet
 * **CROS Ellande**

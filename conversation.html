@@ -4,16 +4,21 @@
   À gauche la liste des discussions et à droite la discussion ouverte
   La discussion se ferme toute seule après 1 minute sans message envoyé
   Écrire au clavier remet aussi le chrono à zéro
-  Dans chaque discussion (privée ou de groupe) on gagne des points
+  Dans chaque discussion (privée ou de groupe) on gagne des grains
   et on peut les dépenser dans la boutique (la fenêtre en bas de la page)
 -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Vos discussions sur Messagerie Custom : messages en temps réel, points et personnalisation.">
-  <title>Discussions | Messagerie Custom</title>
+  <meta name="description" content="Vos discussions sur TimeChat : messages en temps réel, grains et personnalisation.">
+  <title>Discussions | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+
+  <!-- Polices du site : Young Serif pour les titres et Atkinson Hyperlegible pour le texte -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 
   <!-- Style commun puis style de la page puis thèmes de la boutique -->
   <link rel="stylesheet" href="css/style.css">
@@ -34,7 +39,7 @@
   <header class="entete-site">
     <a class="logo" href="conversation.html">
       <img src="images/logo.svg" alt="" width="32" height="32">
-      <span>Messagerie Custom</span>
+      <span>TimeChat</span>
     </a>
     <nav class="navigation" aria-label="Navigation principale">
       <ul>
@@ -78,7 +83,7 @@
       <div id="etat-vide" class="etat-vide">
         <img src="images/logo.svg" alt="" width="72" height="72">
         <h2>Choisissez une discussion</h2>
-        <p>Une discussion ouverte vous rapporte 1 point toutes les 10 secondes.</p>
+        <p>Une discussion ouverte vous rapporte 1 grain toutes les 10 secondes.</p>
         <!-- Rempli quand une discussion vient de se fermer toute seule -->
         <p id="info-fermeture" class="info-fermeture" role="status" hidden></p>
       </div>
@@ -94,10 +99,10 @@
             <p id="statut-discussion" class="statut-discussion"></p>
           </div>
 
-          <!-- Nos points dans cette discussion, un clic ouvre la boutique -->
+          <!-- Nos grains dans cette discussion, un clic ouvre la boutique -->
           <button type="button" id="bouton-boutique" class="bouton-points" aria-label="Ouvrir la boutique">
-            <span><strong id="solde-points">0</strong> pts</span>
-            <span id="points-attente-zone" class="points-attente" title="Points ajoutés à l'envoi du message" hidden>+<span id="points-attente">0</span></span>
+            <span><strong id="solde-points">0</strong> grains</span>
+            <span id="points-attente-zone" class="points-attente" title="Grains ajoutés à l'envoi du message" hidden>+<span id="points-attente">0</span></span>
             <span class="bouton-points-texte">Boutique</span>
           </button>
           <button type="button" id="bouton-fermer-discussion" class="bouton-icone" aria-label="Fermer la discussion">✕</button>
@@ -160,7 +165,7 @@
         <h2 id="titre-boutique">Boutique</h2>
         <p class="aide">Pour <strong id="boutique-nom-contact"></strong>, visible seulement par vous</p>
       </div>
-      <p class="boutique-solde"><strong id="boutique-solde">0</strong> pts</p>
+      <p class="boutique-solde"><strong id="boutique-solde">0</strong> grains</p>
       <button type="button" id="bouton-fermer-boutique" class="bouton-icone" aria-label="Fermer la boutique">✕</button>
     </header>
 
@@ -222,7 +227,7 @@
 
   <!-- Pied de page (le même partout) -->
   <footer class="pied-page">
-    <p>&copy; 2026 Messagerie Custom, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
+    <p>&copy; 2026 TimeChat, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
   </footer>
 
 </body>

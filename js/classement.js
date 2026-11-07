@@ -79,7 +79,7 @@ function afficherPodium(premiers) {
 
     const pts = document.createElement("span");
     pts.className = "points";
-    pts.textContent = ligne.gagnes + " pts";
+    pts.textContent = ligne.gagnes + " grains";
 
     li.append(rang, avatar, nom, pts);
     podium.append(li);
@@ -108,11 +108,11 @@ function afficherTableau(lignes) {
 
     const gagnes = document.createElement("td");
     gagnes.className = "colonne-points";
-    gagnes.textContent = ligne.gagnes + " pts";
+    gagnes.textContent = ligne.gagnes + " grains";
 
     const solde = document.createElement("td");
     solde.className = "colonne-solde";
-    solde.textContent = ligne.solde + " pts";
+    solde.textContent = ligne.solde + " grains";
 
     const articles = document.createElement("td");
     articles.textContent = ligne.articles;

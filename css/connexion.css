@@ -33,7 +33,7 @@
 }
 
 .carte-connexion-entete h1 {
-  font-size: 1.5rem;
+  font-size: 2.25rem;
 }
 
 .slogan {
@@ -41,22 +41,19 @@
   color: var(--couleur-texte-secondaire);
 }
 
-/* Les deux onglets Se connecter / S'inscrire côte à côte */
+/* Les deux onglets Se connecter / S'inscrire côte à côte avec un trait de sable sous celui choisi */
 .onglets {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--espace-1);
-  padding: var(--espace-1);
-  border-radius: 8px;
-  background-color: var(--couleur-surface-douce);
+  border-bottom: 1px solid var(--couleur-bordure);
 }
 
 .onglet {
+  min-height: 44px;
   padding: var(--espace-2);
   border: 0;
-  border-radius: var(--arrondi-petit);
+  border-bottom: 2px solid transparent;
   font: inherit;
-  font-weight: 600;
   color: var(--couleur-texte-secondaire);
   background: none;
   cursor: pointer;
@@ -66,12 +63,12 @@
   color: var(--couleur-texte);
 }
 
-/* Onglet choisi : fond blanc comme une feuille posée dessus */
+/* Onglet choisi */
 .onglet.actif,
 .onglet[aria-pressed="true"] {
-  color: var(--couleur-texte);
-  background-color: var(--couleur-surface);
-  box-shadow: 0 1px 2px rgba(36, 33, 43, 0.12);
+  font-weight: 700;
+  color: var(--couleur-principale);
+  border-bottom-color: var(--couleur-or);
 }
 
 /* Le bouton principal prend toute la largeur */

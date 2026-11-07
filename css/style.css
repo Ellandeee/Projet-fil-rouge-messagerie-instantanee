@@ -1,37 +1,42 @@
 /*
-  Style commun à toutes les pages de Messagerie Custom
+  Style commun à toutes les pages de TimeChat
   On met ici les variables, les boutons, les formulaires, l'en-tête et le pied de page
   Chaque page a ensuite son propre fichier css pour ce qui lui est spécifique
+  Ambiance papier et encre, le sable sert pour les grains et le minuteur
 */
 
 /* ===== Variables ===== */
 
 :root {
-  /* Couleur principale (prune) et ses variantes */
-  --couleur-principale: #563a8f;
-  --couleur-principale-foncee: #3f2a6b;
-  --couleur-principale-claire: #ece6f5;
-  --couleur-principale-tres-claire: #f6f3fa;
+  /* Encre : titres, boutons pleins et mes bulles */
+  --couleur-principale: #1f2a44;
+  --couleur-principale-foncee: #141c30;
+  --couleur-principale-claire: #e3e6ee;
+  --couleur-principale-tres-claire: #eff1f5;
 
-  /* L'or est réservé à tout ce qui touche aux points */
-  --couleur-or: #d4a017;
-  --couleur-or-claire: #fbf1d3;
-  --couleur-or-texte: #7a5a00;
+  /* Sable : les grains et le minuteur */
+  /* Jamais pour du texte sur le papier, le contraste est trop faible */
+  --couleur-or: #c8923a;
+  --couleur-or-claire: #f3e3c3;
+  --couleur-or-texte: #6b4a12;
 
-  /* Fonds et textes */
-  --couleur-fond: #f5f2ec;
-  --couleur-surface: #ffffff;
-  --couleur-surface-douce: #ede9e1;
-  --couleur-texte: #24212b;
-  --couleur-texte-secondaire: #615b6b;
-  --couleur-texte-discret: #8f8998;
-  --couleur-bordure: #ddd7cc;
+  /* Papier et textes */
+  --couleur-fond: #f4efe6;
+  --couleur-surface: #fffcf6;
+  --couleur-surface-douce: #ebe4d7;
+  --couleur-texte: #23201c;
+  --couleur-texte-secondaire: #5f5a52;
+  --couleur-texte-discret: #6b655b;
+  --couleur-bordure: #d9d0c1;
 
-  /* Messages d'état */
-  --couleur-danger: #b42318;
-  --couleur-danger-claire: #fdecea;
-  --couleur-succes: #2f7d4f;
-  --couleur-succes-claire: #e7f4ec;
+  /* Messages d'état (brique et sauge) */
+  --couleur-danger: #b5442e;
+  --couleur-danger-claire: #f6e1db;
+  --couleur-succes: #2f6b4a;
+  --couleur-succes-claire: #e2efe6;
+
+  /* Le fond de la barre du minuteur */
+  --couleur-piste-minuteur: #e6dccb;
 
   /* Espacements (toujours les mêmes valeurs partout) */
   --espace-1: 4px;
@@ -43,13 +48,14 @@
   --espace-8: 32px;
   --espace-12: 48px;
 
-  /* Arrondis (petits exprès, on ne veut pas tout en pilule) */
-  --arrondi-petit: 6px;
-  --arrondi-moyen: 10px;
+  /* Arrondis presque droits, seuls les avatars sont ronds */
+  --arrondi-petit: 4px;
+  --arrondi-moyen: 6px;
   --arrondi-rond: 999px;
 
-  /* Police du système : rien à télécharger donc la page s'affiche vite */
-  --police: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Young Serif pour les titres et Atkinson Hyperlegible pour le reste */
+  --police-titre: "Young Serif", Georgia, serif;
+  --police: "Atkinson Hyperlegible", system-ui, sans-serif;
 
   --hauteur-entete: 60px;
   --hauteur-navigation-mobile: 60px;
@@ -88,18 +94,27 @@ body {
   background-color: var(--couleur-fond);
 }
 
+/* Young Serif n'a qu'une graisse, on ne la met jamais en gras */
+h1,
+h2 {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  color: var(--couleur-principale);
+}
+
 h1 {
   font-size: 1.75rem;
   line-height: 1.2;
 }
 
 h2 {
-  font-size: 1.125rem;
+  font-size: 1.1875rem;
   line-height: 1.3;
 }
 
 a {
   color: var(--couleur-principale);
+  text-underline-offset: 3px;
 }
 
 a:hover {
@@ -127,30 +142,31 @@ a:hover {
 
 /* ===== Boutons ===== */
 
-/* Bouton de base : fond prune clair */
+/* Bouton de base sur fond encre clair */
+/* 44 px de haut minimum pour que ce soit facile à toucher */
 .bouton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--espace-2);
+  min-height: 44px;
   padding: 10px 18px;
   border: 1px solid transparent;
   border-radius: var(--arrondi-petit);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--couleur-principale);
   background-color: var(--couleur-principale-claire);
   cursor: pointer;
-  transition: background-color 120ms, color 120ms;
 }
 
 .bouton:hover {
-  background-color: #e0d6ef;
+  background-color: #d4d9e4;
 }
 
 /* Action principale de la page */
 .bouton-plein {
-  color: #ffffff;
+  color: var(--couleur-fond);
   background-color: var(--couleur-principale);
 }
 
@@ -169,26 +185,27 @@ a:hover {
 }
 
 .bouton-danger {
-  color: #ffffff;
+  color: var(--couleur-surface);
   background-color: var(--couleur-danger);
 }
 
 .bouton-danger:hover {
-  background-color: #8f1c13;
+  background-color: #933624;
 }
 
-/* Bouton qui coûte des points */
+/* Bouton qui coûte des grains, texte encre sur le sable */
 .bouton-or {
-  color: var(--couleur-texte);
+  color: var(--couleur-principale);
   background-color: var(--couleur-or);
 }
 
+/* Au survol le sable s'éclaircit, s'il fonçait le texte encre se lirait moins bien */
 .bouton-or:hover {
-  background-color: #bd8d0f;
+  background-color: #d6a253;
 }
 
 .bouton-petit {
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 0.875rem;
 }
 
@@ -213,8 +230,8 @@ a:hover {
 .bouton-icone {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 0;
   border-radius: var(--arrondi-petit);
@@ -253,8 +270,9 @@ a:hover {
 .formulaire legend {
   padding: 0;
   margin-bottom: var(--espace-4);
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-family: var(--police-titre);
+  font-size: 1.1875rem;
+  color: var(--couleur-principale);
 }
 
 /* Un champ = une étiquette + une zone de saisie + parfois une aide */
@@ -266,9 +284,10 @@ a:hover {
 
 .champ label {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
+/* Champ avec un trait d'encre en bas comme une ligne d'écriture */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -276,9 +295,11 @@ input[type="search"],
 textarea,
 select {
   width: 100%;
+  min-height: 44px;
   padding: 10px 12px;
   border: 1px solid var(--couleur-bordure);
-  border-radius: var(--arrondi-petit);
+  border-bottom: 2px solid var(--couleur-principale);
+  border-radius: var(--arrondi-petit) var(--arrondi-petit) 0 0;
   font: inherit;
   color: var(--couleur-texte);
   background-color: var(--couleur-surface);
@@ -292,8 +313,7 @@ textarea::placeholder {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--couleur-principale);
-  outline: 2px solid var(--couleur-principale-claire);
+  outline: 2px solid var(--couleur-principale);
   outline-offset: 0;
 }
 
@@ -314,6 +334,7 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   gap: var(--espace-2);
+  min-height: 44px;
   font-weight: 400;
   cursor: pointer;
 }
@@ -337,8 +358,9 @@ input[type="checkbox"] {
   display: none;
 }
 
+/* Brique un peu plus foncée pour le texte, sinon le contraste est trop juste sur le fond rosé */
 .message-etat.erreur {
-  color: var(--couleur-danger);
+  color: #933624;
   background-color: var(--couleur-danger-claire);
 }
 
@@ -367,55 +389,68 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 700;
-  color: var(--couleur-texte);
+  color: var(--couleur-principale);
   text-decoration: none;
 }
 
+/* Le nom TimeChat à côté du sablier */
+.logo span {
+  font-family: var(--police-titre);
+  font-size: 1.375rem;
+  line-height: 1;
+}
+
 .logo:hover {
-  color: var(--couleur-texte);
+  color: var(--couleur-principale);
+}
+
+.navigation {
+  align-self: stretch;
 }
 
 .navigation ul {
   display: flex;
-  gap: var(--espace-1);
+  gap: var(--espace-2);
+  height: 100%;
   padding: 0;
   list-style: none;
 }
 
+/* Les liens prennent toute la hauteur pour que le trait soit collé au bas de l'en-tête */
 .navigation a {
-  display: block;
-  padding: 8px 14px;
-  border-radius: var(--arrondi-petit);
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 14px;
+  border-bottom: 2px solid transparent;
   color: var(--couleur-texte-secondaire);
   text-decoration: none;
 }
 
 .navigation a:hover {
   color: var(--couleur-texte);
-  background-color: var(--couleur-fond);
 }
 
-/* La page où on est (aria-current est mis dans le HTML) */
+/* La page où on est (aria-current est mis dans le HTML) : trait de sable dessous */
 .navigation a[aria-current="page"] {
+  font-weight: 700;
   color: var(--couleur-principale);
-  background-color: var(--couleur-principale-claire);
+  border-bottom-color: var(--couleur-or);
 }
 
 /* Le petit compteur d'invitations à côté de Contacts */
 .navigation a .pastille-nombre {
-  margin-left: 2px;
+  margin-left: 6px;
 }
 
-/* Mon avatar et mon nom en haut à droite : un clic ouvre mon profil */
+/* Mon avatar et mon nom en haut à droite, un clic ouvre mon profil */
 .entete-utilisateur {
   display: flex;
   align-items: center;
   gap: var(--espace-2);
-  padding: 4px 12px 4px 4px;
-  border-radius: var(--arrondi-rond);
-  font-weight: 500;
+  min-height: 44px;
+  padding: 4px 10px 4px 4px;
+  border-radius: var(--arrondi-petit);
   color: var(--couleur-texte);
   text-decoration: none;
 }
@@ -426,7 +461,8 @@ input[type="checkbox"] {
 }
 
 .entete-utilisateur[aria-current="page"] {
-  background-color: var(--couleur-principale-claire);
+  font-weight: 700;
+  background-color: var(--couleur-principale-tres-claire);
 }
 
 /* ===== Avatar ===== */
@@ -441,7 +477,7 @@ input[type="checkbox"] {
   height: 40px;
   border-radius: 50%;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #ffffff;
   background-color: var(--couleur-principale);
 }
@@ -473,7 +509,7 @@ input[type="checkbox"] {
 
 /* ===== Blocs réutilisés ===== */
 
-/* Contenu des pages Contacts, Classement et Paramètres */
+/* Contenu des pages Contacts, Classement et Mon profil */
 .page-contenu {
   display: flex;
   flex-direction: column;
@@ -487,7 +523,7 @@ input[type="checkbox"] {
   max-width: 640px;
 }
 
-/* Bloc blanc avec une bordure fine, sans ombre */
+/* Bloc clair avec un filet autour, sans ombre */
 .carte {
   padding: var(--espace-6);
   border: 1px solid var(--couleur-bordure);
@@ -499,31 +535,31 @@ input[type="checkbox"] {
   margin-bottom: var(--espace-4);
 }
 
-/* Petit rond avec un nombre (messages non lus, invitations) */
+/* Petit carré avec un nombre (messages non lus, invitations) */
 .pastille-nombre {
   display: inline-grid;
   place-items: center;
-  min-width: 20px;
-  height: 20px;
+  min-width: 22px;
+  height: 22px;
   padding: 0 6px;
-  border-radius: var(--arrondi-rond);
+  border-radius: 3px;
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
-  color: #ffffff;
+  color: var(--couleur-fond);
   background-color: var(--couleur-principale);
   vertical-align: middle;
 }
 
-/* Les points sont toujours affichés en or */
+/* Les grains sont toujours en sable foncé sur sable clair */
 .points {
   display: inline-flex;
   align-items: center;
   gap: var(--espace-1);
-  padding: 2px 10px;
-  border-radius: var(--arrondi-rond);
+  padding: 2px 8px;
+  border-radius: 3px;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--couleur-or-texte);
   background-color: var(--couleur-or-claire);
 }
@@ -534,16 +570,16 @@ input[type="checkbox"] {
   width: calc(100% - 32px);
   max-width: 520px;
   padding: var(--espace-6);
-  border: 0;
+  border: 1px solid var(--couleur-bordure);
   border-radius: var(--arrondi-moyen);
   color: var(--couleur-texte);
   background-color: var(--couleur-surface);
-  /* Seul endroit avec une vraie ombre : la fenêtre passe au-dessus de la page */
-  box-shadow: 0 20px 50px rgba(36, 33, 43, 0.25);
+  /* Une des deux seules ombres du site, la fenêtre passe au-dessus de la page */
+  box-shadow: 0 16px 40px rgba(20, 28, 48, 0.25);
 }
 
 .dialogue::backdrop {
-  background-color: rgba(36, 33, 43, 0.45);
+  background-color: rgba(20, 28, 48, 0.5);
 }
 
 .actions-dialogue {
@@ -565,9 +601,10 @@ input[type="checkbox"] {
   width: min(340px, calc(100% - 32px));
   padding: var(--espace-3) 14px;
   border: 1px solid var(--couleur-bordure);
+  border-left: 3px solid var(--couleur-principale);
   border-radius: var(--arrondi-moyen);
   background-color: var(--couleur-surface);
-  box-shadow: 0 8px 24px rgba(36, 33, 43, 0.15);
+  box-shadow: 0 8px 24px rgba(20, 28, 48, 0.15);
 }
 
 .notification-textes {
@@ -577,7 +614,7 @@ input[type="checkbox"] {
 }
 
 .notification-titre {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ===== Pied de page ===== */
@@ -640,14 +677,20 @@ input[type="checkbox"] {
   }
 
   .navigation ul {
-    height: 100%;
     justify-content: space-around;
-    align-items: center;
+    gap: 0;
   }
 
+  /* En bas de l'écran le trait de sable passe au-dessus du lien */
   .navigation a {
-    padding: 8px 10px;
-    font-size: 0.8125rem;
+    padding: 0 10px;
+    font-size: 0.875rem;
+    border-top: 2px solid transparent;
+    border-bottom: 0;
+  }
+
+  .navigation a[aria-current="page"] {
+    border-top-color: var(--couleur-or);
   }
 
   /* Place pour que le menu du bas ne cache pas la fin de la page */

@@ -12,13 +12,13 @@
 }
 
 .apercu-profil h2 {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
 }
 
 /* Bandeau qui apparaît après le lien de mot de passe oublié */
 .bandeau {
   padding: var(--espace-3) var(--espace-4);
-  border-radius: var(--arrondi-petit);
+  border-left: 3px solid var(--couleur-or);
   color: var(--couleur-or-texte);
   background-color: var(--couleur-or-claire);
 }
@@ -48,7 +48,7 @@
 
 .champ-couleur input[type="color"] {
   width: 56px;
-  height: 36px;
+  height: 44px;
   padding: 2px;
   border: 1px solid var(--couleur-bordure);
   border-radius: var(--arrondi-petit);
@@ -56,9 +56,10 @@
   cursor: pointer;
 }
 
-/* La zone de suppression est en rouge pour qu'on fasse attention */
+/* La zone de suppression est en brique pour qu'on fasse attention */
 .carte-danger {
-  border-color: #efc4bf;
+  border-color: var(--couleur-danger);
+  border-left-width: 3px;
 }
 
 .carte-danger h2 {

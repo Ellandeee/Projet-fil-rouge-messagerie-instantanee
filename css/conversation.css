@@ -25,7 +25,7 @@
 /* Pied de page plus discret ici pour laisser la place aux messages */
 .page-conversation .pied-page {
   padding: 6px var(--espace-4);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   border-top: 1px solid var(--couleur-bordure);
 }
 
@@ -34,9 +34,9 @@
 .colonne-discussions {
   display: flex;
   flex-direction: column;
-  gap: var(--espace-3);
+  gap: var(--espace-4);
   min-height: 0;
-  padding: var(--espace-5) var(--espace-4);
+  padding: var(--espace-6) var(--espace-4) 0;
   overflow-y: auto;
   background-color: var(--couleur-surface);
   border-right: 1px solid var(--couleur-bordure);
@@ -46,23 +46,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.colonne-discussions-entete h1 {
-  font-size: 1.375rem;
+  gap: var(--espace-3);
 }
 
 .champ-recherche input {
-  border-color: transparent;
   background-color: var(--couleur-fond);
 }
 
+/* La liste touche les bords de la colonne pour que les filets aillent d'un bord à l'autre */
 .liste-salons {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  margin: 0 calc(var(--espace-4) * -1);
   padding: 0;
   list-style: none;
+  border-top: 1px solid var(--couleur-bordure);
 }
 
 /* Une discussion de la liste (bouton créé par le JS) */
@@ -71,9 +69,11 @@
   align-items: center;
   gap: var(--espace-3);
   width: 100%;
-  padding: 10px;
+  min-height: 64px;
+  padding: var(--espace-3) var(--espace-4) var(--espace-3) 13px;
   border: 0;
-  border-radius: var(--arrondi-petit);
+  border-bottom: 1px solid var(--couleur-bordure);
+  border-left: 3px solid transparent;
   font: inherit;
   color: inherit;
   text-align: left;
@@ -88,12 +88,14 @@
 /* Discussion ouverte à droite (le JS met la classe actif) */
 .salon.actif {
   background-color: var(--couleur-principale-claire);
+  border-left-color: var(--couleur-principale);
 }
 
 .salon-textes {
   display: flex;
   flex: 1;
   flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -107,14 +109,14 @@
 .salon-nom {
   flex: 1;
   overflow: hidden;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .salon-heure {
   flex-shrink: 0;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--couleur-texte-discret);
 }
 
@@ -122,36 +124,33 @@
 .salon-apercu {
   flex: 1;
   overflow: hidden;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   color: var(--couleur-texte-secondaire);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.salon.non-lu .salon-heure {
-  font-weight: 600;
-  color: var(--couleur-principale);
-}
-
 /* Messages pas encore lus (le JS met la classe non-lu) */
-.salon.non-lu .salon-nom {
+.salon.non-lu .salon-heure {
   font-weight: 700;
+  color: var(--couleur-principale);
 }
 
 .salon.non-lu .salon-apercu {
   color: var(--couleur-texte);
 }
 
+/* Nombre de non lus, même petit carré que la pastille de l'en-tête */
 .salon-badge {
   display: inline-grid;
   place-items: center;
-  min-width: 20px;
-  height: 20px;
+  min-width: 22px;
+  height: 22px;
   padding: 0 6px;
-  border-radius: var(--arrondi-rond);
+  border-radius: 3px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--couleur-fond);
   background-color: var(--couleur-principale);
 }
 
@@ -184,7 +183,7 @@
 .info-fermeture {
   margin-top: var(--espace-2);
   padding: 8px 14px;
-  border-radius: var(--arrondi-petit);
+  border-left: 3px solid var(--couleur-or);
   font-size: 0.875rem;
   background-color: var(--couleur-surface-douce);
 }
@@ -212,7 +211,7 @@
 }
 
 .discussion-titres h2 {
-  font-size: 1.0625rem;
+  font-size: 1.1875rem;
 }
 
 .statut-discussion {
@@ -222,6 +221,7 @@
 
 /* Le JS met la classe en-ligne quand le contact est connecté */
 .statut-discussion.en-ligne {
+  font-weight: 700;
   color: var(--couleur-succes);
 }
 
@@ -230,52 +230,61 @@
   display: none;
 }
 
-/* Nos points dans la discussion, le bouton ouvre la boutique */
+/* Nos grains dans la discussion, le bouton ouvre la boutique */
 .bouton-points {
   display: inline-flex;
   align-items: center;
   gap: var(--espace-2);
-  padding: 6px 6px 6px 12px;
-  border: 1px solid #ecd9a0;
-  border-radius: var(--arrondi-rond);
+  min-height: 44px;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--couleur-or);
+  border-radius: var(--arrondi-petit);
   font: inherit;
   font-size: 0.875rem;
   color: var(--couleur-or-texte);
   background-color: var(--couleur-or-claire);
   cursor: pointer;
-  transition: background-color 120ms;
 }
 
 .bouton-points:hover {
-  background-color: #f6e3ad;
+  background-color: #eed8ad;
 }
 
-/* Points gagnés pendant l'écriture, ajoutés à l'envoi */
+/* Le nombre de grains en Young Serif, chiffres de même largeur pour que ça ne bouge pas */
+#solde-points {
+  font-family: var(--police-titre);
+  font-size: 1.1875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Grains gagnés pendant l'écriture, ajoutés à l'envoi */
 .points-attente {
   font-size: 0.8125rem;
-  opacity: 0.8;
+  font-weight: 700;
 }
 
 .bouton-points-texte {
-  padding: 2px 10px;
-  border-radius: var(--arrondi-rond);
-  font-weight: 600;
-  color: var(--couleur-texte);
-  background-color: var(--couleur-surface);
+  padding: 6px 10px;
+  border-radius: 3px;
+  font-weight: 700;
+  color: var(--couleur-principale);
+  background-color: var(--couleur-or);
 }
 
 /* ===== Minuteur de fermeture ===== */
 
+/* La piste reste et le sable s'écoule vers la gauche */
 .minuteur {
-  height: 3px;
-  background-color: var(--couleur-surface-douce);
+  height: 4px;
+  background-color: var(--couleur-piste-minuteur);
 }
 
 /* Le JS change la largeur chaque seconde (100% = 60 s restantes) */
 .minuteur-barre {
   width: 100%;
   height: 100%;
-  background-color: var(--couleur-principale);
+  background-color: var(--couleur-or);
   transition: width 1s linear;
 }
 
@@ -286,20 +295,20 @@
 
 .minuteur-texte {
   padding: 4px var(--espace-6);
-  font-size: 0.75rem;
-  color: var(--couleur-texte-discret);
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
   background-color: var(--couleur-surface);
   border-bottom: 1px solid var(--couleur-bordure);
 }
 
-/* Moins de 10 secondes (classe bientot ajoutée par le JS) */
+/* Moins de 10 secondes (classe bientot ajoutée par le JS) : tout passe en brique */
 .minuteur-barre.bientot {
   background-color: var(--couleur-danger);
 }
 
 .minuteur-texte.bientot {
+  font-weight: 700;
   color: var(--couleur-danger);
-  background-color: var(--couleur-danger-claire);
 }
 
 /* Pendant que la personne écrit (classe ecriture) */
@@ -320,13 +329,24 @@
 }
 
 /* Séparateur « Aujourd'hui », « Hier »... (li ajouté par le JS) */
+/* Petites capitales entre deux filets */
 .separateur-date {
-  align-self: center;
-  padding: 2px 10px;
-  border-radius: var(--arrondi-rond);
+  display: flex;
+  align-items: center;
+  gap: var(--espace-3);
+  margin: var(--espace-2) 0;
   font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--couleur-texte-secondaire);
-  background-color: var(--couleur-surface-douce);
+}
+
+.separateur-date::before,
+.separateur-date::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--couleur-bordure);
 }
 
 .message {
@@ -373,24 +393,31 @@
   text-align: center;
 }
 
+/* Bulle reçue : coin vif en haut à gauche, du côté de l'auteur */
 .bulle {
-  padding: 8px 12px;
+  padding: 8px 14px;
   border: 1px solid var(--couleur-bordure);
-  border-radius: 14px 14px 14px 4px;
-  background-color: var(--couleur-surface);
+  border-radius: 2px 12px 12px 12px;
+  background-color: var(--couleur-fond);
 }
 
+/* Ma bulle : encre, coin vif en haut à droite */
 .message.moi .bulle {
-  color: #ffffff;
+  color: var(--couleur-fond);
   background-color: var(--couleur-principale);
   border-color: var(--couleur-principale);
-  border-radius: 14px 14px 4px 14px;
+  border-radius: 12px 2px 12px 12px;
+}
+
+/* Dans une suite de messages les 4 coins sont arrondis */
+.message.suite .bulle {
+  border-radius: 12px;
 }
 
 /* Nom de l'auteur, utile seulement dans les salons de groupe */
 .message-auteur {
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--couleur-principale);
 }
 
@@ -409,12 +436,12 @@
   justify-content: flex-end;
   gap: 6px;
   margin-top: 2px;
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   color: var(--couleur-texte-discret);
 }
 
 .message.moi .message-infos {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--couleur-principale-claire);
 }
 
 /* Image partagée dans un message */
@@ -426,7 +453,7 @@
 
 .indicateur-ecriture {
   padding: 0 var(--espace-8) var(--espace-2);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-style: italic;
   color: var(--couleur-texte-secondaire);
 }
@@ -447,6 +474,7 @@
   max-height: 140px;
   line-height: 1.4;
   resize: none;
+  background-color: var(--couleur-fond);
 }
 
 /* Le compteur n'apparaît qu'à partir de 400 caractères (vide avant) */
@@ -456,13 +484,14 @@
 
 .compteur-caracteres {
   align-self: center;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--couleur-texte-discret);
   white-space: nowrap;
 }
 
 /* Près de la limite des 500 caractères (classe limite) */
 .compteur-caracteres.limite {
+  font-weight: 700;
   color: var(--couleur-danger);
 }
 
@@ -475,24 +504,25 @@
 
 .dialogue legend {
   margin-bottom: var(--espace-2);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .choix-participants {
   display: grid;
-  gap: 2px;
   max-height: 260px;
   padding: 0;
   overflow-y: auto;
   list-style: none;
+  border-top: 1px solid var(--couleur-bordure);
 }
 
 .choix-participants label {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-height: 48px;
   padding: var(--espace-2);
-  border-radius: var(--arrondi-petit);
+  border-bottom: 1px solid var(--couleur-bordure);
   cursor: pointer;
 }
 
@@ -517,12 +547,20 @@
 }
 
 .boutique-solde {
-  padding: 4px 12px;
-  border-radius: var(--arrondi-rond);
-  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-weight: 700;
   color: var(--couleur-or-texte);
   background-color: var(--couleur-or-claire);
   white-space: nowrap;
+}
+
+/* Le solde en grand chiffres comme dans l'en-tête de la discussion */
+#boutique-solde {
+  font-family: var(--police-titre);
+  font-size: 1.1875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Un onglet par catégorie d'articles */
@@ -535,13 +573,14 @@
   border-bottom: 1px solid var(--couleur-bordure);
 }
 
+/* Même trait de sable que la navigation pour l'onglet choisi */
 .onglet-boutique {
+  min-height: 44px;
   padding: 8px 12px;
   border: 0;
   border-bottom: 2px solid transparent;
   font: inherit;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9375rem;
   color: var(--couleur-texte-secondaire);
   background: none;
   cursor: pointer;
@@ -553,8 +592,9 @@
 }
 
 .onglet-boutique[aria-pressed="true"] {
+  font-weight: 700;
   color: var(--couleur-principale);
-  border-bottom-color: var(--couleur-principale);
+  border-bottom-color: var(--couleur-or);
 }
 
 .liste-articles {
@@ -585,7 +625,7 @@
 }
 
 .article-nom {
-  font-size: 0.9375rem;
+  font-size: 1rem;
 }
 
 .article-description {
@@ -595,7 +635,7 @@
 
 .article-prix {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--couleur-or-texte);
 }
 
@@ -646,9 +686,9 @@
     padding: var(--espace-2) var(--espace-3);
   }
 
-  /* Sur téléphone le bouton montre seulement les points */
+  /* Sur téléphone le bouton montre seulement les grains */
   .bouton-points {
-    padding: 6px 12px;
+    padding: 4px 12px;
   }
 
   .bouton-points-texte,

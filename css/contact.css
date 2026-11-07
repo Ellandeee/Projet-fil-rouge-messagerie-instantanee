@@ -23,10 +23,11 @@
   color: var(--couleur-texte-discret);
 }
 
-/* Les invitations reçues demandent une action, on les fait ressortir un peu */
+/* Les invitations reçues demandent une action, un trait de sable à gauche les fait ressortir */
 #bloc-recues {
-  border-color: #ecd9a0;
-  background-color: #fffbf0;
+  border-color: var(--couleur-or);
+  border-left-width: 3px;
+  background-color: var(--couleur-surface);
 }
 
 .liste-contacts {
@@ -62,7 +63,7 @@
 }
 
 .ligne-contact-nom {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .ligne-contact-detail {
@@ -72,6 +73,7 @@
 
 /* Le JS met la classe en-ligne quand le contact est connecté */
 .ligne-contact-detail.en-ligne {
+  font-weight: 700;
   color: var(--couleur-succes);
 }
 
@@ -85,6 +87,7 @@
 .bouton-supprimer-contact {
   color: var(--couleur-danger);
   background: none;
+  border-color: transparent;
 }
 
 .bouton-supprimer-contact:hover {
