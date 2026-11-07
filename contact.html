@@ -2,11 +2,7 @@
 <!--
   Page des contacts
   On cherche quelqu'un avec son nom d'utilisateur pour l'inviter
-<<<<<<< HEAD
   Les invitations reçues et envoyées s'affichent seulement s'il y en a
-=======
-  On gère aussi les invitations reçues et envoyées et la liste de nos contacts
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   Toutes les listes sont remplies par contact.js
 -->
 <html lang="fr">
@@ -27,11 +23,7 @@
 </head>
 <body class="page-contact">
 
-<<<<<<< HEAD
   <!-- Menu du haut : logo, navigation et lien vers mon profil -->
-=======
-  <!-- Menu du haut avec le logo et le nom de la personne connectée -->
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   <header class="entete-site">
     <a class="logo" href="conversation.html">
       <img src="images/logo.svg" alt="" width="32" height="32">
@@ -40,7 +32,6 @@
     <nav class="navigation" aria-label="Navigation principale">
       <ul>
         <li><a href="conversation.html">Discussions</a></li>
-<<<<<<< HEAD
         <li><a href="contact.html" aria-current="page">Contacts <span id="badge-invitations" class="pastille-nombre" hidden></span></a></li>
         <li><a href="classement.html">Classement</a></li>
       </ul>
@@ -84,57 +75,6 @@
     <section id="bloc-envoyees" class="carte" aria-labelledby="titre-envoyees" hidden>
       <h2 id="titre-envoyees">En attente de réponse</h2>
       <ul id="liste-invitations-envoyees" class="liste-contacts"></ul>
-=======
-        <li><a href="contact.html" aria-current="page">Contacts</a></li>
-        <li><a href="classement.html">Classement</a></li>
-        <li><a href="parametre.html">Paramètres</a></li>
-      </ul>
-    </nav>
-    <p class="entete-utilisateur">
-      <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
-      <span id="nom-utilisateur">…</span>
-    </p>
-  </header>
-
-  <main class="page-contenu">
-    <h1>Contacts</h1>
-
-    <!-- Recherche pour ajouter un contact -->
-    <section class="carte" aria-labelledby="titre-ajout">
-      <h2 id="titre-ajout">Ajouter un contact</h2>
-      <form id="form-recherche-contact" class="form-ligne" role="search">
-        <label for="recherche-contact" class="visuellement-cache">Nom d'utilisateur à rechercher</label>
-        <input type="search" id="recherche-contact" name="recherche" minlength="2" maxlength="20"
-               placeholder="Nom d'utilisateur…" autocomplete="off" required>
-        <button type="submit" class="bouton bouton-plein">Rechercher</button>
-      </form>
-      <p id="message-recherche" class="message-etat" role="status" aria-live="polite"></p>
-      <!-- Résultats de la recherche avec un bouton Inviter -->
-      <ul id="resultats-recherche" class="liste-contacts"></ul>
-    </section>
-
-    <div class="grille-contacts">
-      <!-- Invitations reçues -->
-      <section class="carte" aria-labelledby="titre-recues">
-        <h2 id="titre-recues">Invitations reçues <span id="nombre-recues" class="pastille-nombre" hidden></span></h2>
-        <ul id="liste-invitations-recues" class="liste-contacts"></ul>
-        <p id="aucune-recue" class="aide">Aucune invitation reçue.</p>
-      </section>
-
-      <!-- Invitations envoyées -->
-      <section class="carte" aria-labelledby="titre-envoyees">
-        <h2 id="titre-envoyees">Invitations envoyées</h2>
-        <ul id="liste-invitations-envoyees" class="liste-contacts"></ul>
-        <p id="aucune-envoyee" class="aide">Aucune invitation en attente.</p>
-      </section>
-    </div>
-
-    <!-- Liste de mes contacts -->
-    <section class="carte" aria-labelledby="titre-contacts">
-      <h2 id="titre-contacts">Mes contacts</h2>
-      <ul id="liste-contacts" class="liste-contacts"></ul>
-      <p id="aucun-contact" class="aide">Vous n'avez pas encore de contact : invitez quelqu'un ci-dessus !</p>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
     </section>
   </main>
 
@@ -153,11 +93,7 @@
 
   <!-- Pied de page (le même partout) -->
   <footer class="pied-page">
-<<<<<<< HEAD
     <p>&copy; 2026 Messagerie Custom, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
-=======
-    <p>&copy; 2026 Messagerie Custom · Projet fil rouge 8WEB101 à l'UQAC par Ellande Cros et Émeric Aubert</p>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   </footer>
 
 </body>

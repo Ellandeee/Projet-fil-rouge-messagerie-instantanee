@@ -4,11 +4,7 @@
   À gauche la liste des discussions et à droite la discussion ouverte
   La discussion se ferme toute seule après 1 minute sans message envoyé
   Écrire au clavier remet aussi le chrono à zéro
-<<<<<<< HEAD
   Dans chaque discussion (privée ou de groupe) on gagne des points
-=======
-  Quand une discussion privée est ouverte on gagne des points avec ce contact
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   et on peut les dépenser dans la boutique (la fenêtre en bas de la page)
 -->
 <html lang="fr">
@@ -34,11 +30,7 @@
 </head>
 <body class="page-conversation">
 
-<<<<<<< HEAD
   <!-- Menu du haut : logo, navigation et lien vers mon profil -->
-=======
-  <!-- Menu du haut avec le logo et le nom de la personne connectée -->
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   <header class="entete-site">
     <a class="logo" href="conversation.html">
       <img src="images/logo.svg" alt="" width="32" height="32">
@@ -47,7 +39,6 @@
     <nav class="navigation" aria-label="Navigation principale">
       <ul>
         <li><a href="conversation.html" aria-current="page">Discussions</a></li>
-<<<<<<< HEAD
         <li><a href="contact.html">Contacts <span id="badge-invitations" class="pastille-nombre" hidden></span></a></li>
         <li><a href="classement.html">Classement</a></li>
       </ul>
@@ -56,17 +47,6 @@
       <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
       <span id="nom-utilisateur">Mon profil</span>
     </a>
-=======
-        <li><a href="contact.html">Contacts</a></li>
-        <li><a href="classement.html">Classement</a></li>
-        <li><a href="parametre.html">Paramètres</a></li>
-      </ul>
-    </nav>
-    <p class="entete-utilisateur">
-      <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
-      <span id="nom-utilisateur">…</span>
-    </p>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   </header>
 
   <main class="disposition-conversation">
@@ -75,32 +55,19 @@
     <aside class="colonne-discussions" aria-labelledby="titre-discussions">
       <div class="colonne-discussions-entete">
         <h1 id="titre-discussions">Discussions</h1>
-<<<<<<< HEAD
         <button type="button" id="bouton-nouvelle-discussion" class="bouton bouton-petit bouton-plein">Nouvelle</button>
-=======
-        <button type="button" id="bouton-nouvelle-discussion" class="bouton bouton-petit">+ Nouvelle</button>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       </div>
 
       <p class="champ champ-recherche">
         <label for="recherche-discussion" class="visuellement-cache">Rechercher une discussion</label>
-<<<<<<< HEAD
         <input type="search" id="recherche-discussion" placeholder="Rechercher">
-=======
-        <input type="search" id="recherche-discussion" placeholder="Rechercher une discussion…">
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       </p>
 
       <!-- La liste est remplie par conversation.js -->
       <ul id="liste-salons" class="liste-salons"></ul>
 
       <p id="aucune-discussion" class="aide" hidden>
-<<<<<<< HEAD
         Pas encore de discussion. <a href="contact.html">Ajoutez un contact</a> pour commencer.
-=======
-        Aucune discussion pour l'instant. Ajoutez des <a href="contact.html">contacts</a>
-        puis cliquez sur « + Nouvelle ».
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       </p>
     </aside>
 
@@ -109,26 +76,11 @@
 
       <!-- Affiché quand aucune discussion n'est ouverte -->
       <div id="etat-vide" class="etat-vide">
-<<<<<<< HEAD
         <img src="images/logo.svg" alt="" width="72" height="72">
         <h2>Choisissez une discussion</h2>
         <p>Une discussion ouverte vous rapporte 1 point toutes les 10 secondes.</p>
         <!-- Rempli quand une discussion vient de se fermer toute seule -->
         <p id="info-fermeture" class="info-fermeture" role="status" hidden></p>
-=======
-        <img src="images/logo.svg" alt="" width="96" height="96">
-        <h2>Aucune discussion ouverte</h2>
-        <p>Choisissez une discussion dans la liste pour commencer à discuter.</p>
-        <details class="regles">
-          <summary>Comment fonctionnent les points ?</summary>
-          <ul>
-            <li>Une discussion privée ouverte rapporte <strong>1 point toutes les 10 secondes</strong> avec ce contact.</li>
-            <li>Sans message envoyé pendant <strong>1 minute</strong>, la discussion se ferme toute seule.</li>
-            <li>Écrire un long message garde la discussion ouverte : ce temps donne des points <strong>en attente</strong>, crédités à l'envoi du message (12 points maximum par message).</li>
-            <li>Dépensez vos points dans la <strong>boutique</strong> pour personnaliser la discussion : ces changements ne sont visibles que par vous.</li>
-          </ul>
-        </details>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       </div>
 
       <!-- Cachée tant qu'on n'a pas cliqué sur une discussion -->
@@ -142,7 +94,6 @@
             <p id="statut-discussion" class="statut-discussion"></p>
           </div>
 
-<<<<<<< HEAD
           <!-- Nos points dans cette discussion, un clic ouvre la boutique -->
           <button type="button" id="bouton-boutique" class="bouton-points" aria-label="Ouvrir la boutique">
             <span><strong id="solde-points">0</strong> pts</span>
@@ -157,22 +108,6 @@
           <div id="barre-minuteur" class="minuteur-barre"></div>
         </div>
         <p id="texte-minuteur" class="minuteur-texte" role="status"></p>
-=======
-          <!-- Nos points avec ce contact (seulement en privé) -->
-          <p id="zone-points" class="zone-points" hidden>
-            <span class="zone-points-solde"><strong id="solde-points">0</strong> pts</span>
-            <span id="points-attente-zone" class="zone-points-attente" hidden>+<span id="points-attente">0</span> en attente</span>
-          </p>
-          <button type="button" id="bouton-boutique" class="bouton bouton-petit" hidden>Boutique</button>
-          <button type="button" id="bouton-fermer-discussion" class="bouton-icone" aria-label="Fermer la discussion">✕</button>
-        </header>
-
-        <!-- Barre du chrono avant la fermeture -->
-        <div class="minuteur" aria-hidden="true">
-          <div id="barre-minuteur" class="minuteur-barre"></div>
-        </div>
-        <p id="texte-minuteur" class="minuteur-texte">Fermeture dans 60 s sans message</p>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
 
         <!-- Les messages sont ajoutés ici par conversation.js -->
         <ol id="liste-messages" class="liste-messages" aria-live="polite"></ol>
@@ -183,13 +118,8 @@
         <form id="form-message" class="form-message">
           <label for="champ-message" class="visuellement-cache">Votre message</label>
           <textarea id="champ-message" name="message" rows="1" maxlength="500"
-<<<<<<< HEAD
                     placeholder="Écrivez un message" aria-describedby="compteur-caracteres" required></textarea>
           <span id="compteur-caracteres" class="compteur-caracteres"></span>
-=======
-                    placeholder="Écrivez un message…" aria-describedby="compteur-caracteres" required></textarea>
-          <span id="compteur-caracteres" class="compteur-caracteres">0 / 500</span>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
           <button type="submit" class="bouton bouton-plein">Envoyer</button>
         </form>
       </article>
@@ -200,31 +130,17 @@
   <dialog id="dialogue-nouvelle-discussion" class="dialogue" aria-labelledby="titre-nouvelle-discussion">
     <form id="form-nouvelle-discussion" class="formulaire">
       <h2 id="titre-nouvelle-discussion">Nouvelle discussion</h2>
-<<<<<<< HEAD
       <p class="aide">Choisissez une personne, ou plusieurs pour créer un groupe.</p>
 
       <fieldset>
         <legend class="visuellement-cache">Participants</legend>
-=======
-      <p class="aide">
-        Cochez <strong>un</strong> contact pour une discussion privée (avec points),
-        ou <strong>plusieurs</strong> pour un salon de groupe.
-      </p>
-
-      <fieldset>
-        <legend>Participants</legend>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
         <!-- Une case à cocher par contact -->
         <ul id="choix-participants" class="choix-participants"></ul>
       </fieldset>
 
       <!-- Affiché seulement si on coche plusieurs contacts -->
       <p id="zone-nom-salon" class="champ" hidden>
-<<<<<<< HEAD
         <label for="nom-salon">Nom du groupe</label>
-=======
-        <label for="nom-salon">Nom du salon de groupe</label>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
         <input type="text" id="nom-salon" name="nom-salon" maxlength="40" placeholder="Ex. : Équipe 8WEB101">
       </p>
 
@@ -242,29 +158,17 @@
     <header class="boutique-entete">
       <div>
         <h2 id="titre-boutique">Boutique</h2>
-<<<<<<< HEAD
         <p class="aide">Pour <strong id="boutique-nom-contact"></strong>, visible seulement par vous</p>
-=======
-        <p class="aide">
-          Personnalisez votre discussion avec <strong id="boutique-nom-contact"></strong>.
-          Ces changements ne sont visibles que par vous.
-        </p>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       </div>
       <p class="boutique-solde"><strong id="boutique-solde">0</strong> pts</p>
       <button type="button" id="bouton-fermer-boutique" class="bouton-icone" aria-label="Fermer la boutique">✕</button>
     </header>
 
-<<<<<<< HEAD
     <!-- Un onglet par catégorie (fond, bulles, cadres, police, couleur) -->
     <div id="boutique-onglets" class="boutique-onglets"></div>
 
     <!-- Les articles de la catégorie choisie, créés par boutique.js -->
     <ul id="boutique-articles" class="liste-articles"></ul>
-=======
-    <!-- boutique.js crée une section pour chaque catégorie d'articles -->
-    <div id="boutique-categories" class="boutique-categories"></div>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
 
     <p id="message-boutique" class="message-etat" role="status" aria-live="polite"></p>
   </dialog>
@@ -277,7 +181,6 @@
       <button type="button" class="salon">
         <span class="avatar salon-avatar" aria-hidden="true"></span>
         <span class="salon-textes">
-<<<<<<< HEAD
           <span class="salon-ligne">
             <span class="salon-nom"></span>
             <span class="salon-heure"></span>
@@ -287,12 +190,6 @@
             <span class="salon-badge" hidden></span>
           </span>
         </span>
-=======
-          <span class="salon-nom"></span>
-          <span class="salon-apercu"></span>
-        </span>
-        <span class="salon-badge" hidden></span>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       </button>
     </li>
   </template>
@@ -316,11 +213,7 @@
   <template id="modele-article">
     <li class="article">
       <div class="article-apercu" aria-hidden="true"></div>
-<<<<<<< HEAD
       <h3 class="article-nom"></h3>
-=======
-      <h4 class="article-nom"></h4>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       <p class="article-description"></p>
       <p class="article-prix"></p>
       <button type="button" class="bouton bouton-petit article-action"></button>
@@ -329,11 +222,7 @@
 
   <!-- Pied de page (le même partout) -->
   <footer class="pied-page">
-<<<<<<< HEAD
     <p>&copy; 2026 Messagerie Custom, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
-=======
-    <p>&copy; 2026 Messagerie Custom · Projet fil rouge 8WEB101 à l'UQAC par Ellande Cros et Émeric Aubert</p>
->>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   </footer>
 
 </body>
