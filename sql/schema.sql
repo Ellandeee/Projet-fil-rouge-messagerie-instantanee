@@ -63,17 +63,17 @@ create table if not exists public.messages (
 );
 create index if not exists messages_salon_date on public.messages (salon_id, cree_le);
 
--- Les points d'une personne avec un contact précis
+-- Les points d'une personne dans une discussion (privée ou de groupe)
 -- points_gagnes ne baisse jamais et sert pour le classement
 -- solde baisse quand on achète et sert pour la boutique
 -- dernier_gain sert à bloquer la triche (1 point toutes les 10 s max)
 create table if not exists public.points (
   proprietaire_id uuid not null references public.profils (id) on delete cascade,
-  contact_id      uuid not null references public.profils (id) on delete cascade,
+  salon_id        bigint not null references public.salons (id) on delete cascade,
   points_gagnes   integer not null default 0 check (points_gagnes >= 0),
   solde           integer not null default 0 check (solde >= 0),
   dernier_gain    timestamptz not null default now(),
-  primary key (proprietaire_id, contact_id)
+  primary key (proprietaire_id, salon_id)
 );
 
 -- Les articles de la boutique
@@ -87,22 +87,22 @@ create table if not exists public.articles (
   ordre       smallint not null default 0
 );
 
--- Les articles achetés (on les garde pour toujours)
+-- Les articles achetés dans une discussion (on les garde pour toujours)
 create table if not exists public.achats (
   proprietaire_id uuid not null references public.profils (id) on delete cascade,
-  contact_id      uuid not null references public.profils (id) on delete cascade,
+  salon_id        bigint not null references public.salons (id) on delete cascade,
   article_id      text not null references public.articles (id) on delete cascade,
   achete_le       timestamptz not null default now(),
-  primary key (proprietaire_id, contact_id, article_id)
+  primary key (proprietaire_id, salon_id, article_id)
 );
 
--- L'article équipé pour chaque catégorie et chaque contact
+-- L'article équipé pour chaque catégorie dans chaque discussion
 create table if not exists public.personnalisations (
   proprietaire_id uuid not null references public.profils (id) on delete cascade,
-  contact_id      uuid not null references public.profils (id) on delete cascade,
+  salon_id        bigint not null references public.salons (id) on delete cascade,
   categorie       text not null,
   article_id      text not null references public.articles (id) on delete cascade,
-  primary key (proprietaire_id, contact_id, categorie)
+  primary key (proprietaire_id, salon_id, categorie)
 );
 
 
@@ -347,13 +347,13 @@ begin
 end;
 $$;
 
--- Ajoute des points avec un contact et vérifie la triche côté serveur
--- Il faut être contacts
+-- Ajoute des points dans une discussion et vérifie la triche côté serveur
+-- Il faut être membre de la discussion
 -- On donne au max 1 point par 10 secondes depuis le dernier gain (avec 1 s de marge)
 -- et au max 12 points par appel
 -- Même en appelant la fonction en boucle un tricheur ne gagne pas plus vite que la normale
 -- Renvoie les points crédités, le solde et les points gagnés
-create or replace function public.crediter_points(p_contact uuid, p_points integer)
+create or replace function public.crediter_points(p_salon bigint, p_points integer)
 returns jsonb
 language plpgsql security definer set search_path = ''
 as $$
@@ -362,18 +362,18 @@ declare
   v_autorises integer;
   v_credites  integer;
 begin
-  if not public.sont_contacts(p_contact) then
-    raise exception 'Cette personne ne fait pas partie de vos contacts.';
+  if not public.est_membre(p_salon) then
+    raise exception 'Vous ne faites pas partie de cette discussion.';
   end if;
 
-  -- Si c'est la première fois avec ce contact on crée sa ligne de points
-  insert into public.points (proprietaire_id, contact_id, dernier_gain)
-  values (auth.uid(), p_contact, now() - interval '10 seconds')
-  on conflict (proprietaire_id, contact_id) do nothing;
+  -- Si c'est la première fois dans cette discussion on crée la ligne de points
+  insert into public.points (proprietaire_id, salon_id, dernier_gain)
+  values (auth.uid(), p_salon, now() - interval '10 seconds')
+  on conflict (proprietaire_id, salon_id) do nothing;
 
   -- for update bloque la ligne pendant le calcul pour éviter de créditer deux fois
   select * into v_ligne from public.points
-  where proprietaire_id = auth.uid() and contact_id = p_contact
+  where proprietaire_id = auth.uid() and salon_id = p_salon
   for update;
 
   v_autorises := floor((extract(epoch from (now() - v_ligne.dernier_gain)) + 1) / 10)::integer;
@@ -384,7 +384,7 @@ begin
     set points_gagnes = points_gagnes + v_credites,
         solde         = solde + v_credites,
         dernier_gain  = now()
-    where proprietaire_id = auth.uid() and contact_id = p_contact
+    where proprietaire_id = auth.uid() and salon_id = p_salon
     returning * into v_ligne;
   end if;
 
@@ -396,10 +396,10 @@ begin
 end;
 $$;
 
--- Achète un article pour un contact
+-- Achète un article pour une discussion
 -- Le prix est lu dans la base et pas envoyé par le site donc on ne peut pas tricher dessus
 -- Renvoie le nouveau solde
-create or replace function public.acheter_article(p_contact uuid, p_article text)
+create or replace function public.acheter_article(p_salon bigint, p_article text)
 returns jsonb
 language plpgsql security definer set search_path = ''
 as $$
@@ -414,31 +414,31 @@ begin
 
   if exists (
     select 1 from public.achats
-    where proprietaire_id = auth.uid() and contact_id = p_contact and article_id = p_article
+    where proprietaire_id = auth.uid() and salon_id = p_salon and article_id = p_article
   ) then
-    raise exception 'Vous possédez déjà cet article pour ce contact.';
+    raise exception 'Vous avez déjà cet article dans cette discussion.';
   end if;
 
   select solde into v_solde from public.points
-  where proprietaire_id = auth.uid() and contact_id = p_contact
+  where proprietaire_id = auth.uid() and salon_id = p_salon
   for update;
 
   if coalesce(v_solde, 0) < v_prix then
-    raise exception 'Solde insuffisant : il faut % points.', v_prix;
+    raise exception 'Il vous faut % points pour cet article.', v_prix;
   end if;
 
   update public.points set solde = solde - v_prix
-  where proprietaire_id = auth.uid() and contact_id = p_contact;
+  where proprietaire_id = auth.uid() and salon_id = p_salon;
 
-  insert into public.achats (proprietaire_id, contact_id, article_id)
-  values (auth.uid(), p_contact, p_article);
+  insert into public.achats (proprietaire_id, salon_id, article_id)
+  values (auth.uid(), p_salon, p_article);
 
   return jsonb_build_object('solde', v_solde - v_prix);
 end;
 $$;
 
 -- Équipe un article déjà acheté (remplace celui de la même catégorie)
-create or replace function public.equiper_article(p_contact uuid, p_article text)
+create or replace function public.equiper_article(p_salon bigint, p_article text)
 returns void
 language plpgsql security definer set search_path = ''
 as $$
@@ -447,16 +447,16 @@ declare
 begin
   if not exists (
     select 1 from public.achats
-    where proprietaire_id = auth.uid() and contact_id = p_contact and article_id = p_article
+    where proprietaire_id = auth.uid() and salon_id = p_salon and article_id = p_article
   ) then
     raise exception 'Achetez d''abord cet article.';
   end if;
 
   select categorie into v_categorie from public.articles where id = p_article;
 
-  insert into public.personnalisations (proprietaire_id, contact_id, categorie, article_id)
-  values (auth.uid(), p_contact, v_categorie, p_article)
-  on conflict (proprietaire_id, contact_id, categorie)
+  insert into public.personnalisations (proprietaire_id, salon_id, categorie, article_id)
+  values (auth.uid(), p_salon, v_categorie, p_article)
+  on conflict (proprietaire_id, salon_id, categorie)
   do update set article_id = excluded.article_id;
 end;
 $$;
@@ -475,15 +475,15 @@ $$;
 -- Ces fonctions sont seulement pour les personnes connectées
 revoke execute on function public.ouvrir_salon_prive(uuid)          from public, anon;
 revoke execute on function public.creer_salon_groupe(text, uuid[])  from public, anon;
-revoke execute on function public.crediter_points(uuid, integer)    from public, anon;
-revoke execute on function public.acheter_article(uuid, text)       from public, anon;
-revoke execute on function public.equiper_article(uuid, text)       from public, anon;
+revoke execute on function public.crediter_points(bigint, integer)  from public, anon;
+revoke execute on function public.acheter_article(bigint, text)     from public, anon;
+revoke execute on function public.equiper_article(bigint, text)     from public, anon;
 revoke execute on function public.supprimer_mon_compte()            from public, anon;
 grant  execute on function public.ouvrir_salon_prive(uuid)          to authenticated;
 grant  execute on function public.creer_salon_groupe(text, uuid[])  to authenticated;
-grant  execute on function public.crediter_points(uuid, integer)    to authenticated;
-grant  execute on function public.acheter_article(uuid, text)       to authenticated;
-grant  execute on function public.equiper_article(uuid, text)       to authenticated;
+grant  execute on function public.crediter_points(bigint, integer)  to authenticated;
+grant  execute on function public.acheter_article(bigint, text)     to authenticated;
+grant  execute on function public.equiper_article(bigint, text)     to authenticated;
 grant  execute on function public.supprimer_mon_compte()            to authenticated;
 
 -- Sauf celle-là qu'on utilise avant d'être connecté
@@ -554,8 +554,7 @@ on conflict (id) do update set
 
 -- ===== Pour tester =====
 -- À lancer à la main seulement pour tester la boutique
--- Donne 500 points à ellande avec emeric
+-- Donne 500 points à ellande dans toutes ses discussions
 --
 -- update public.points set solde = solde + 500, points_gagnes = points_gagnes + 500
--- where proprietaire_id = (select id from public.profils where nom_utilisateur = 'ellande')
---   and contact_id      = (select id from public.profils where nom_utilisateur = 'emeric');
+-- where proprietaire_id = (select id from public.profils where nom_utilisateur = 'ellande');
