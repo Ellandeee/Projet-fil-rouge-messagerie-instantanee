@@ -49,21 +49,21 @@ function dessinerRelations() {
   remplirListe("#liste-invitations-recues", recues, (relation) => [
     creerBouton("Accepter", "bouton bouton-petit bouton-plein", () => accepter(relation)),
     creerBouton("Refuser", "bouton bouton-petit bouton-secondaire", () => supprimerRelation(relation))
-  ], "Vous invite à devenir contacts");
+  ], "Veut vous ajouter");
 
   remplirListe("#liste-invitations-envoyees", envoyees, (relation) => [
     creerBouton("Annuler", "bouton bouton-petit bouton-secondaire", () => supprimerRelation(relation))
-  ], "En attente de réponse");
+  ], "Invitation envoyée");
 
   remplirListe("#liste-contacts", contacts, (relation) => [
     creerBouton("Discuter", "bouton bouton-petit", () => discuter(relation.autre)),
     creerBouton("Supprimer", "bouton bouton-petit bouton-supprimer-contact", () => supprimerContact(relation))
   ], null);
 
-  // Petit nombre à côté du titre des invitations reçues
-  const pastille = document.querySelector("#nombre-recues");
-  pastille.hidden = recues.length === 0;
-  pastille.textContent = recues.length;
+  // Les blocs d'invitations n'apparaissent que s'il y en a
+  document.querySelector("#bloc-recues").hidden = recues.length === 0;
+  document.querySelector("#bloc-envoyees").hidden = envoyees.length === 0;
+  document.querySelector("#nombre-contacts").textContent = contacts.length > 0 ? "(" + contacts.length + ")" : "";
 }
 
 // detailFixe = texte sous le nom, sinon on affiche En ligne / Hors ligne
@@ -100,13 +100,28 @@ function creerBouton(texte, classes, action) {
 
 // ===== Recherche =====
 
-formRecherche.addEventListener("submit", async (evenement) => {
+// La recherche se lance pendant la frappe, 300 ms après la dernière touche
+// (on attend un peu pour ne pas interroger la base à chaque lettre)
+let minuterieRecherche = null;
+
+champRecherche.addEventListener("input", () => {
+  clearTimeout(minuterieRecherche);
+  minuterieRecherche = setTimeout(rechercher, 300);
+});
+
+formRecherche.addEventListener("submit", (evenement) => {
   evenement.preventDefault();
+  clearTimeout(minuterieRecherche);
+  rechercher();
+});
+
+async function rechercher() {
   const texte = champRecherche.value.trim();
   resultatsRecherche.textContent = "";
 
+  // Moins de 2 lettres : on n'affiche rien, ce n'est pas une erreur
   if (texte.length < 2) {
-    afficherEtat(messageRecherche, "Tapez au moins 2 caractères.", "erreur");
+    afficherEtat(messageRecherche, "");
     return;
   }
 
@@ -124,16 +139,16 @@ formRecherche.addEventListener("submit", async (evenement) => {
     return;
   }
   if (data.length === 0) {
-    afficherEtat(messageRecherche, "Personne ne s'appelle comme ça.", "erreur");
+    afficherEtat(messageRecherche, "Aucun utilisateur ne s'appelle « " + texte + " ».");
     return;
   }
   afficherEtat(messageRecherche, "");
 
   for (const profil of data) {
     const relation = relations.find((r) => r.autre.id === profil.id);
-    let detail = "Pas encore dans vos contacts";
+    let detail = "";
     if (relation && relation.statut === "accepte") detail = "Déjà dans vos contacts";
-    else if (relation && relation.envoyeeParMoi) detail = "Invitation déjà envoyée";
+    else if (relation && relation.envoyeeParMoi) detail = "Invitation envoyée";
     else if (relation) detail = "Vous a envoyé une invitation";
 
     const ligne = creerLigne(profil, detail);
@@ -144,7 +159,7 @@ formRecherche.addEventListener("submit", async (evenement) => {
     }
     resultatsRecherche.append(ligne);
   }
-});
+}
 
 // ===== Actions =====
 
@@ -184,7 +199,7 @@ async function supprimerRelation(relation) {
 }
 
 async function supprimerContact(relation) {
-  const ok = confirm("Supprimer " + relation.autre.nom_utilisateur + " de vos contacts ? Vos messages restent mais vous ne gagnerez plus de points avec cette personne.");
+  const ok = confirm("Supprimer " + relation.autre.nom_utilisateur + " de vos contacts ? Vos anciens messages restent visibles.");
   if (ok) await supprimerRelation(relation);
 }
 

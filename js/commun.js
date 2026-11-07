@@ -47,6 +47,7 @@ async function initialiserPage() {
 
   remplirEnTete();
   suivrePresence();
+  suivreInvitations();
 
   // Sur la page des discussions c'est conversation.js qui gère les nouveaux messages
   if (!document.body.classList.contains("page-conversation")) {
@@ -68,8 +69,33 @@ async function initialiserPage() {
 function remplirEnTete() {
   const nom = document.querySelector("#nom-utilisateur");
   const avatar = document.querySelector("#avatar-utilisateur");
+  const lienProfil = document.querySelector(".entete-utilisateur");
   if (nom) nom.textContent = utilisateur.nom_utilisateur;
   if (avatar) remplirAvatar(avatar, utilisateur);
+  // Texte lu par les lecteurs d'écran (sur téléphone on ne voit que l'avatar)
+  if (lienProfil) lienProfil.setAttribute("aria-label", "Mon profil (" + utilisateur.nom_utilisateur + ")");
+}
+
+// Petit nombre à côté de « Contacts » quand on a des invitations à traiter
+async function mettreAJourBadgeInvitations() {
+  const badge = document.querySelector("#badge-invitations");
+  if (!badge) return;
+  const { count } = await client
+    .from("contacts")
+    .select("id", { count: "exact", head: true })
+    .eq("destinataire_id", utilisateur.id)
+    .eq("statut", "en_attente");
+  badge.hidden = !count;
+  badge.textContent = count || "";
+}
+
+// Le nombre se met à jour tout seul quand une invitation arrive ou part
+function suivreInvitations() {
+  mettreAJourBadgeInvitations();
+  client
+    .channel("badge-invitations")
+    .on("postgres_changes", { event: "*", schema: "public", table: "contacts" }, mettreAJourBadgeInvitations)
+    .subscribe();
 }
 
 // ===== Avatars =====

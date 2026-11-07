@@ -1,6 +1,6 @@
 /*
   Style de la page des contacts (contact.html)
-  Recherche en haut, invitations au milieu, liste des contacts en bas
+  Recherche en haut, invitations reçues seulement s'il y en a, puis la liste des contacts
 */
 
 /* Champ de recherche et bouton sur la même ligne */
@@ -17,11 +17,16 @@
   margin-top: var(--espace-3);
 }
 
-/* Invitations reçues et envoyées côte à côte */
-.grille-contacts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--espace-6);
+/* Nombre de contacts à côté du titre */
+.titre-nombre {
+  font-weight: 400;
+  color: var(--couleur-texte-discret);
+}
+
+/* Les invitations reçues demandent une action, on les fait ressortir un peu */
+#bloc-recues {
+  border-color: #ecd9a0;
+  background-color: #fffbf0;
 }
 
 .liste-contacts {
@@ -87,10 +92,6 @@
 }
 
 @media (max-width: 768px) {
-  .grille-contacts {
-    grid-template-columns: 1fr;
-  }
-
   .ligne-contact {
     flex-wrap: wrap;
   }

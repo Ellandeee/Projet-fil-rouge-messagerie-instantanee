@@ -403,11 +403,30 @@ input[type="checkbox"] {
   background-color: var(--couleur-principale-claire);
 }
 
+/* Le petit compteur d'invitations à côté de Contacts */
+.navigation a .pastille-nombre {
+  margin-left: 2px;
+}
+
+/* Mon avatar et mon nom en haut à droite : un clic ouvre mon profil */
 .entete-utilisateur {
   display: flex;
   align-items: center;
   gap: var(--espace-2);
+  padding: 4px 12px 4px 4px;
+  border-radius: var(--arrondi-rond);
   font-weight: 500;
+  color: var(--couleur-texte);
+  text-decoration: none;
+}
+
+.entete-utilisateur:hover {
+  color: var(--couleur-texte);
+  background-color: var(--couleur-fond);
+}
+
+.entete-utilisateur[aria-current="page"] {
+  background-color: var(--couleur-principale-claire);
 }
 
 /* ===== Avatar ===== */
@@ -571,7 +590,28 @@ input[type="checkbox"] {
 }
 
 .pied-page a {
-  color: inherit;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* ===== Page de confidentialité (texte long) ===== */
+
+.page-texte {
+  gap: var(--espace-8);
+  line-height: 1.65;
+}
+
+.page-texte section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+}
+
+.page-texte h1 + .aide {
+  margin-top: calc(var(--espace-6) * -1);
+}
+
+.page-legale .entete-site {
+  position: static;
 }
 
 /* ===== Téléphone (moins de 768 px) ===== */
@@ -611,8 +651,13 @@ input[type="checkbox"] {
   }
 
   /* Place pour que le menu du bas ne cache pas la fin de la page */
-  body:not(.page-connexion) {
+  body:not(.page-connexion):not(.page-legale) {
     padding-bottom: var(--hauteur-navigation-mobile);
+  }
+
+  /* Sans le nom il ne reste que l'avatar, plus besoin de marge */
+  .entete-utilisateur {
+    padding: 4px;
   }
 
   .page-contenu {

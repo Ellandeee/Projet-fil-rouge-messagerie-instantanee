@@ -137,28 +137,16 @@
   color: var(--couleur-or-texte);
 }
 
-/* ===== Règles ===== */
-
-aside.carte details + details {
-  margin-top: var(--espace-3);
+/* Le nom ouvre la discussion, mais il garde l'allure du texte */
+.cellule-contact a,
+.podium-nom a {
+  color: inherit;
+  text-decoration: none;
 }
 
-aside.carte summary {
-  font-weight: 600;
-  color: var(--couleur-principale);
-  cursor: pointer;
-}
-
-aside.carte ul,
-aside.carte details p {
-  margin-top: var(--espace-2);
-  color: var(--couleur-texte-secondaire);
-}
-
-aside.carte ul {
-  display: grid;
-  gap: 6px;
-  padding-left: var(--espace-5);
+.cellule-contact a:hover,
+.podium-nom a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

@@ -1,7 +1,19 @@
 /*
-  Style de la page des paramètres (parametre.html)
+  Style de la page Mon profil (parametre.html)
   Une carte par sujet et la suppression du compte bien séparée en bas
 */
+
+/* Titre de la page avec le bouton de déconnexion à droite */
+.titre-profil {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-4);
+}
+
+.apercu-profil h2 {
+  font-size: 1.25rem;
+}
 
 /* Bandeau qui apparaît après le lien de mot de passe oublié */
 .bandeau {

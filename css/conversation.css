@@ -97,17 +97,40 @@
   min-width: 0;
 }
 
+/* Nom et heure sur la 1re ligne, aperçu et non lus sur la 2e */
+.salon-ligne {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+}
+
 .salon-nom {
+  flex: 1;
+  overflow: hidden;
   font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.salon-heure {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--couleur-texte-discret);
 }
 
 /* Aperçu du dernier message sur une seule ligne avec des ... */
 .salon-apercu {
+  flex: 1;
   overflow: hidden;
   font-size: 0.8125rem;
   color: var(--couleur-texte-secondaire);
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.salon.non-lu .salon-heure {
+  font-weight: 600;
+  color: var(--couleur-principale);
 }
 
 /* Messages pas encore lus (le JS met la classe non-lu) */
@@ -157,29 +180,13 @@
   color: var(--couleur-texte-secondaire);
 }
 
-/* Encadré qui explique les points */
-.regles {
-  width: 100%;
-  margin-top: var(--espace-3);
-  padding: var(--espace-4) var(--espace-5);
-  border: 1px solid var(--couleur-bordure);
-  border-radius: var(--arrondi-moyen);
-  text-align: left;
-  background-color: var(--couleur-surface);
-}
-
-.regles summary {
-  font-weight: 600;
-  color: var(--couleur-principale);
-  cursor: pointer;
-}
-
-.regles ul {
-  display: grid;
-  gap: var(--espace-2);
-  margin-top: var(--espace-3);
-  padding-left: var(--espace-5);
-  font-size: 0.9375rem;
+/* Phrase qui explique pourquoi la discussion vient de se fermer */
+.info-fermeture {
+  margin-top: var(--espace-2);
+  padding: 8px 14px;
+  border-radius: var(--arrondi-petit);
+  font-size: 0.875rem;
+  background-color: var(--couleur-surface-douce);
 }
 
 /* Discussion ouverte */
@@ -223,24 +230,38 @@
   display: none;
 }
 
-/* Nos points avec ce contact */
-.zone-points {
-  display: flex;
+/* Nos points dans la discussion, le bouton ouvre la boutique */
+.bouton-points {
+  display: inline-flex;
   align-items: center;
   gap: var(--espace-2);
-}
-
-.zone-points-solde {
-  padding: 2px 10px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid #ecd9a0;
   border-radius: var(--arrondi-rond);
+  font: inherit;
   font-size: 0.875rem;
   color: var(--couleur-or-texte);
   background-color: var(--couleur-or-claire);
+  cursor: pointer;
+  transition: background-color 120ms;
 }
 
-.zone-points-attente {
+.bouton-points:hover {
+  background-color: #f6e3ad;
+}
+
+/* Points gagnés pendant l'écriture, ajoutés à l'envoi */
+.points-attente {
   font-size: 0.8125rem;
-  color: var(--couleur-texte-secondaire);
+  opacity: 0.8;
+}
+
+.bouton-points-texte {
+  padding: 2px 10px;
+  border-radius: var(--arrondi-rond);
+  font-weight: 600;
+  color: var(--couleur-texte);
+  background-color: var(--couleur-surface);
 }
 
 /* ===== Minuteur de fermeture ===== */
@@ -256,6 +277,11 @@
   height: 100%;
   background-color: var(--couleur-principale);
   transition: width 1s linear;
+}
+
+/* Le texte n'apparaît que dans les dernières secondes (vide le reste du temps) */
+.minuteur-texte:empty {
+  display: none;
 }
 
 .minuteur-texte {
@@ -324,6 +350,27 @@
 
 .message.moi .message-avatar {
   display: none;
+}
+
+/* Messages qui se suivent du même auteur (classe suite) : collés et sans avatar répété */
+.message.suite {
+  margin-top: -6px;
+}
+
+.message.suite .message-avatar {
+  visibility: hidden;
+}
+
+.message.suite .message-auteur {
+  display: none;
+}
+
+/* Discussion encore vide (li ajouté par le JS) */
+.message-vide {
+  margin: auto;
+  font-size: 0.875rem;
+  color: var(--couleur-texte-secondaire);
+  text-align: center;
 }
 
 .bulle {
@@ -402,12 +449,16 @@
   resize: none;
 }
 
+/* Le compteur n'apparaît qu'à partir de 400 caractères (vide avant) */
+.compteur-caracteres:empty {
+  display: none;
+}
+
 .compteur-caracteres {
   align-self: center;
-  min-width: 64px;
   font-size: 0.75rem;
   color: var(--couleur-texte-discret);
-  text-align: right;
+  white-space: nowrap;
 }
 
 /* Près de la limite des 500 caractères (classe limite) */
@@ -474,25 +525,46 @@
   white-space: nowrap;
 }
 
-.boutique-categories {
+/* Un onglet par catégorie d'articles */
+/* Sur un petit écran les onglets défilent au lieu de passer à la ligne */
+.boutique-onglets {
   display: flex;
-  flex-direction: column;
-  gap: var(--espace-6);
-  max-height: 60vh;
-  margin: var(--espace-4) 0;
-  overflow-y: auto;
+  gap: var(--espace-1);
+  overflow-x: auto;
+  margin-top: var(--espace-4);
+  border-bottom: 1px solid var(--couleur-bordure);
 }
 
-.boutique-categorie h3 {
-  margin-bottom: var(--espace-3);
-  font-size: 1rem;
+.onglet-boutique {
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--couleur-texte-secondaire);
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.onglet-boutique:hover {
+  color: var(--couleur-texte);
+}
+
+.onglet-boutique[aria-pressed="true"] {
+  color: var(--couleur-principale);
+  border-bottom-color: var(--couleur-principale);
 }
 
 .liste-articles {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--espace-3);
+  max-height: 55vh;
+  margin: var(--espace-4) 0;
   padding: 0;
+  overflow-y: auto;
   list-style: none;
 }
 
@@ -570,11 +642,17 @@
   }
 
   .discussion-entete {
-    flex-wrap: wrap;
+    gap: var(--espace-2);
     padding: var(--espace-2) var(--espace-3);
   }
 
-  .zone-points-attente {
+  /* Sur téléphone le bouton montre seulement les points */
+  .bouton-points {
+    padding: 6px 12px;
+  }
+
+  .bouton-points-texte,
+  .points-attente {
     display: none;
   }
 
@@ -602,16 +680,8 @@
     padding: var(--espace-2) var(--espace-3);
   }
 
-  /* On cache le compteur sur petit écran pour gagner de la place */
-  .compteur-caracteres {
-    display: none;
-  }
-
-  .boutique-categories {
-    max-height: 65vh;
-  }
-
   .liste-articles {
     grid-template-columns: 1fr 1fr;
+    max-height: 60vh;
   }
 }
