@@ -1,16 +1,27 @@
 <!doctype html>
 <!--
   Page du classement
+<<<<<<< HEAD
+  Montre dans quelles discussions on a gagné le plus de points
+  On classe avec les points gagnés et pas avec le solde
+  comme ça acheter dans la boutique ne fait pas descendre une discussion
+  Le podium et le tableau sont remplis par classement.js
+=======
   Montre avec quels contacts on discute le plus
   On classe avec les points gagnés et pas avec le solde
   comme ça acheter dans la boutique ne fait pas descendre un contact
   Le tableau est rempli par classement.js
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
 -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
+  <meta name="description" content="Classement de Messagerie Custom : vos discussions triées selon les points gagnés.">
+=======
   <meta name="description" content="Classement de Messagerie Custom : vos contacts triés selon les points gagnés en discutant.">
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   <title>Classement | Messagerie Custom</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
 
@@ -24,7 +35,11 @@
 </head>
 <body class="page-classement">
 
+<<<<<<< HEAD
+  <!-- Menu du haut : logo, navigation et lien vers mon profil -->
+=======
   <!-- Menu du haut avec le logo et le nom de la personne connectée -->
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   <header class="entete-site">
     <a class="logo" href="conversation.html">
       <img src="images/logo.svg" alt="" width="32" height="32">
@@ -33,6 +48,16 @@
     <nav class="navigation" aria-label="Navigation principale">
       <ul>
         <li><a href="conversation.html">Discussions</a></li>
+<<<<<<< HEAD
+        <li><a href="contact.html">Contacts <span id="badge-invitations" class="pastille-nombre" hidden></span></a></li>
+        <li><a href="classement.html" aria-current="page">Classement</a></li>
+      </ul>
+    </nav>
+    <a class="entete-utilisateur" href="parametre.html">
+      <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
+      <span id="nom-utilisateur">Mon profil</span>
+    </a>
+=======
         <li><a href="contact.html">Contacts</a></li>
         <li><a href="classement.html" aria-current="page">Classement</a></li>
         <li><a href="parametre.html">Paramètres</a></li>
@@ -42,10 +67,30 @@
       <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
       <span id="nom-utilisateur">…</span>
     </p>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   </header>
 
   <main class="page-contenu">
     <h1>Classement</h1>
+<<<<<<< HEAD
+    <p class="introduction">Vos discussions rangées selon les points que vous y avez gagnés.</p>
+
+    <!-- Podium des 3 premiers -->
+    <ol id="podium" class="podium" aria-label="Les trois discussions où vous avez le plus de points"></ol>
+
+    <!-- Tableau avec toutes les discussions -->
+    <section class="carte" aria-labelledby="titre-tableau">
+      <h2 id="titre-tableau">Toutes mes discussions</h2>
+      <table class="tableau-classement">
+        <caption class="visuellement-cache">Discussions triées par points gagnés, du plus grand au plus petit</caption>
+        <thead>
+          <tr>
+            <th scope="col">Rang</th>
+            <th scope="col">Discussion</th>
+            <th scope="col">Points gagnés</th>
+            <th scope="col">Solde</th>
+            <th scope="col">Articles</th>
+=======
     <p class="introduction">Les contacts avec qui vous discutez le plus. Plus une discussion reste ouverte, plus vous gagnez de points avec ce contact.</p>
 
     <!-- Podium des 3 premiers -->
@@ -63,11 +108,17 @@
             <th scope="col">Points gagnés</th>
             <th scope="col">Solde à dépenser</th>
             <th scope="col">Articles achetés</th>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
           </tr>
         </thead>
         <tbody id="corps-classement"></tbody>
       </table>
       <p id="classement-vide" class="aide" hidden>
+<<<<<<< HEAD
+        Pas encore de points. <a href="conversation.html">Ouvrez une discussion</a> pour en gagner.
+      </p>
+    </section>
+=======
         Aucun point pour l'instant. Ouvrez une <a href="conversation.html">discussion privée</a> pour commencer à en gagner !
       </p>
     </section>
@@ -89,11 +140,16 @@
         <p>Dans la boutique d'une discussion, achetez des fonds, des bulles, des cadres de photo, des polices et des couleurs. Chaque achat vaut pour ce contact uniquement et n'est visible que par vous.</p>
       </details>
     </aside>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   </main>
 
   <!-- Pied de page (le même partout) -->
   <footer class="pied-page">
+<<<<<<< HEAD
+    <p>&copy; 2026 Messagerie Custom, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
+=======
     <p>&copy; 2026 Messagerie Custom · Projet fil rouge 8WEB101 à l'UQAC par Ellande Cros et Émeric Aubert</p>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   </footer>
 
 </body>

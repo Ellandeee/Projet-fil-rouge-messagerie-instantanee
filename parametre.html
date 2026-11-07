@@ -1,6 +1,10 @@
 <!doctype html>
 <!--
+<<<<<<< HEAD
+  Page de mon profil (on y arrive en cliquant sur son nom en haut à droite)
+=======
   Page des paramètres du compte
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   On peut changer son profil et son mot de passe
   On peut aussi se déconnecter ou supprimer son compte
   Tout est géré par parametre.js
@@ -9,8 +13,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
+  <meta name="description" content="Votre profil sur Messagerie Custom.">
+  <title>Mon profil | Messagerie Custom</title>
+=======
   <meta name="description" content="Paramètres de votre compte Messagerie Custom.">
   <title>Paramètres | Messagerie Custom</title>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
 
   <link rel="stylesheet" href="css/style.css">
@@ -23,7 +32,11 @@
 </head>
 <body class="page-parametre">
 
+<<<<<<< HEAD
+  <!-- Menu du haut : logo, navigation et lien vers mon profil (page actuelle) -->
+=======
   <!-- Menu du haut avec le logo et le nom de la personne connectée -->
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   <header class="entete-site">
     <a class="logo" href="conversation.html">
       <img src="images/logo.svg" alt="" width="32" height="32">
@@ -32,6 +45,38 @@
     <nav class="navigation" aria-label="Navigation principale">
       <ul>
         <li><a href="conversation.html">Discussions</a></li>
+<<<<<<< HEAD
+        <li><a href="contact.html">Contacts <span id="badge-invitations" class="pastille-nombre" hidden></span></a></li>
+        <li><a href="classement.html">Classement</a></li>
+      </ul>
+    </nav>
+    <a class="entete-utilisateur" href="parametre.html" aria-current="page">
+      <span class="avatar avatar-petit" id="avatar-utilisateur" aria-hidden="true"></span>
+      <span id="nom-utilisateur">Mon profil</span>
+    </a>
+  </header>
+
+  <main class="page-contenu page-etroite">
+    <div class="titre-profil">
+      <h1>Mon profil</h1>
+      <button type="button" id="bouton-deconnexion" class="bouton bouton-secondaire">Se déconnecter</button>
+    </div>
+
+    <!-- Affiché quand on arrive depuis l'e-mail de mot de passe oublié -->
+    <p id="bandeau-recuperation" class="bandeau" role="alert" hidden>
+      Choisissez votre nouveau mot de passe juste en dessous.
+    </p>
+
+    <!-- Modifier son profil -->
+    <section class="carte" aria-labelledby="titre-infos">
+      <form id="form-profil" class="formulaire">
+        <div class="apercu-profil">
+          <span class="avatar avatar-grand" id="apercu-avatar" aria-hidden="true"></span>
+          <div>
+            <h2 id="titre-infos"><span id="apercu-nom"></span></h2>
+            <p id="apercu-email" class="aide"></p>
+          </div>
+=======
         <li><a href="contact.html">Contacts</a></li>
         <li><a href="classement.html">Classement</a></li>
         <li><a href="parametre.html" aria-current="page">Paramètres</a></li>
@@ -61,12 +106,24 @@
             <strong id="apercu-nom"></strong><br>
             <span id="apercu-email" class="aide"></span>
           </p>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
         </div>
 
         <p class="champ">
           <label for="profil-nom">Nom d'utilisateur</label>
           <input type="text" id="profil-nom" name="nom-utilisateur" minlength="3" maxlength="20"
                  pattern="[A-Za-z0-9_\-]{3,20}" aria-describedby="aide-profil-nom" required>
+<<<<<<< HEAD
+          <small id="aide-profil-nom" class="aide">3 à 20 caractères : lettres, chiffres, _ ou -</small>
+        </p>
+
+        <p class="champ champ-couleur">
+          <label for="profil-couleur">Couleur de l'avatar</label>
+          <input type="color" id="profil-couleur" name="couleur-avatar" value="#563a8f">
+        </p>
+
+        <button type="submit" class="bouton bouton-plein">Enregistrer</button>
+=======
           <small id="aide-profil-nom" class="aide">3 à 20 caractères : lettres, chiffres, « _ » ou « - ».</small>
         </p>
 
@@ -76,13 +133,18 @@
         </p>
 
         <button type="submit" class="bouton bouton-plein">Enregistrer le profil</button>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
         <p id="message-profil" class="message-etat" role="status" aria-live="polite"></p>
       </form>
     </section>
 
     <!-- Changer son mot de passe -->
     <section class="carte" aria-labelledby="titre-securite">
+<<<<<<< HEAD
+      <h2 id="titre-securite">Mot de passe</h2>
+=======
       <h2 id="titre-securite">Sécurité</h2>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
       <form id="form-mdp" class="formulaire">
         <p class="champ">
           <label for="nouveau-mdp">Nouveau mot de passe</label>
@@ -97,6 +159,18 @@
       </form>
     </section>
 
+<<<<<<< HEAD
+    <!-- Suppression du compte (attention c'est définitif) -->
+    <section class="carte carte-danger" aria-labelledby="titre-suppression">
+      <h2 id="titre-suppression">Supprimer mon compte</h2>
+      <p>Vos messages, vos contacts et vos points seront effacés pour de bon.</p>
+      <form id="form-suppression" class="formulaire">
+        <p class="champ">
+          <label for="confirmation-suppression">Écrivez SUPPRIMER pour confirmer</label>
+          <input type="text" id="confirmation-suppression" name="confirmation" autocomplete="off" required>
+        </p>
+        <button type="submit" class="bouton bouton-danger">Supprimer mon compte</button>
+=======
     <!-- Déconnexion -->
     <section class="carte" aria-labelledby="titre-session">
       <h2 id="titre-session">Session</h2>
@@ -117,6 +191,7 @@
           <input type="text" id="confirmation-suppression" name="confirmation" autocomplete="off" required>
         </p>
         <button type="submit" class="bouton bouton-danger">Supprimer définitivement mon compte</button>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
         <p id="message-suppression" class="message-etat" role="status" aria-live="polite"></p>
       </form>
     </section>
@@ -124,7 +199,11 @@
 
   <!-- Pied de page (le même partout) -->
   <footer class="pied-page">
+<<<<<<< HEAD
+    <p>&copy; 2026 Messagerie Custom, Ellande Cros et Émeric Aubert · <a href="confidentialite.html">Confidentialité et mentions légales</a></p>
+=======
     <p>&copy; 2026 Messagerie Custom · Projet fil rouge 8WEB101 à l'UQAC par Ellande Cros et Émeric Aubert</p>
+>>>>>>> b2d7892663ee7da33367710f5f4bf7d4d6f0f958
   </footer>
 
 </body>
