@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-25 -5 150 150" role="img" aria-label="Sablier qui s'écoule">
+  <!-- Grand sablier animé : le sable du haut coule dans le bas puis le sablier se retourne -->
+  <!-- Il sert sur la page d'accueil, quand aucune discussion n'est ouverte et sur la page 404 -->
+  <!-- Le cadre est carré et plus large que le sablier pour qu'il ne soit pas coupé quand il tourne -->
+  <style>
+    .cache-haut, .cache-bas { transform-box: fill-box; }
+    .sablier { transform-box: view-box; transform-origin: 50px 70px; animation: retourner 9s ease-in-out infinite; }
+    .cache-haut { transform-origin: top; animation: vider 9s linear infinite; }
+    .cache-bas { transform-origin: top; animation: remplir 9s linear infinite; }
+    .filet { stroke-dasharray: 3 3; animation: couler 0.4s linear infinite, filet 9s linear infinite; }
+    @keyframes vider { from { transform: scaleY(0.29); } 78%, to { transform: scaleY(1); } }
+    @keyframes remplir { from { transform: scaleY(1); } 78%, to { transform: scaleY(0); } }
+    @keyframes couler { to { stroke-dashoffset: -6; } }
+    @keyframes filet { 0%, 76% { opacity: 1; } 79%, 100% { opacity: 0; } }
+    @keyframes retourner { 0%, 82% { transform: rotate(0deg); } 96%, 100% { transform: rotate(180deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .sablier, .cache-haut, .cache-bas, .filet { animation: none; }
+      .cache-haut { transform: scaleY(0.6); }
+      .cache-bas { transform: scaleY(0.45); }
+    }
+  </style>
+  <defs>
+    <clipPath id="bulbe-haut">
+      <path d="M24 14H76C76 38 56 58 52 70H48C44 58 24 38 24 14Z"/>
+    </clipPath>
+    <clipPath id="bulbe-bas">
+      <path d="M48 70H52C56 82 76 102 76 126H24C24 102 44 82 48 70Z"/>
+    </clipPath>
+  </defs>
+  <g class="sablier">
+    <!-- Le verre -->
+    <path d="M24 14H76C76 38 56 58 52 70C56 82 76 102 76 126H24C24 102 44 82 48 70C44 58 24 38 24 14Z" fill="#fbf7ef"/>
+    <!-- Sable du haut, caché petit à petit par le haut -->
+    <g clip-path="url(#bulbe-haut)">
+      <rect x="20" y="30" width="60" height="42" fill="#c8923a"/>
+      <rect class="cache-haut" x="20" y="14" width="60" height="56" fill="#fbf7ef"/>
+    </g>
+    <!-- Tas de sable du bas, découvert petit à petit par le bas -->
+    <g clip-path="url(#bulbe-bas)">
+      <path d="M20 126V108C34 103 43 95 50 95C57 95 66 103 80 108V126Z" fill="#c8923a"/>
+      <rect class="cache-bas" x="20" y="70" width="60" height="56" fill="#fbf7ef"/>
+    </g>
+    <!-- Le filet de sable qui tombe -->
+    <line class="filet" x1="50" y1="70" x2="50" y2="124" stroke="#c8923a" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- Contour du verre et les deux socles -->
+    <path d="M24 14H76C76 38 56 58 52 70C56 82 76 102 76 126H24C24 102 44 82 48 70C44 58 24 38 24 14Z" fill="none" stroke="#1f2a44" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="14" y="6" width="72" height="9" rx="2" fill="#1f2a44"/>
+    <rect x="14" y="125" width="72" height="9" rx="2" fill="#1f2a44"/>
+    <!-- Les trois points du logo sur le socle du haut -->
+    <circle cx="42" cy="10.5" r="1.6" fill="#f4efe6"/>
+    <circle cx="50" cy="10.5" r="1.6" fill="#f4efe6"/>
+    <circle cx="58" cy="10.5" r="1.6" fill="#f4efe6"/>
+  </g>
+</svg>
