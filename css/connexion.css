@@ -58,13 +58,13 @@
   color: var(--couleur-fond);
 }
 
+/* Sable sur encre : contraste de 5,2 pour 1, ça passe */
 .slogan {
   font-family: var(--police-titre);
   font-size: 1.25rem;
   color: var(--couleur-or);
 }
 
-/* Sable sur encre : contraste de 5,2 pour 1, ça passe */
 .accueil-texte {
   max-width: 34ch;
   margin-top: var(--espace-4);
@@ -107,7 +107,6 @@
   color: var(--couleur-texte);
 }
 
-/* Onglet choisi */
 .onglet.actif,
 .onglet[aria-pressed="true"] {
   font-weight: 700;

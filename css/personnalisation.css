@@ -1,11 +1,9 @@
 /*
   Les articles de la boutique
-  Chaque article est une classe qui a le même nom que son id dans la table articles
-  Le JS met les classes équipées sur #discussion-ouverte
-  Dans la boutique il les met aussi sur la vitrine et sur l'aperçu de chaque carte
-  Les trois ont la même structure (.liste-messages > .message > .avatar + .bulle) donc un seul style suffit
-  Ces styles ne sont visibles que par la personne qui a acheté l'article
-  Les effets d'envoi et les sons sont dans effets.js, pas ici
+  Chaque article est une classe qui porte le même nom que son id dans la table articles
+  Le JS la met sur la discussion ouverte, sur la vitrine et sur l'aperçu des cartes
+  Les trois ont la même structure donc un seul style suffit
+  Les effets d'envoi et les sons sont dans effets.js
 */
 
 /* Variables animées : il faut les déclarer pour que le navigateur sache les faire bouger */

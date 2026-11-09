@@ -3,7 +3,6 @@
   Recherche en haut, invitations reçues seulement s'il y en a, puis la liste des contacts
 */
 
-/* Champ de recherche et bouton sur la même ligne */
 .form-ligne {
   display: flex;
   gap: var(--espace-2);
@@ -17,7 +16,6 @@
   margin-top: var(--espace-3);
 }
 
-/* Nombre de contacts à côté du titre */
 .titre-nombre {
   font-weight: 400;
   color: var(--couleur-texte-discret);

@@ -159,7 +159,7 @@ formMdpOublie.addEventListener("submit", async (evenement) => {
     return;
   }
 
-  // Le lien de l'e-mail ramène sur la page des paramètres pour choisir un nouveau mot de passe
+  // Le lien de l'e-mail ramène sur la page Mon profil pour choisir un nouveau mot de passe
   const pageRetour = new URL("parametre.html", window.location.href).href;
   occuper(formMdpOublie, true);
   const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: pageRetour });

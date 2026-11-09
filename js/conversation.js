@@ -1,11 +1,8 @@
 /*
   Page des discussions (conversation.html)
-  - liste des salons à gauche avec le dernier message, les non lus, les grains et des filtres
-  - discussion ouverte à droite avec les messages en temps réel
-  - indicateurs en ligne, en train d'écrire et envoyé / reçu / lu
-  - fenêtre pour créer une nouvelle discussion
+  La liste des salons à gauche et la discussion ouverte à droite, en temps réel
   Le chrono et les grains sont dans points.js, la boutique dans boutique.js
-  Les animations et les sons sont dans effets.js
+  et les animations dans effets.js
 */
 
 // Nombre de messages chargés à la fois (le bouton « Messages précédents » charge la suite)
@@ -426,7 +423,6 @@ function dessinerMessages() {
   dernierJourAffiche = "";
   dernierAffiche = null;
 
-  // Bouton pour remonter plus loin dans la discussion
   if (!toutCharge) {
     const ligne = document.createElement("li");
     ligne.className = "charger-plus";
@@ -610,7 +606,6 @@ if (window.visualViewport) {
 
 // ===== Statuts envoyé / reçu / lu =====
 
-// Envoyé / Reçu / Lu pour mes messages
 function statutMessage(date) {
   const autres = salonOuvert.membres.filter((m) => m.id !== utilisateur.id);
   const toutLu = autres.length > 0 && autres.every((m) => new Date(m.derniereLecture) >= new Date(date));
@@ -646,7 +641,6 @@ document.addEventListener("visibilitychange", () => {
 
 // ===== Écrire et envoyer =====
 
-// Le bouton Envoyer est grisé tant qu'il n'y a rien à envoyer
 function majBoutonEnvoi() {
   boutonEnvoi.disabled = envoiEnCours || champMessage.value.trim() === "";
 }

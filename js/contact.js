@@ -1,9 +1,7 @@
 /*
   Page des contacts (contact.html)
-  - chercher quelqu'un par son nom et l'inviter
-  - accepter ou refuser les invitations reçues
-  - annuler les invitations envoyées
-  - ouvrir une discussion avec un contact ou le supprimer
+  On cherche quelqu'un pour l'inviter, on répond aux invitations
+  et on ouvre une discussion avec un contact
 */
 
 const formRecherche = document.querySelector("#form-recherche-contact");

@@ -1,7 +1,6 @@
 /*
   Page du classement (classement.html)
-  On classe nos discussions (privées et de groupe) avec les points gagnés
-  Les points gagnés ne baissent jamais, le solde et les articles sont affichés en plus
+  Les discussions sont rangées selon les grains gagnés, qui ne baissent jamais
   Un clic sur une discussion l'ouvre dans la page Discussions
 */
 

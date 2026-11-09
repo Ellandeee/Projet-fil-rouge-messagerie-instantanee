@@ -1,8 +1,6 @@
 /*
-  Petits outils d'interface utilisés sur toutes les pages (même la connexion)
-  - écrire un message d'erreur ou de succès sous un formulaire
-  - afficher un toast, la petite bande qui apparaît en bas puis disparaît
-  - le bouton « Afficher » à côté des mots de passe
+  Petits outils d'interface utilisés sur toutes les pages, même la connexion
+  Messages sous les formulaires, toasts et bouton « Afficher » des mots de passe
 */
 
 // ===== Messages d'état (erreur ou succès) =====

@@ -1,8 +1,7 @@
 /*
   Style commun à toutes les pages de TimeChat
-  On met ici les variables, les boutons, les formulaires, l'en-tête et le pied de page
-  Chaque page a ensuite son propre fichier css pour ce qui lui est spécifique
-  Ambiance papier et encre, le sable sert pour les grains et le minuteur
+  Variables, boutons, formulaires, en-tête et pied de page
+  Chaque page a ensuite son propre fichier pour ce qui lui est propre
 */
 
 /* ===== Variables ===== */
@@ -20,7 +19,6 @@
   --couleur-or-claire: #f3e3c3;
   --couleur-or-texte: #6b4a12;
 
-  /* Papier et textes */
   --couleur-fond: #f4efe6;
   --couleur-surface: #fffcf6;
   --couleur-surface-douce: #ebe4d7;
@@ -35,7 +33,6 @@
   --couleur-succes: #2f6b4a;
   --couleur-succes-claire: #e2efe6;
 
-  /* Le fond de la barre du minuteur */
   --couleur-piste-minuteur: #e6dccb;
 
   /* Espacements (toujours les mêmes valeurs partout) */
@@ -107,13 +104,11 @@ body {
   background-image: var(--texture-papier);
 }
 
-/* Le texte sélectionné passe en sable clair */
 ::selection {
   color: var(--couleur-principale);
   background-color: var(--couleur-or-claire);
 }
 
-/* Barres de défilement fines aux couleurs du site */
 * {
   scrollbar-color: var(--couleur-bordure) transparent;
   scrollbar-width: thin;
@@ -167,8 +162,7 @@ a:hover {
 
 /* ===== Boutons ===== */
 
-/* Bouton de base sur fond encre clair */
-/* 44 px de haut minimum pour que ce soit facile à toucher */
+/* 44 px de haut minimum pour que ce soit facile à toucher sur téléphone */
 .bouton {
   display: inline-flex;
   align-items: center;
@@ -189,12 +183,10 @@ a:hover {
   background-color: #d4d9e4;
 }
 
-/* Le bouton s'enfonce un peu quand on appuie dessus */
 .bouton:active:not(:disabled) {
   transform: translateY(1px);
 }
 
-/* Action principale de la page */
 .bouton-plein {
   color: var(--couleur-fond);
   background-color: var(--couleur-principale);
@@ -305,7 +297,6 @@ a:hover {
   color: var(--couleur-principale);
 }
 
-/* Un champ = une étiquette + une zone de saisie + parfois une aide */
 .champ {
   display: flex;
   flex-direction: column;
@@ -359,7 +350,6 @@ input[type="checkbox"] {
   accent-color: var(--couleur-principale);
 }
 
-/* Case à cocher avec son texte sur la même ligne */
 .champ-case label {
   display: flex;
   align-items: center;
@@ -383,7 +373,6 @@ input[type="checkbox"] {
   background-color: var(--couleur-surface-douce);
 }
 
-/* Vide = on ne montre rien */
 .message-etat:empty {
   display: none;
 }
@@ -423,7 +412,6 @@ input[type="checkbox"] {
   text-decoration: none;
 }
 
-/* Le nom TimeChat à côté du sablier */
 .logo span {
   font-family: var(--police-titre);
   font-size: 1.375rem;
@@ -524,7 +512,6 @@ input[type="checkbox"] {
   font-size: 1.5rem;
 }
 
-/* Petit point vert quand la personne est en ligne */
 .avatar.en-ligne::after {
   content: "";
   position: absolute;
@@ -539,7 +526,6 @@ input[type="checkbox"] {
 
 /* ===== Blocs réutilisés ===== */
 
-/* Contenu des pages Contacts, Classement et Mon profil */
 .page-contenu {
   display: flex;
   flex-direction: column;
@@ -553,7 +539,6 @@ input[type="checkbox"] {
   max-width: 640px;
 }
 
-/* Bloc clair avec un filet autour, sans ombre */
 .carte {
   padding: var(--espace-6);
   border: 1px solid var(--couleur-bordure);
@@ -612,7 +597,6 @@ input[type="checkbox"] {
   background-color: rgba(20, 28, 48, 0.5);
 }
 
-/* La fenêtre monte un peu en apparaissant */
 .dialogue[open] {
   animation: ouvrir-fenetre 0.2s ease-out;
 }
@@ -662,7 +646,6 @@ input[type="checkbox"] {
   border-color: var(--couleur-principale);
 }
 
-/* La notification arrive par la droite */
 @keyframes arrivee-notification {
   from { transform: translateX(24px); }
 }
@@ -714,7 +697,6 @@ input[type="checkbox"] {
   border-left-color: #f0a08f;
 }
 
-/* Juste avant de disparaître */
 .toast.depart {
   opacity: 0;
   transform: translateY(8px);

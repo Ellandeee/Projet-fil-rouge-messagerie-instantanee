@@ -36,7 +36,7 @@ create table if not exists public.contacts (
 create unique index if not exists contacts_paire_unique
   on public.contacts (least(demandeur_id, destinataire_id), greatest(demandeur_id, destinataire_id));
 
--- Un salon peut être privé (2 personnes avec des points) ou de groupe (avec un nom)
+-- Un salon peut être privé (2 personnes) ou de groupe (avec un nom)
 create table if not exists public.salons (
   id        bigint generated always as identity primary key,
   nom       text check (nom is null or char_length(nom) between 1 and 40),
@@ -585,11 +585,3 @@ on conflict (id) do update set
   description = excluded.description,
   prix        = excluded.prix,
   ordre       = excluded.ordre;
-
-
--- ===== Pour tester =====
--- À lancer à la main seulement pour tester la boutique
--- Donne 500 grains à ellande dans toutes ses discussions
---
--- update public.points set solde = solde + 500, points_gagnes = points_gagnes + 500
--- where proprietaire_id = (select id from public.profils where nom_utilisateur = 'ellande');

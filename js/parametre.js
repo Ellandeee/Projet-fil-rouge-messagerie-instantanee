@@ -1,9 +1,7 @@
 /*
-  Page des paramètres (parametre.html)
-  - voir quelques chiffres sur son compte
-  - modifier son nom d'utilisateur et la couleur de son avatar (nuancier ou couleur libre)
-  - changer son mot de passe (aussi après le lien « mot de passe oublié »)
-  - se déconnecter et supprimer son compte
+  Page Mon profil (parametre.html)
+  On change son nom, la couleur de son avatar et son mot de passe
+  On peut aussi se déconnecter ou supprimer son compte
 */
 
 // Le lien « mot de passe oublié » arrive avec type=recovery dans l'adresse

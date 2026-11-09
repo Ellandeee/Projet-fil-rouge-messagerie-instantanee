@@ -1,14 +1,10 @@
 /*
-  Chrono de fermeture et gain de points (notre fonctionnalité en plus)
-  Règles :
-  - la discussion se ferme toute seule après 60 s sans message envoyé
-  - écrire au clavier garde aussi la discussion ouverte
-  - dans chaque discussion (privée ou de groupe) on gagne 1 grain toutes les 10 s si l'onglet est visible
-  - le temps gagné grâce à la frappe donne des grains en attente
-    qui sont ajoutés seulement quand on envoie le message (12 max)
-  - pendant qu'on est dans la boutique le chrono est en pause (pas de fermeture et pas de grains)
-  La base vérifie aussi de son côté (1 grain par 10 s max) donc on ne peut pas tricher
-  Dans le code et la base on parle encore de « points », sur le site on dit « grains »
+  Chrono de fermeture et gain de grains (notre fonctionnalité en plus)
+  La discussion se ferme après 60 s sans message, écrire au clavier la garde ouverte
+  On gagne 1 grain toutes les 10 s quand l'onglet est visible
+  Le temps gagné en écrivant donne des grains en attente, ajoutés à l'envoi (12 max)
+  La base vérifie aussi de son côté donc on ne peut pas tricher
+  Dans le code et la base on dit encore « points », sur le site on dit « grains »
 */
 
 const DUREE_OUVERTURE = 60; // secondes sans message avant la fermeture

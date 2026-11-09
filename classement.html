@@ -1,10 +1,8 @@
 <!doctype html>
 <!--
   Page du classement
-  Montre dans quelles discussions on a gagné le plus de points
-  On classe avec les points gagnés et pas avec le solde
-  comme ça acheter dans la boutique ne fait pas descendre une discussion
-  Le podium et le tableau sont remplis par classement.js
+  On range les discussions avec les grains gagnés et pas avec le solde,
+  comme ça un achat ne fait pas descendre une discussion
 -->
 <html lang="fr">
 <head>
@@ -15,7 +13,7 @@
   <title>Classement | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
 
-  <!-- Polices du site : Young Serif pour les titres et Atkinson Hyperlegible pour le texte -->
+  <!-- Polices : Young Serif pour les titres, Atkinson Hyperlegible pour le texte -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
@@ -61,10 +59,8 @@
       <p><strong id="total-articles">0</strong> articles achetés</p>
     </div>
 
-    <!-- Podium des 3 premiers -->
     <ol id="podium" class="podium" aria-label="Les trois discussions où vous avez le plus de grains"></ol>
 
-    <!-- Tableau avec toutes les discussions -->
     <section class="carte" aria-labelledby="titre-tableau">
       <h2 id="titre-tableau">Toutes mes discussions</h2>
       <table class="tableau-classement">

@@ -116,7 +116,6 @@
   border-bottom: 0;
 }
 
-/* Les colonnes avec des nombres sont alignées à droite */
 .tableau-classement th:nth-child(n+3),
 .tableau-classement td:nth-child(n+3) {
   text-align: right;
@@ -133,7 +132,6 @@
   color: var(--couleur-principale);
 }
 
-/* Discussion avec son avatar dans la 2e colonne */
 .cellule-contact {
   display: flex;
   align-items: center;

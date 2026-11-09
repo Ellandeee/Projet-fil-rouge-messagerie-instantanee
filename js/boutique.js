@@ -1,10 +1,8 @@
 /*
   Boutique de personnalisation
-  On achète des articles avec les grains gagnés dans une discussion (privée ou de groupe)
-  Un article acheté vaut seulement pour cette discussion et seule la personne qui l'a acheté le voit
-  Le nom de chaque article (id) est aussi sa classe CSS dans personnalisation.css
-  En haut de la boutique une vitrine montre l'article qu'on essaie avant de l'acheter
-  Pendant qu'on est dans la boutique le chrono de la discussion est en pause (points.js)
+  Un article acheté vaut pour une seule discussion et seule la personne qui l'a acheté le voit
+  L'id de chaque article est aussi sa classe CSS dans personnalisation.css
+  La vitrine en haut montre l'article qu'on essaie avant de l'acheter
 */
 
 const NOMS_CATEGORIES = {
@@ -315,7 +313,7 @@ async function acheterArticle(article, bouton) {
     p_article: article.id
   });
   if (error) {
-    afficherEtatBoutique(error.message, "erreur");
+    afficherToast(error.message, "erreur");
     return;
   }
   feterAchat(bouton);
@@ -332,7 +330,7 @@ async function equiperArticle(article) {
     p_article: article.id
   });
   if (error) {
-    afficherEtatBoutique(error.message, "erreur");
+    afficherToast(error.message, "erreur");
     return;
   }
   await apresAction(article.nom + " équipé.");
@@ -345,12 +343,9 @@ async function retirerArticle(article) {
     .eq("salon_id", salonBoutique.id)
     .eq("categorie", article.categorie);
   if (error) {
-    afficherEtatBoutique(error.message, "erreur");
+    afficherToast(error.message, "erreur");
     return;
   }
   await apresAction(article.nom + " retiré.");
 }
 
-function afficherEtatBoutique(texte, type = "") {
-  afficherToast(texte, type);
-}

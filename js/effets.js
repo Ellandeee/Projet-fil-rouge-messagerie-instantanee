@@ -1,11 +1,6 @@
 /*
-  Effets visuels et sonores de la page des discussions
-  - les effets d'envoi achetés dans la boutique (tampon, encre, sable, avion, confettis)
-  - les sons de notification achetés dans la boutique
-  - les polices de la boutique, chargées seulement quand on en a besoin
-  - les petites animations des grains (+1 qui s'envole, nombre qui défile)
-  - l'humeur d'un message et l'heure du jour pour les articles qui en dépendent
-  Les animations sont faites avec element.animate() donc pas besoin de keyframes en CSS
+  Animations et sons de la page des discussions
+  Effets d'envoi, sons et polices de la boutique, et petites animations des grains
   Rien ne bouge si la personne a demandé moins d'animations dans son système
 */
 

@@ -1,11 +1,7 @@
 /*
   Code commun aux pages où il faut être connecté
-  (conversation, contact, classement, parametre)
-  - vérifie la session et renvoie vers la connexion sinon
-  - charge le profil et remplit l'en-tête
-  - suit qui est en ligne
-  - affiche les notifications de nouveaux messages
-  Les petits outils d'interface (toasts, messages d'état) sont dans interface.js
+  On vérifie la session, on remplit l'en-tête, on suit qui est en ligne
+  et on prévient quand un message arrive
 */
 
 // Profil de la personne connectée (rempli au chargement)

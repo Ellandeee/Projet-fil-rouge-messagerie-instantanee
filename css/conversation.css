@@ -1,7 +1,6 @@
 /*
   Style de la page des discussions (conversation.html)
   La page prend toute la hauteur de l'écran comme une appli
-  Liste des discussions à gauche et discussion ouverte à droite
   Les classes ajoutées par le JS sont notées en commentaire
 */
 
@@ -83,7 +82,6 @@
   border-color: var(--couleur-principale);
 }
 
-/* Lignes qui brillent pendant le chargement de la liste */
 .salon-squelette {
   display: flex;
   align-items: center;
@@ -158,7 +156,6 @@
   min-width: 0;
 }
 
-/* Nom et heure sur la 1re ligne, aperçu et non lus sur la 2e */
 .salon-ligne {
   display: flex;
   align-items: center;
@@ -179,7 +176,6 @@
   color: var(--couleur-texte-discret);
 }
 
-/* Aperçu du dernier message sur une seule ligne avec des ... */
 .salon-apercu {
   flex: 1;
   overflow: hidden;
@@ -199,7 +195,6 @@
   color: var(--couleur-texte);
 }
 
-/* Les grains de la discussion, en sable foncé */
 .salon-grains {
   flex-shrink: 0;
   font-size: 0.75rem;
@@ -207,7 +202,6 @@
   color: var(--couleur-or-texte);
 }
 
-/* Nombre de non lus, même petit carré que la pastille de l'en-tête */
 .salon-badge {
   display: inline-grid;
   place-items: center;
@@ -235,7 +229,6 @@
   background-size: 22px 22px, auto;
 }
 
-/* Quand aucune discussion n'est ouverte */
 .etat-vide {
   display: flex;
   flex-direction: column;
@@ -251,7 +244,6 @@
   color: var(--couleur-texte-secondaire);
 }
 
-/* Le grand sablier (images/sablier.svg) s'anime tout seul */
 .etat-vide img {
   margin-bottom: var(--espace-2);
 }
@@ -269,7 +261,6 @@
   background-color: var(--couleur-surface-douce);
 }
 
-/* Discussion ouverte */
 .discussion-ouverte {
   display: flex;
   flex: 1;
@@ -339,7 +330,7 @@
   background-color: #eed8ad;
 }
 
-/* Le nombre de grains en Young Serif, chiffres de même largeur pour que ça ne bouge pas */
+/* Chiffres de même largeur pour que le nombre ne bouge pas quand il change */
 #solde-points {
   font-family: var(--police-titre);
   font-size: 1.1875rem;
@@ -375,7 +366,6 @@
 
 /* ===== Minuteur de fermeture ===== */
 
-/* La piste reste et le sable s'écoule vers la gauche */
 .minuteur {
   height: 4px;
   background-color: var(--couleur-piste-minuteur);
@@ -430,7 +420,6 @@
 
 /* ===== Messages ===== */
 
-/* La liste et le bouton « Nouveaux messages » posé dessus */
 .zone-messages {
   position: relative;
   display: flex;
@@ -473,7 +462,6 @@
 }
 
 /* Séparateur « Aujourd'hui », « Hier »... (li ajouté par le JS) */
-/* Petites capitales entre deux filets */
 .separateur-date {
   display: flex;
   align-items: center;
@@ -547,7 +535,6 @@
   display: none;
 }
 
-/* Bulles grises pendant le chargement des messages */
 .message-squelette {
   height: 44px;
   border-radius: 2px 12px 12px 12px;
@@ -558,7 +545,6 @@
   border-radius: 12px 2px 12px 12px;
 }
 
-/* Bouton « Messages précédents » tout en haut */
 .charger-plus {
   align-self: center;
   margin-bottom: var(--espace-2);
@@ -627,13 +613,6 @@
 
 .message.moi .message-infos {
   color: var(--couleur-principale-claire);
-}
-
-/* Image partagée dans un message */
-.message-image {
-  max-width: 260px;
-  margin-top: var(--espace-1);
-  border-radius: var(--arrondi-petit);
 }
 
 .indicateur-ecriture {
@@ -774,7 +753,6 @@
   white-space: nowrap;
 }
 
-/* Le solde en grand chiffres comme dans l'en-tête de la discussion */
 #boutique-solde {
   font-family: var(--police-titre);
   font-size: 1.1875rem;
@@ -782,7 +760,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Un onglet par catégorie d'articles */
 /* Sur un petit écran les onglets défilent au lieu de passer à la ligne */
 .boutique-onglets {
   display: flex;
@@ -873,7 +850,6 @@
 
 /* ===== Vitrine et aperçus de la boutique ===== */
 
-/* Mini discussion où on essaie un article avant de l'acheter */
 .vitrine-cadre {
   margin-top: var(--espace-4);
 }
@@ -964,7 +940,6 @@
   border-radius: 1px;
 }
 
-/* Avion en papier dessiné en SVG */
 .avion-papier {
   position: absolute;
   width: 30px;
