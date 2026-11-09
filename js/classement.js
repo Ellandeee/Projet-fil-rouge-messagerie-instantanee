@@ -36,7 +36,10 @@ async function demarrerClassement() {
 
   afficherPodium(lignes.filter((l) => l.gagnes > 0).slice(0, 3));
   afficherTableau(lignes);
+  afficherResume(lignes);
   document.querySelector("#classement-vide").hidden = lignes.some((l) => l.gagnes > 0);
+  // Sans aucune discussion le tableau vide ne sert à rien
+  document.querySelector(".tableau-classement").hidden = lignes.length === 0;
 }
 
 // En privé on montre l'autre personne, en groupe le nom du groupe
@@ -86,17 +89,27 @@ function afficherPodium(premiers) {
   });
 }
 
-// Les grains du podium défilent de 0 jusqu'au total
-function compterJusqua(element, total) {
+// Les totaux de toutes les discussions, en grands chiffres au-dessus du podium
+function afficherResume(lignes) {
+  const somme = (cle) => lignes.reduce((total, ligne) => total + ligne[cle], 0);
+  if (somme("gagnes") === 0) return;
+  document.querySelector("#resume-classement").hidden = false;
+  compterJusqua(document.querySelector("#total-gagnes"), somme("gagnes"), "");
+  compterJusqua(document.querySelector("#total-solde"), somme("solde"), "");
+  compterJusqua(document.querySelector("#total-articles"), somme("articles"), "");
+}
+
+// Les grains défilent de 0 jusqu'au total (suite = texte après le nombre)
+function compterJusqua(element, total, suite = " grains") {
   const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduit) {
-    element.textContent = total + " grains";
+    element.textContent = total + suite;
     return;
   }
   const debut = performance.now();
   function etape(maintenant) {
     const avancee = Math.min(1, (maintenant - debut) / 900);
-    element.textContent = Math.round(total * avancee) + " grains";
+    element.textContent = Math.round(total * avancee) + suite;
     if (avancee < 1) requestAnimationFrame(etape);
   }
   requestAnimationFrame(etape);

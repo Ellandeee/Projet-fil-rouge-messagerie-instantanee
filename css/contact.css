@@ -38,7 +38,7 @@
 }
 
 /* Si la liste contient quelque chose on cache le message « aucun... » */
-.liste-contacts:not(:empty) + .aide {
+.liste-contacts:not(:empty) + .vide-illustre {
   display: none;
 }
 

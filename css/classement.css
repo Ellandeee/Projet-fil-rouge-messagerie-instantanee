@@ -40,7 +40,7 @@
 }
 
 @keyframes monter-marche {
-  from { transform: scaleY(0); }
+  from { transform: scaleY(0.3); }
 }
 
 /* La 1re marche, la plus haute, en encre */

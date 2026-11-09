@@ -6,6 +6,7 @@
   - dans chaque discussion (privée ou de groupe) on gagne 1 grain toutes les 10 s si l'onglet est visible
   - le temps gagné grâce à la frappe donne des grains en attente
     qui sont ajoutés seulement quand on envoie le message (12 max)
+  - pendant qu'on est dans la boutique le chrono est en pause (pas de fermeture et pas de grains)
   La base vérifie aussi de son côté (1 grain par 10 s max) donc on ne peut pas tricher
   Dans le code et la base on parle encore de « points », sur le site on dit « grains »
 */
@@ -23,9 +24,11 @@ const chrono = {
   derniereFrappe: 0,
   secondesVisibles: 0,
   enAttente: 0,
-  quandFerme: null
+  quandFerme: null,
+  pause: 0 // moment où la pause a commencé, 0 si le chrono tourne
 };
 
+const minuteur = document.querySelector(".minuteur");
 const barreMinuteur = document.querySelector("#barre-minuteur");
 const texteMinuteur = document.querySelector("#texte-minuteur");
 
@@ -45,6 +48,28 @@ function demarrerChrono({ salonId, quandFerme }) {
 function arreterChrono() {
   clearInterval(chrono.minuterie);
   chrono.minuterie = null;
+  chrono.pause = 0;
+  minuteur.classList.remove("en-pause");
+}
+
+// Pause pendant la boutique : sans ça la discussion se fermait au bout d'une minute avec la boutique dedans
+function mettreChronoEnPause() {
+  if (!chrono.minuterie || chrono.pause) return;
+  clearInterval(chrono.minuterie);
+  chrono.minuterie = null;
+  chrono.pause = Date.now();
+  mettreAJourMinuteur();
+}
+
+// En repartant on décale les dates du temps passé en pause, comme si le temps s'était arrêté
+function reprendreChrono() {
+  if (!chrono.pause) return;
+  const duree = Date.now() - chrono.pause;
+  chrono.dernierEnvoi += duree;
+  if (chrono.derniereFrappe) chrono.derniereFrappe += duree;
+  chrono.pause = 0;
+  chrono.minuterie = setInterval(tic, 1000);
+  mettreAJourMinuteur();
 }
 
 // Appelé chaque seconde
@@ -83,14 +108,20 @@ function gagnerUnPoint() {
 }
 
 async function crediterPoints(nombre) {
+  const salonId = chrono.salonId;
   const { data, error } = await client.rpc("crediter_points", {
-    p_salon: chrono.salonId,
+    p_salon: salonId,
     p_points: nombre
   });
-  if (!error && data) {
-    afficherSolde(data.solde);
-    if (data.credites > 0) animerGain(data.credites); // effets.js
+  if (error || !data) return;
+
+  // Si on a changé de discussion entre temps, on met juste à jour la liste
+  if (salonId !== chrono.salonId || !chrono.minuterie) {
+    document.dispatchEvent(new CustomEvent("solde-change", { detail: { salonId, solde: data.solde } }));
+    return;
   }
+  afficherSolde(data.solde, salonId);
+  if (data.credites > 0) animerGain(data.credites); // effets.js
 }
 
 // Une touche maintenue enfoncée (event.repeat) ne compte pas, sinon un objet sur le clavier suffirait
@@ -115,7 +146,9 @@ async function signalerEnvoi() {
 // ===== Affichage =====
 
 function mettreAJourMinuteur() {
-  const maintenant = Date.now();
+  // En pause on fige tout à l'heure du début de la pause
+  const maintenant = chrono.pause || Date.now();
+  minuteur.classList.toggle("en-pause", Boolean(chrono.pause));
   const derniereActivite = Math.max(chrono.dernierEnvoi, chrono.derniereFrappe);
   const restant = Math.max(0, DUREE_OUVERTURE - Math.floor((maintenant - derniereActivite) / 1000));
   const prolongeParFrappe = maintenant - chrono.dernierEnvoi >= DUREE_OUVERTURE * 1000;
@@ -133,7 +166,10 @@ function mettreAJourMinuteur() {
   texteMinuteur.classList.toggle("ecriture", prolongeParFrappe && !bientot);
 
   // La plupart du temps la barre suffit, le texte reste vide (donc caché par le CSS)
-  if (prolongeParFrappe && !bientot) {
+  if (chrono.pause) {
+    texteMinuteur.textContent = "En pause pendant que vous êtes dans la boutique";
+    texteMinuteur.classList.remove("bientot", "ecriture");
+  } else if (prolongeParFrappe && !bientot) {
     texteMinuteur.textContent = "Vous écrivez, la discussion reste ouverte";
   } else if (restant <= AFFICHER_TEXTE_A) {
     texteMinuteur.textContent = "Fermeture dans " + restant + " s, envoyez un message pour rester";
@@ -142,8 +178,10 @@ function mettreAJourMinuteur() {
   }
 }
 
-function afficherSolde(solde) {
+// salonId sert à prévenir la liste des discussions (événement « solde-change »)
+function afficherSolde(solde, salonId = chrono.salonId) {
   document.querySelector("#solde-points").textContent = solde;
+  document.dispatchEvent(new CustomEvent("solde-change", { detail: { salonId, solde } }));
 }
 
 function afficherAttente() {

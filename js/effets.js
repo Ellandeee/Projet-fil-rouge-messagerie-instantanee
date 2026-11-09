@@ -247,9 +247,11 @@ function animerNombre(element, depuis, vers, duree = 600) {
 // ===== Machine à écrire =====
 
 // Le texte apparaît lettre par lettre (le message complet dure 1,2 s au maximum)
-function ecrireLettreParLettre(element, texte) {
+// quandFini est appelé à la fin (par exemple pour remettre les liens cliquables)
+function ecrireLettreParLettre(element, texte, quandFini) {
   if (moinsDAnimations.matches) {
     element.textContent = texte;
+    if (quandFini) quandFini();
     return;
   }
   const pas = Math.max(1, Math.ceil(texte.length / 50));
@@ -262,6 +264,7 @@ function ecrireLettreParLettre(element, texte) {
     if (position >= texte.length) {
       clearInterval(minuterie);
       element.classList.remove("en-frappe");
+      if (quandFini) quandFini();
     }
   }, 24);
 }

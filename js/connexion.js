@@ -31,19 +31,22 @@ function montrerFormulaire(formulaire) {
   ongletInscription.setAttribute("aria-pressed", formulaire === formInscription);
 
   afficherEtat(zoneMessage, "");
+  // Le curseur va directement dans le premier champ du formulaire
+  const premierChamp = formulaire.querySelector("input");
+  if (premierChamp) premierChamp.focus();
+}
+
+// Bloque le bouton pendant qu'on attend Supabase (évite les doubles clics)
+function occuper(formulaire, occupe) {
+  const bouton = formulaire.querySelector("button[type=submit]");
+  bouton.disabled = occupe;
+  formulaire.setAttribute("aria-busy", occupe);
 }
 
 ongletConnexion.addEventListener("click", () => montrerFormulaire(formConnexion));
 ongletInscription.addEventListener("click", () => montrerFormulaire(formInscription));
 document.querySelector("#bouton-mdp-oublie").addEventListener("click", () => montrerFormulaire(formMdpOublie));
 document.querySelector("#bouton-retour-connexion").addEventListener("click", () => montrerFormulaire(formConnexion));
-
-// commun.js n'est pas chargé sur cette page donc on a notre propre version
-function afficherEtat(element, texte, type = "") {
-  element.textContent = texte;
-  element.classList.remove("erreur", "succes");
-  if (type) element.classList.add(type);
-}
 
 // Les erreurs de Supabase sont en anglais, on traduit les plus courantes
 function traduireErreur(erreur) {
@@ -77,8 +80,10 @@ formConnexion.addEventListener("submit", async (evenement) => {
   localStorage.setItem("se-souvenir", souvenir ? "oui" : "non");
 
   afficherEtat(zoneMessage, "Connexion en cours…");
+  occuper(formConnexion, true);
   const { error } = await client.auth.signInWithPassword({ email, password: mdp });
   if (error) {
+    occuper(formConnexion, false);
     afficherEtat(zoneMessage, traduireErreur(error), "erreur");
     return;
   }
@@ -114,8 +119,10 @@ formInscription.addEventListener("submit", async (evenement) => {
 
   // Le nom doit être libre (fonction nom_disponible dans la base)
   afficherEtat(zoneMessage, "Création du compte…");
+  occuper(formInscription, true);
   const { data: libre } = await client.rpc("nom_disponible", { p_nom: nom });
   if (libre === false) {
+    occuper(formInscription, false);
     afficherEtat(zoneMessage, "Ce nom d'utilisateur est déjà pris, essayez-en un autre.", "erreur");
     return;
   }
@@ -127,6 +134,7 @@ formInscription.addEventListener("submit", async (evenement) => {
     password: mdp,
     options: { data: { nom_utilisateur: nom } }
   });
+  occuper(formInscription, false);
   if (error) {
     afficherEtat(zoneMessage, traduireErreur(error), "erreur");
     return;
@@ -153,7 +161,9 @@ formMdpOublie.addEventListener("submit", async (evenement) => {
 
   // Le lien de l'e-mail ramène sur la page des paramètres pour choisir un nouveau mot de passe
   const pageRetour = new URL("parametre.html", window.location.href).href;
+  occuper(formMdpOublie, true);
   const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: pageRetour });
+  occuper(formMdpOublie, false);
   if (error) {
     afficherEtat(zoneMessage, traduireErreur(error), "erreur");
     return;

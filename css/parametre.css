@@ -40,14 +40,63 @@
   gap: var(--espace-4);
 }
 
-.champ-couleur {
-  flex-direction: row;
+/* ===== Couleur de l'avatar ===== */
+
+/* Le titre du groupe ressemble aux autres étiquettes de champ */
+.formulaire .champ-couleur legend {
+  margin-bottom: var(--espace-2);
+  font-family: var(--police);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--couleur-texte);
+}
+
+.nuancier {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--espace-3);
+  gap: var(--espace-2);
+}
+
+/* Une pastille ronde par couleur, le vrai bouton radio est caché dedans */
+.pastille-couleur {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--couleur);
+  cursor: pointer;
+}
+
+.pastille-couleur input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* La couleur choisie a un anneau d'encre autour */
+.pastille-couleur:has(input:checked) {
+  box-shadow: 0 0 0 2px var(--couleur-surface), 0 0 0 4px var(--couleur-principale);
+}
+
+.pastille-couleur:has(input:focus-visible) {
+  outline: 2px solid var(--couleur-principale);
+  outline-offset: 4px;
+}
+
+.couleur-autre {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+  margin-left: var(--espace-2);
+  font-size: 0.875rem;
+  color: var(--couleur-texte-secondaire);
+  cursor: pointer;
 }
 
 .champ-couleur input[type="color"] {
-  width: 56px;
+  width: 52px;
   height: 44px;
   padding: 2px;
   border: 1px solid var(--couleur-bordure);

@@ -59,6 +59,13 @@
 
   --hauteur-entete: 60px;
   --hauteur-navigation-mobile: 60px;
+
+  /* Grain de papier très léger posé sur les fonds (un bruit fait en SVG, rien à télécharger) */
+  --texture-papier: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0 0.28 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* Zones à laisser libres sur les téléphones avec une encoche (0 ailleurs) */
+  --zone-haut: env(safe-area-inset-top, 0px);
+  --zone-bas: env(safe-area-inset-bottom, 0px);
 }
 
 /* ===== Remise à zéro ===== */
@@ -85,6 +92,11 @@ img {
   max-width: 100%;
 }
 
+html {
+  -webkit-tap-highlight-color: transparent; /* pas de rectangle bleu au toucher sur téléphone */
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   min-height: 100vh;
   font-family: var(--police);
@@ -92,6 +104,19 @@ body {
   line-height: 1.5;
   color: var(--couleur-texte);
   background-color: var(--couleur-fond);
+  background-image: var(--texture-papier);
+}
+
+/* Le texte sélectionné passe en sable clair */
+::selection {
+  color: var(--couleur-principale);
+  background-color: var(--couleur-or-claire);
+}
+
+/* Barres de défilement fines aux couleurs du site */
+* {
+  scrollbar-color: var(--couleur-bordure) transparent;
+  scrollbar-width: thin;
 }
 
 /* Young Serif n'a qu'une graisse, on ne la met jamais en gras */
@@ -604,15 +629,22 @@ input[type="checkbox"] {
 
 /* ===== Notification de nouveau message (créée par le JS) ===== */
 
-.notification {
+/* La pile en haut à droite, les notifications se rangent l'une sous l'autre */
+.pile-notifications {
   position: fixed;
-  top: calc(var(--hauteur-entete) + 12px);
+  top: calc(var(--hauteur-entete) + var(--zone-haut) + 12px);
   right: var(--espace-4);
   z-index: 30;
   display: flex;
+  flex-direction: column;
+  gap: var(--espace-2);
+  width: min(340px, calc(100% - 32px));
+}
+
+.notification {
+  display: flex;
   align-items: flex-start;
   gap: 10px;
-  width: min(340px, calc(100% - 32px));
   padding: var(--espace-3) 14px;
   border: 1px solid var(--couleur-bordure);
   border-left: 3px solid var(--couleur-principale);
@@ -620,6 +652,14 @@ input[type="checkbox"] {
   background-color: var(--couleur-surface);
   box-shadow: 0 8px 24px rgba(20, 28, 48, 0.15);
   animation: arrivee-notification 0.3s ease-out;
+}
+
+.notification.cliquable {
+  cursor: pointer;
+}
+
+.notification.cliquable:hover {
+  border-color: var(--couleur-principale);
 }
 
 /* La notification arrive par la droite */
@@ -635,6 +675,182 @@ input[type="checkbox"] {
 
 .notification-titre {
   font-weight: 700;
+}
+
+/* ===== Toasts (créés par interface.js) ===== */
+
+/* Petite bande en bas de l'écran, au-dessus du menu sur téléphone */
+.pile-toasts {
+  position: fixed;
+  bottom: calc(var(--espace-6) + var(--zone-bas));
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-2);
+  width: min(460px, calc(100% - 32px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  padding: 10px 16px;
+  border-left: 3px solid var(--couleur-or);
+  border-radius: var(--arrondi-petit);
+  font-size: 0.9375rem;
+  color: var(--couleur-fond);
+  background-color: var(--couleur-principale);
+  box-shadow: 0 8px 24px rgba(20, 28, 48, 0.2);
+  animation: monter-toast 0.25s ease-out;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast.succes {
+  border-left-color: #8fc9a5;
+}
+
+.toast.erreur {
+  border-left-color: #f0a08f;
+}
+
+/* Juste avant de disparaître */
+.toast.depart {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes monter-toast {
+  from { transform: translateY(12px); }
+}
+
+/* ===== Mot de passe avec le bouton Afficher ===== */
+
+.champ-mdp {
+  position: relative;
+  display: block;
+}
+
+.champ-mdp input {
+  padding-right: 92px;
+}
+
+.bouton-voir {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  min-width: 76px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--arrondi-petit);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--couleur-principale);
+  background: none;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.bouton-voir:hover {
+  background-color: var(--couleur-principale-tres-claire);
+}
+
+/* ===== Chargement ===== */
+
+/* Lignes grises qui brillent doucement pendant que les données arrivent */
+.squelette {
+  border-radius: var(--arrondi-petit);
+  background: linear-gradient(90deg, var(--couleur-surface-douce) 30%, #f3ede2 50%, var(--couleur-surface-douce) 70%) 0 0 / 300% 100%;
+  animation: briller 1.4s ease-in-out infinite;
+}
+
+@keyframes briller {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+/* ===== Détails de mise en page ===== */
+
+/* Un petit trait de sable sous le titre de chaque page */
+.page-contenu h1::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-top: var(--espace-2);
+  background-color: var(--couleur-or);
+}
+
+/* Bandeau de chiffres (classement et profil) : grands nombres en Young Serif */
+.resume {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-2) var(--espace-8);
+  padding: var(--espace-4) 0;
+  border-top: 2px solid var(--couleur-principale);
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.resume p {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+.resume strong {
+  font-family: var(--police-titre);
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--couleur-principale);
+}
+
+/* État vide avec un petit dessin au-dessus du texte */
+.vide-illustre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-2);
+  padding: var(--espace-6) var(--espace-4);
+  text-align: center;
+  color: var(--couleur-texte-secondaire);
+}
+
+.vide-illustre img {
+  opacity: 0.85;
+}
+
+/* ===== Page 404 ===== */
+
+.page-erreur {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.page-erreur main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espace-3);
+  padding: var(--espace-8) var(--espace-4);
+  text-align: center;
+}
+
+.page-erreur h1 {
+  font-size: 2.25rem;
+}
+
+.page-erreur p {
+  max-width: 40ch;
+  color: var(--couleur-texte-secondaire);
 }
 
 /* ===== Pied de page ===== */
@@ -673,9 +889,16 @@ input[type="checkbox"] {
 
 /* ===== Téléphone (moins de 768 px) ===== */
 
+/* Sur les téléphones à encoche, l'en-tête descend sous la barre d'état */
+.entete-site {
+  height: calc(var(--hauteur-entete) + var(--zone-haut));
+  padding-top: var(--zone-haut);
+}
+
 @media (max-width: 768px) {
   .entete-site {
-    padding: 0 var(--espace-4);
+    padding-right: max(var(--espace-4), env(safe-area-inset-right));
+    padding-left: max(var(--espace-4), env(safe-area-inset-left));
   }
 
   /* Sur téléphone le nom du site et le pseudo prennent trop de place */
@@ -691,7 +914,8 @@ input[type="checkbox"] {
     bottom: 0;
     left: 0;
     z-index: 20;
-    height: var(--hauteur-navigation-mobile);
+    height: calc(var(--hauteur-navigation-mobile) + var(--zone-bas));
+    padding-bottom: var(--zone-bas);
     background-color: var(--couleur-surface);
     border-top: 1px solid var(--couleur-bordure);
   }
@@ -702,8 +926,13 @@ input[type="checkbox"] {
   }
 
   /* En bas de l'écran le trait de sable passe au-dessus du lien */
+  .navigation li {
+    flex: 1;
+  }
+
   .navigation a {
-    padding: 0 10px;
+    justify-content: center;
+    padding: 0 6px;
     font-size: 0.875rem;
     border-top: 2px solid transparent;
     border-bottom: 0;
@@ -714,8 +943,24 @@ input[type="checkbox"] {
   }
 
   /* Place pour que le menu du bas ne cache pas la fin de la page */
-  body:not(.page-connexion):not(.page-legale) {
-    padding-bottom: var(--hauteur-navigation-mobile);
+  body:not(.page-connexion):not(.page-legale):not(.page-erreur) {
+    padding-bottom: calc(var(--hauteur-navigation-mobile) + var(--zone-bas));
+  }
+
+  /* Les toasts passent au-dessus du menu du bas */
+  body:not(.page-connexion):not(.page-legale):not(.page-erreur) .pile-toasts {
+    bottom: calc(var(--hauteur-navigation-mobile) + var(--zone-bas) + var(--espace-3));
+  }
+
+  /* Les notifications prennent toute la largeur en haut */
+  .pile-notifications {
+    top: calc(var(--hauteur-entete) + var(--zone-haut) + 8px);
+    right: var(--espace-3);
+    width: calc(100% - 24px);
+  }
+
+  .resume strong {
+    font-size: 1.5rem;
   }
 
   /* Sans le nom il ne reste que l'avatar, plus besoin de marge */

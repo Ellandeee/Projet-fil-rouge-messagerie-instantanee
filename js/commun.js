@@ -5,6 +5,7 @@
   - charge le profil et remplit l'en-tête
   - suit qui est en ligne
   - affiche les notifications de nouveaux messages
+  Les petits outils d'interface (toasts, messages d'état) sont dans interface.js
 */
 
 // Profil de la personne connectée (rempli au chargement)
@@ -42,7 +43,7 @@ async function initialiserPage() {
     return null;
   }
 
-  utilisateur = { ...profil, email: data.session.user.email };
+  utilisateur = { ...profil, email: data.session.user.email, inscritLe: data.session.user.created_at };
   cacheProfils.set(profil.id, profil);
 
   remplirEnTete();
@@ -185,14 +186,6 @@ function formaterDateCourte(date) {
   return jour.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
 }
 
-// ===== Messages d'état (erreur ou succès) =====
-
-function afficherEtat(element, texte, type = "") {
-  element.textContent = texte;
-  element.classList.remove("erreur", "succes");
-  if (type) element.classList.add(type);
-}
-
 // ===== Qui est en ligne =====
 
 // On utilise la « présence » de Supabase Realtime : chaque onglet ouvert
@@ -241,8 +234,24 @@ function jouerSon() {
   }
 }
 
-// Carte en haut à droite qui disparaît après 5 secondes
-function afficherNotification(profil, texte, lien) {
+// Les notifications s'empilent en haut à droite au lieu de se cacher les unes les autres
+function pileNotifications() {
+  let pile = document.querySelector(".pile-notifications");
+  if (!pile) {
+    pile = document.createElement("div");
+    pile.className = "pile-notifications";
+    document.body.append(pile);
+  }
+  return pile;
+}
+
+// Carte qui disparaît après 6 secondes
+// action = un lien (autre page) ou une fonction (page des discussions, sans recharger)
+function afficherNotification(profil, texte, action) {
+  const pile = pileNotifications();
+  // Pas plus de 3 à la fois, la plus ancienne part
+  if (pile.children.length >= 3) pile.firstElementChild.remove();
+
   const carte = document.createElement("div");
   carte.className = "notification";
   carte.setAttribute("role", "status");
@@ -271,15 +280,17 @@ function afficherNotification(profil, texte, lien) {
   });
 
   carte.append(avatar, textes, fermer);
-  if (lien) {
-    carte.style.cursor = "pointer";
+  if (action) {
+    carte.classList.add("cliquable");
     carte.addEventListener("click", () => {
-      window.location.href = lien;
+      carte.remove();
+      if (typeof action === "function") action();
+      else window.location.href = action;
     });
   }
 
-  document.body.append(carte);
-  setTimeout(() => carte.remove(), 5000);
+  pile.append(carte);
+  setTimeout(() => carte.remove(), 6000);
 }
 
 // Sur les autres pages on prévient quand un message arrive

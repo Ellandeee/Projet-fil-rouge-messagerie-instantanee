@@ -1,6 +1,7 @@
 /*
   Page des paramètres (parametre.html)
-  - modifier son nom d'utilisateur et la couleur de son avatar
+  - voir quelques chiffres sur son compte
+  - modifier son nom d'utilisateur et la couleur de son avatar (nuancier ou couleur libre)
   - changer son mot de passe (aussi après le lien « mot de passe oublié »)
   - se déconnecter et supprimer son compte
 */
@@ -30,8 +31,23 @@ async function demarrerParametres() {
   champCouleur.value = utilisateur.couleur_avatar;
   document.querySelector("#apercu-email").textContent = utilisateur.email;
   mettreAJourApercu();
+  afficherStatistiques();
 
   if (arriveeRecuperation) montrerBandeauRecuperation();
+}
+
+// Date d'inscription, grains gagnés dans toutes les discussions et articles achetés
+async function afficherStatistiques() {
+  document.querySelector("#stat-inscription").textContent = new Date(utilisateur.inscritLe)
+    .toLocaleDateString("fr-FR", { month: "short", year: "numeric" });
+
+  const [reponsePoints, reponseAchats] = await Promise.all([
+    client.from("points").select("points_gagnes"),
+    client.from("achats").select("article_id", { count: "exact", head: true })
+  ]);
+  const grains = (reponsePoints.data || []).reduce((total, ligne) => total + ligne.points_gagnes, 0);
+  document.querySelector("#stat-grains").textContent = grains;
+  document.querySelector("#stat-articles").textContent = reponseAchats.count || 0;
 }
 
 function montrerBandeauRecuperation() {
@@ -40,7 +56,11 @@ function montrerBandeauRecuperation() {
 }
 
 // L'aperçu change pendant qu'on tape ou qu'on choisit la couleur
+// La pastille du nuancier qui correspond à la couleur est cochée
 function mettreAJourApercu() {
+  for (const choix of document.querySelectorAll("input[name=couleur-choix]")) {
+    choix.checked = choix.value.toLowerCase() === champCouleur.value.toLowerCase();
+  }
   const profil = {
     id: utilisateur.id,
     nom_utilisateur: champNom.value.trim() || utilisateur.nom_utilisateur,
@@ -52,6 +72,14 @@ function mettreAJourApercu() {
 
 champNom.addEventListener("input", mettreAJourApercu);
 champCouleur.addEventListener("input", mettreAJourApercu);
+
+// Un clic sur une pastille du nuancier change la couleur
+for (const choix of document.querySelectorAll("input[name=couleur-choix]")) {
+  choix.addEventListener("change", () => {
+    champCouleur.value = choix.value;
+    mettreAJourApercu();
+  });
+}
 
 // ===== Profil =====
 
@@ -88,7 +116,9 @@ formProfil.addEventListener("submit", async (evenement) => {
   utilisateur.nom_utilisateur = nom;
   utilisateur.couleur_avatar = couleur;
   remplirEnTete();
-  afficherEtat(message, "Profil enregistré.", "succes");
+  cacheProfils.set(utilisateur.id, { id: utilisateur.id, nom_utilisateur: nom, couleur_avatar: couleur });
+  afficherEtat(message, "");
+  afficherToast("Profil enregistré.", "succes");
 });
 
 // ===== Mot de passe =====
@@ -116,7 +146,8 @@ formMdp.addEventListener("submit", async (evenement) => {
 
   formMdp.reset();
   document.querySelector("#bandeau-recuperation").hidden = true;
-  afficherEtat(message, "Mot de passe changé.", "succes");
+  afficherEtat(message, "");
+  afficherToast("Mot de passe changé.", "succes");
 });
 
 // ===== Déconnexion =====

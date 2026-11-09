@@ -1,44 +1,88 @@
 /*
   Style de la page de connexion (index.html)
-  La carte est centrée au milieu de l'écran avec le pied de page en dessous
+  Sur ordinateur : la présentation en encre à gauche et le formulaire à droite
+  Sur téléphone : une petite bande de présentation en haut puis le formulaire
 */
 
 .page-connexion {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Les deux moitiés de l'écran */
+.accueil {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(0, 1fr);
+}
+
+/* ===== Présentation ===== */
+
+/* Fond encre avec le même grain de papier que le reste du site, en clair */
+.accueil-presentation {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--espace-6) var(--espace-4);
+  gap: var(--espace-3);
+  padding: var(--espace-12) var(--espace-8);
+  color: var(--couleur-fond);
+  text-align: center;
+  background-color: var(--couleur-principale);
+  background-image: var(--texture-papier);
 }
+
+/* Le sablier posé dans un rond de papier */
+.medaillon {
+  display: grid;
+  place-items: center;
+  width: 200px;
+  height: 200px;
+  margin-bottom: var(--espace-4);
+  border: 3px solid var(--couleur-or);
+  border-radius: 50%;
+  background-color: var(--couleur-fond);
+}
+
+.accueil-titres {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-2);
+}
+
+.accueil-presentation h1 {
+  font-size: 3.25rem;
+  line-height: 1;
+  color: var(--couleur-fond);
+}
+
+.slogan {
+  font-family: var(--police-titre);
+  font-size: 1.25rem;
+  color: var(--couleur-or);
+}
+
+/* Sable sur encre : contraste de 5,2 pour 1, ça passe */
+.accueil-texte {
+  max-width: 34ch;
+  margin-top: var(--espace-4);
+  line-height: 1.6;
+  color: var(--couleur-principale-claire);
+}
+
+/* ===== Formulaire ===== */
 
 .carte-connexion {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: var(--espace-5);
   width: 100%;
-  max-width: 420px;
-  padding: var(--espace-8);
-  border: 1px solid var(--couleur-bordure);
-  border-radius: var(--arrondi-moyen);
-  background-color: var(--couleur-surface);
-}
-
-/* Logo, nom et slogan */
-.carte-connexion-entete {
-  text-align: center;
-}
-
-.carte-connexion-entete .logo-image {
-  margin: 0 auto var(--espace-3);
-}
-
-.carte-connexion-entete h1 {
-  font-size: 2.25rem;
-}
-
-.slogan {
-  margin-top: var(--espace-1);
-  color: var(--couleur-texte-secondaire);
+  max-width: 460px;
+  margin: 0 auto;
+  padding: var(--espace-12) var(--espace-8);
 }
 
 /* Les deux onglets Se connecter / S'inscrire côte à côte avec un trait de sable sous celui choisi */
@@ -71,6 +115,15 @@
   border-bottom-color: var(--couleur-or);
 }
 
+/* Le formulaire qui apparaît glisse un peu vers le haut */
+.carte-connexion .formulaire:not([hidden]) {
+  animation: apparaitre-formulaire 0.25s ease-out;
+}
+
+@keyframes apparaitre-formulaire {
+  from { transform: translateY(8px); }
+}
+
 /* Le bouton principal prend toute la largeur */
 .carte-connexion .bouton-plein {
   width: 100%;
@@ -82,12 +135,47 @@
 }
 
 .page-connexion .pied-page {
-  max-width: 420px;
-  margin-top: var(--espace-4);
+  border-top: 1px solid var(--couleur-bordure);
 }
 
-@media (max-width: 480px) {
+/* ===== Tablette et téléphone ===== */
+
+@media (max-width: 860px) {
+  .accueil {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  /* La présentation devient une bande en haut, sans le long texte */
+  .accueil-presentation {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0 var(--espace-4);
+    padding: var(--espace-5) var(--espace-4);
+    text-align: left;
+  }
+
+  .medaillon {
+    width: 76px;
+    height: 76px;
+    margin: 0;
+    border-width: 2px;
+  }
+
+  .medaillon img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .accueil-presentation h1 {
+    font-size: 2.25rem;
+  }
+
+  .accueil-texte {
+    display: none;
+  }
+
   .carte-connexion {
-    padding: var(--espace-6) var(--espace-4);
+    padding: var(--espace-6) var(--espace-4) var(--espace-8);
   }
 }

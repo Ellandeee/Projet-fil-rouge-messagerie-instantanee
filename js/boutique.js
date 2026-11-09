@@ -4,6 +4,7 @@
   Un article acheté vaut seulement pour cette discussion et seule la personne qui l'a acheté le voit
   Le nom de chaque article (id) est aussi sa classe CSS dans personnalisation.css
   En haut de la boutique une vitrine montre l'article qu'on essaie avant de l'acheter
+  Pendant qu'on est dans la boutique le chrono de la discussion est en pause (points.js)
 */
 
 const NOMS_CATEGORIES = {
@@ -19,7 +20,6 @@ const NOMS_CATEGORIES = {
 const fenetreBoutique = document.querySelector("#boutique");
 const zoneOnglets = document.querySelector("#boutique-onglets");
 const listeArticles = document.querySelector("#boutique-articles");
-const messageBoutique = document.querySelector("#message-boutique");
 const vitrine = document.querySelector("#boutique-vitrine");
 const legendeVitrine = document.querySelector("#vitrine-legende");
 
@@ -54,12 +54,17 @@ function mettreClassesArticles(element, ids) {
 
 // ===== Appliquer les articles équipés sur la discussion =====
 
+// Dernière discussion demandée : si on change vite de discussion, l'ancienne réponse est ignorée
+let salonApplique = null;
+
 async function appliquerPersonnalisation(salonId) {
+  salonApplique = salonId;
   await chargerArticles();
   const { data } = await client
     .from("personnalisations")
     .select("article_id")
     .eq("salon_id", salonId);
+  if (salonApplique !== salonId) return;
 
   const ids = (data || []).map((ligne) => ligne.article_id);
   mettreClassesArticles(document.querySelector("#discussion-ouverte"), ids);
@@ -70,8 +75,8 @@ async function appliquerPersonnalisation(salonId) {
 // salon = { id, nom, profil } avec profil l'avatar affiché pour la discussion
 async function ouvrirBoutique(salon) {
   salonBoutique = salon;
+  mettreChronoEnPause(); // points.js
   document.querySelector("#boutique-nom-contact").textContent = salon.nom;
-  afficherEtatBoutique("");
   await chargerEtatBoutique();
   remplirVitrine();
   dessinerVitrine(null);
@@ -82,7 +87,11 @@ async function ouvrirBoutique(salon) {
 
 document.querySelector("#bouton-fermer-boutique").addEventListener("click", () => {
   fenetreBoutique.close();
+  reprendreChrono(); // points.js
 });
+
+// Fermée avec Échap : le chrono repart aussi (reprendreChrono ne fait rien s'il tourne déjà)
+fenetreBoutique.addEventListener("close", reprendreChrono);
 
 // Solde, articles achetés et articles équipés pour la discussion
 async function chargerEtatBoutique() {
@@ -102,7 +111,7 @@ async function chargerEtatBoutique() {
   };
 
   document.querySelector("#boutique-solde").textContent = etatBoutique.solde;
-  afficherSolde(etatBoutique.solde); // met aussi à jour le bouton dans la discussion
+  afficherSolde(etatBoutique.solde, salonBoutique.id); // met aussi à jour le bouton dans la discussion
 }
 
 // ===== Mini discussion (vitrine et aperçu des cartes) =====
@@ -182,6 +191,8 @@ function essayerArticle(article) {
   }
   dessinerVitrine(article);
   rejouerVitrine(article);
+  // Sur un petit écran la vitrine peut être plus haut, on la ramène en vue
+  vitrine.scrollIntoView({ block: "nearest", behavior: moinsDAnimations.matches ? "auto" : "smooth" });
 }
 
 // ===== Affichage =====
@@ -270,10 +281,15 @@ function creerCarteArticle(article) {
     bouton.classList.add("bouton-or");
     bouton.addEventListener("click", (evenement) => acheterArticle(article, evenement.currentTarget));
   } else {
-    // Pas assez de grains : on dit combien il en manque et le bouton reste grisé
+    // Pas assez de grains : on dit combien il en manque et une barre montre où on en est
     prix.textContent = article.prix + " grains, il en manque " + (article.prix - etatBoutique.solde);
     bouton.textContent = "Acheter";
     bouton.disabled = true;
+    const barre = document.createElement("span");
+    barre.className = "article-progression";
+    barre.style.setProperty("--avancee", Math.round((etatBoutique.solde / article.prix) * 100) + "%");
+    barre.title = etatBoutique.solde + " grains sur " + article.prix;
+    prix.after(barre);
   }
 
   return modele;
@@ -283,7 +299,7 @@ function creerCarteArticle(article) {
 
 // Après chaque action on recharge l'état puis on redessine
 async function apresAction(texte) {
-  afficherEtatBoutique(texte, "succes");
+  afficherToast(texte, "succes");
   await chargerEtatBoutique();
   dessinerArticles();
   dessinerVitrine(null);
@@ -336,5 +352,5 @@ async function retirerArticle(article) {
 }
 
 function afficherEtatBoutique(texte, type = "") {
-  afficherEtat(messageBoutique, texte, type);
+  afficherToast(texte, type);
 }

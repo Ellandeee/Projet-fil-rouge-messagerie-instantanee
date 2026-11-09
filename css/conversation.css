@@ -53,6 +53,65 @@
   background-color: var(--couleur-fond);
 }
 
+/* Filtres Toutes / Non lues / Groupes */
+.filtres-salons {
+  display: flex;
+  gap: var(--espace-2);
+}
+
+.filtre {
+  min-height: 44px;
+  padding: 4px 12px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-petit);
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--couleur-texte-secondaire);
+  background-color: var(--couleur-surface);
+  cursor: pointer;
+}
+
+.filtre:hover {
+  color: var(--couleur-texte);
+  border-color: var(--couleur-texte-discret);
+}
+
+.filtre[aria-pressed="true"] {
+  font-weight: 700;
+  color: var(--couleur-fond);
+  background-color: var(--couleur-principale);
+  border-color: var(--couleur-principale);
+}
+
+/* Lignes qui brillent pendant le chargement de la liste */
+.salon-squelette {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-3);
+  min-height: 64px;
+  padding: var(--espace-3) var(--espace-4);
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.salon-squelette .rond {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.salon-squelette .ligne {
+  flex: 1;
+  height: 14px;
+}
+
+/* Quand le filtre ou la recherche ne donne rien */
+.aucun-resultat {
+  padding: var(--espace-6) var(--espace-4);
+  font-size: 0.9375rem;
+  color: var(--couleur-texte-secondaire);
+  text-align: center;
+}
+
 /* La liste touche les bords de la colonne pour que les filets aillent d'un bord à l'autre */
 .liste-salons {
   display: flex;
@@ -140,6 +199,14 @@
   color: var(--couleur-texte);
 }
 
+/* Les grains de la discussion, en sable foncé */
+.salon-grains {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--couleur-or-texte);
+}
+
 /* Nombre de non lus, même petit carré que la pastille de l'en-tête */
 .salon-badge {
   display: inline-grid;
@@ -156,11 +223,16 @@
 
 /* ===== Colonne de droite ===== */
 
+/* Fond de carnet : petits points d'encre réguliers sur le grain de papier */
 .panneau-discussion {
   display: flex;
   flex-direction: column;
   min-height: 0;
   background-color: var(--couleur-fond);
+  background-image:
+    radial-gradient(circle, rgba(31, 42, 68, 0.09) 1px, transparent 1.5px),
+    var(--texture-papier);
+  background-size: 22px 22px, auto;
 }
 
 /* Quand aucune discussion n'est ouverte */
@@ -179,14 +251,13 @@
   color: var(--couleur-texte-secondaire);
 }
 
-/* Le logo se retourne de temps en temps, comme un sablier */
+/* Le grand sablier (images/sablier.svg) s'anime tout seul */
 .etat-vide img {
-  animation: retourner 8s ease-in-out infinite;
+  margin-bottom: var(--espace-2);
 }
 
-@keyframes retourner {
-  0%, 85% { transform: rotate(0deg); }
-  95%, 100% { transform: rotate(180deg); }
+.etat-vide p {
+  max-width: 38ch;
 }
 
 /* Phrase qui explique pourquoi la discussion vient de se fermer */
@@ -331,6 +402,12 @@
   border-bottom: 1px solid var(--couleur-bordure);
 }
 
+/* Pendant la boutique le chrono est en pause : la barre devient rayée */
+.minuteur.en-pause .minuteur-barre {
+  background: repeating-linear-gradient(-45deg, var(--couleur-or) 0 6px, var(--couleur-or-claire) 6px 12px);
+  animation: none;
+}
+
 /* Moins de 10 secondes (classe bientot ajoutée par le JS) : tout passe en brique et la barre bat */
 .minuteur-barre.bientot {
   background-color: var(--couleur-danger);
@@ -352,6 +429,38 @@
 }
 
 /* ===== Messages ===== */
+
+/* La liste et le bouton « Nouveaux messages » posé dessus */
+.zone-messages {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.bouton-bas {
+  position: absolute;
+  bottom: var(--espace-3);
+  left: 50%;
+  min-height: 44px;
+  padding: 6px 16px;
+  border: 0;
+  border-radius: var(--arrondi-petit);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--couleur-fond);
+  background-color: var(--couleur-principale);
+  box-shadow: 0 6px 16px rgba(20, 28, 48, 0.25);
+  cursor: pointer;
+  transform: translateX(-50%);
+  animation: monter-bouton 0.25s ease-out;
+}
+
+@keyframes monter-bouton {
+  from { transform: translate(-50%, 10px); }
+}
 
 .liste-messages {
   display: flex;
@@ -438,6 +547,23 @@
   display: none;
 }
 
+/* Bulles grises pendant le chargement des messages */
+.message-squelette {
+  height: 44px;
+  border-radius: 2px 12px 12px 12px;
+}
+
+.message-squelette:nth-child(2) {
+  align-self: flex-end;
+  border-radius: 12px 2px 12px 12px;
+}
+
+/* Bouton « Messages précédents » tout en haut */
+.charger-plus {
+  align-self: center;
+  margin-bottom: var(--espace-2);
+}
+
 /* Discussion encore vide (li ajouté par le JS) */
 .message-vide {
   margin: auto;
@@ -482,6 +608,12 @@
 .message-contenu {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+/* Les liens dans les messages prennent la couleur du texte de la bulle */
+.message-contenu a {
+  color: inherit;
+  text-decoration-thickness: 1px;
 }
 
 .message-infos {
@@ -843,8 +975,11 @@
 /* ===== Téléphone ===== */
 
 @media (max-width: 768px) {
+  /* La page fait exactement la hauteur visible (100dvh suit la barre d'adresse du téléphone)
+     le menu du bas est déjà compté dans le padding du body */
   .page-conversation {
-    height: calc(100dvh - var(--hauteur-navigation-mobile));
+    height: 100dvh;
+    min-height: 0;
   }
 
   .page-conversation .pied-page {
@@ -875,6 +1010,11 @@
 
   .bouton-retour {
     display: inline-grid;
+  }
+
+  /* La flèche retour suffit, la croix prendrait de la place pour rien */
+  #bouton-fermer-discussion {
+    display: none;
   }
 
   .discussion-entete {
@@ -916,13 +1056,48 @@
     padding: var(--espace-2) var(--espace-3);
   }
 
-  .liste-articles {
+  /* La boutique prend tout l'écran : en-tête, onglets et vitrine en haut, les cartes défilent dessous */
+  .boutique[open] {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: calc(var(--espace-4) + var(--zone-haut)) var(--espace-4) var(--zone-bas);
+    border: 0;
+    border-radius: 0;
+  }
+
+  .boutique .liste-articles {
+    flex: 1;
     grid-template-columns: 1fr 1fr;
-    max-height: 42vh;
+    max-height: none;
+    margin-bottom: 0;
+    padding-bottom: var(--espace-4);
   }
 
   .vitrine {
-    height: 170px;
+    height: 150px;
+  }
+
+  /* Sur petit écran la vitrine garde deux messages : le reçu (bulles, cadres) et le dernier des miens (couleurs, effets) */
+  .vitrine .message:nth-child(2) {
+    display: none;
+  }
+
+  .boutique-entete h2 {
+    font-size: 1.375rem;
+  }
+
+  /* La fenêtre nouvelle discussion monte depuis le bas comme un tiroir */
+  #dialogue-nouvelle-discussion[open] {
+    width: 100%;
+    max-width: none;
+    margin: auto 0 0;
+    padding-bottom: calc(var(--espace-6) + var(--zone-bas));
+    border-radius: var(--arrondi-moyen) var(--arrondi-moyen) 0 0;
   }
 
   /* Sur téléphone les deux boutons d'une carte passent l'un sous l'autre */

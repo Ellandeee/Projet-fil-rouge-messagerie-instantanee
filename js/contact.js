@@ -42,9 +42,11 @@ async function afficherRelations() {
 function dessinerRelations() {
   const recues = relations.filter((r) => r.statut === "en_attente" && !r.envoyeeParMoi);
   const envoyees = relations.filter((r) => r.statut === "en_attente" && r.envoyeeParMoi);
+  // Les contacts en ligne d'abord, puis par ordre alphabétique
   const contacts = relations
     .filter((r) => r.statut === "accepte")
-    .sort((a, b) => a.autre.nom_utilisateur.localeCompare(b.autre.nom_utilisateur));
+    .sort((a, b) => enLigne.has(b.autre.id) - enLigne.has(a.autre.id)
+      || a.autre.nom_utilisateur.localeCompare(b.autre.nom_utilisateur));
 
   remplirListe("#liste-invitations-recues", recues, (relation) => [
     creerBouton("Accepter", "bouton bouton-petit bouton-plein", () => accepter(relation)),
@@ -126,10 +128,13 @@ async function rechercher() {
   }
 
   // ilike = recherche sans tenir compte des majuscules, % = n'importe quoi avant ou après
+  // Les _ et % tapés par la personne sont protégés par une barre \ sinon ils serviraient de jokers
+  const texteProtege = texte.replace(/[\\%_]/g, "\\$&");
+  afficherEtat(messageRecherche, "Recherche…");
   const { data, error } = await client
     .from("profils")
     .select("id, nom_utilisateur, couleur_avatar")
-    .ilike("nom_utilisateur", "%" + texte + "%")
+    .ilike("nom_utilisateur", "%" + texteProtege + "%")
     .neq("id", utilisateur.id)
     .order("nom_utilisateur")
     .limit(10);
@@ -175,16 +180,17 @@ async function inviter(profil, bouton) {
     return;
   }
   bouton.textContent = "Invitation envoyée";
-  afficherEtat(messageRecherche, "Invitation envoyée à " + profil.nom_utilisateur + ".", "succes");
+  afficherToast("Invitation envoyée à " + profil.nom_utilisateur + ".", "succes");
   await afficherRelations();
 }
 
 async function accepter(relation) {
   const { error } = await client.from("contacts").update({ statut: "accepte" }).eq("id", relation.id);
   if (error) {
-    alert("Impossible d'accepter l'invitation : " + error.message);
+    afficherToast("Impossible d'accepter l'invitation : " + error.message, "erreur");
     return;
   }
+  afficherToast(relation.autre.nom_utilisateur + " fait maintenant partie de vos contacts.", "succes");
   await afficherRelations();
 }
 
@@ -192,7 +198,7 @@ async function accepter(relation) {
 async function supprimerRelation(relation) {
   const { error } = await client.from("contacts").delete().eq("id", relation.id);
   if (error) {
-    alert("L'action n'a pas marché : " + error.message);
+    afficherToast("L'action n'a pas marché : " + error.message, "erreur");
     return;
   }
   await afficherRelations();
@@ -207,7 +213,7 @@ async function supprimerContact(relation) {
 async function discuter(profil) {
   const { data, error } = await client.rpc("ouvrir_salon_prive", { p_contact: profil.id });
   if (error) {
-    alert("Impossible d'ouvrir la discussion : " + error.message);
+    afficherToast("Impossible d'ouvrir la discussion : " + error.message, "erreur");
     return;
   }
   window.location.href = "conversation.html?salon=" + data;
