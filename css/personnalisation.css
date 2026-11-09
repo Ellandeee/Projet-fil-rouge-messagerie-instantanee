@@ -2,67 +2,130 @@
   Les articles de la boutique
   Chaque article est une classe qui a le même nom que son id dans la table articles
   Le JS met les classes équipées sur #discussion-ouverte
-  Dans la boutique il met aussi la classe sur .article-apercu pour montrer le rendu
+  Dans la boutique il les met aussi sur la vitrine et sur l'aperçu de chaque carte
+  Les trois ont la même structure (.liste-messages > .message > .avatar + .bulle) donc un seul style suffit
   Ces styles ne sont visibles que par la personne qui a acheté l'article
+  Les effets d'envoi et les sons sont dans effets.js, pas ici
 */
 
-/* ===== Aperçu dans la boutique ===== */
-
-/* Petit cadre avec un faux message pour voir le rendu avant d'acheter */
-.article-apercu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--espace-2);
-  height: 80px;
-  padding: var(--espace-2);
-  border: 1px solid var(--couleur-bordure);
-  border-radius: var(--arrondi-petit);
-  background-color: var(--couleur-fond);
+/* Variables animées : il faut les déclarer pour que le navigateur sache les faire bouger */
+@property --progression {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
 }
 
-.apercu-bulle {
-  padding: 4px 10px;
-  border: 1px solid var(--couleur-bordure);
-  border-radius: 2px 12px 12px 12px;
-  font-size: 0.8125rem;
-  background-color: var(--couleur-surface);
+@property --eclat {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+/* La progression de la minute change chaque seconde, on la fait glisser doucement */
+.discussion-ouverte {
+  transition: --progression 1s linear;
 }
 
 /* ===== Fonds de discussion ===== */
 
-.fond-coucher-soleil .liste-messages,
-.article-apercu.fond-coucher-soleil {
+/* Cahier : les lignes défilent avec les messages (background-attachment: local) */
+.fond-cahier .liste-messages {
+  background-color: #fffdf7;
+  background-image:
+    linear-gradient(to right, transparent 46px, #e3a29b 46px, #e3a29b 48px, transparent 48px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 27px, #c9d6ea 27px, #c9d6ea 28px);
+  background-attachment: local;
+}
+
+.fond-coucher-soleil .liste-messages {
   background: linear-gradient(180deg, #f6a35b, #e0607e);
 }
 
-.fond-ocean .liste-messages,
-.article-apercu.fond-ocean {
-  background: linear-gradient(180deg, #245f88, #163a5c);
+/* Océan : des vagues claires roulent en bas de la discussion */
+.fond-ocean .liste-messages {
+  background-color: #163a5c;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='40'%3E%3Cpath d='M0 20 Q30 4 60 20 T120 20 T180 20 T240 20 V40 H0Z' fill='%23ffffff' fill-opacity='0.12'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #245f88, #163a5c);
+  background-repeat: repeat-x, no-repeat;
+  background-position: 0 100%, 0 0;
+  background-size: 240px 40px, 100% 100%;
+  animation: vagues 6s linear infinite;
 }
 
-/* Les étoiles sont des petits points dessinés avec des dégradés ronds */
-.fond-nuit-etoilee .liste-messages,
-.article-apercu.fond-nuit-etoilee {
-  background-color: #1d1b33;
+@keyframes vagues {
+  to { background-position: 240px 100%, 0 0; }
+}
+
+/* Pluie : des petits traits qui tombent en biais */
+.fond-pluie .liste-messages {
+  background-color: #46566a;
   background-image:
-    radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, transparent),
-    radial-gradient(1px 1px at 90px 70px, #ffffff, transparent),
-    radial-gradient(1.5px 1.5px at 150px 20px, #fff6d5, transparent),
-    radial-gradient(1px 1px at 60px 110px, #ffffff, transparent),
-    radial-gradient(1px 1px at 130px 140px, #ffffff, transparent);
-  background-size: 180px 160px;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%23ffffff' stroke-opacity='0.35' stroke-width='1.5' stroke-linecap='round'%3E%3Cline x1='10' y1='4' x2='7' y2='16'/%3E%3Cline x1='42' y1='24' x2='39' y2='36'/%3E%3Cline x1='26' y1='44' x2='23' y2='56'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(180deg, #5d6d80, #3e4a5a);
+  background-size: 60px 60px, 100% 100%;
+  animation: pluie 0.7s linear infinite;
+}
+
+@keyframes pluie {
+  to { background-position: -15px 60px, 0 0; }
 }
 
 /* Damier fait avec un dégradé conique qui se répète */
-.fond-damier .liste-messages,
-.article-apercu.fond-damier {
+.fond-damier .liste-messages {
   background: repeating-conic-gradient(#e3e6ee 0% 25%, #fffcf6 0% 50%) 0 0 / 40px 40px;
 }
 
-/* Le seul fond qui bouge, très lentement */
-.fond-aurore .liste-messages,
-.article-apercu.fond-aurore {
+/* Nuit étoilée : deux groupes d'étoiles qui scintillent chacun leur tour */
+.fond-nuit-etoilee .liste-messages {
+  background-color: #141c30;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, rgb(255 255 255 / var(--eclat)), transparent),
+    radial-gradient(1px 1px at 90px 70px, rgb(255 255 255 / calc(1.2 - var(--eclat))), transparent),
+    radial-gradient(1.5px 1.5px at 150px 20px, rgb(255 246 213 / var(--eclat)), transparent),
+    radial-gradient(1px 1px at 60px 110px, rgb(255 255 255 / calc(1.2 - var(--eclat))), transparent),
+    radial-gradient(1.5px 1.5px at 130px 140px, rgb(255 255 255 / var(--eclat)), transparent);
+  background-size: 180px 160px;
+  animation: scintille 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes scintille {
+  from { --eclat: 0.25; }
+  to { --eclat: 1; }
+}
+
+/* Ciel du moment : le JS met data-moment selon l'heure (aube, jour, crepuscule, nuit) */
+.fond-ciel-du-moment .liste-messages {
+  background: linear-gradient(180deg, #bfe0f5, #eef6fb);
+}
+
+.fond-ciel-du-moment[data-moment="aube"] .liste-messages {
+  background: linear-gradient(180deg, #c9d8ee, #f6d7b0);
+}
+
+.fond-ciel-du-moment[data-moment="crepuscule"] .liste-messages {
+  background: linear-gradient(180deg, #3d4472, #b8665c);
+}
+
+.fond-ciel-du-moment[data-moment="nuit"] .liste-messages {
+  background-color: #0f1830;
+  background-image:
+    radial-gradient(1.5px 1.5px at 30px 40px, #ffffff, transparent),
+    radial-gradient(1px 1px at 120px 90px, #ffffff, transparent),
+    linear-gradient(180deg, #0f1830, #1f2a44);
+  background-size: 160px 140px, 160px 140px, 100% 100%;
+}
+
+/* Dune : deux bosses de sable qui grandissent avec la minute (--progression va de 0 à 1) */
+.fond-dune .liste-messages {
+  background-color: #f6ead2;
+  background-image:
+    radial-gradient(140% calc(8% + var(--progression) * 70%) at 25% 100%, #d9b26f 99%, transparent 100%),
+    radial-gradient(120% calc(5% + var(--progression) * 55%) at 85% 100%, #e8c98d 99%, transparent 100%);
+}
+
+/* Aurore : le seul fond qui ondule en continu, très lentement */
+.fond-aurore .liste-messages {
   background: linear-gradient(120deg, #1f6f78, #1f2a44, #9c3a68, #1f6f78);
   background-size: 300% 300%;
   animation: aurore 24s ease-in-out infinite alternate;
@@ -74,42 +137,122 @@
 }
 
 /* Sur un fond foncé les petits textes gris deviennent illisibles, on les passe en papier */
-:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) :is(.separateur-date, .indicateur-ecriture) {
-  color: var(--couleur-fond);
+:is(.fond-ocean, .fond-pluie, .fond-nuit-etoilee, .fond-aurore,
+    .fond-ciel-du-moment[data-moment="crepuscule"], .fond-ciel-du-moment[data-moment="nuit"])
+  :is(.separateur-date, .message-vide) {
+  color: #f4efe6;
 }
 
-:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) .separateur-date::before,
-:is(.fond-ocean, .fond-nuit-etoilee, .fond-aurore) .separateur-date::after {
+:is(.fond-ocean, .fond-pluie, .fond-nuit-etoilee, .fond-aurore,
+    .fond-ciel-du-moment[data-moment="crepuscule"], .fond-ciel-du-moment[data-moment="nuit"])
+  .separateur-date::before,
+:is(.fond-ocean, .fond-pluie, .fond-nuit-etoilee, .fond-aurore,
+    .fond-ciel-du-moment[data-moment="crepuscule"], .fond-ciel-du-moment[data-moment="nuit"])
+  .separateur-date::after {
   background-color: rgba(244, 239, 230, 0.4);
 }
 
-/* Sur le coucher de soleil le gris est trop pâle, on prend la couleur du texte */
-.fond-coucher-soleil :is(.separateur-date, .indicateur-ecriture) {
+/* Sur le coucher de soleil et la dune le gris est trop pâle, on prend la couleur du texte */
+:is(.fond-coucher-soleil, .fond-dune) :is(.separateur-date, .message-vide) {
   color: var(--couleur-texte);
 }
 
-.fond-coucher-soleil .separateur-date::before,
-.fond-coucher-soleil .separateur-date::after {
+:is(.fond-coucher-soleil, .fond-dune) .separateur-date::before,
+:is(.fond-coucher-soleil, .fond-dune) .separateur-date::after {
   background-color: rgba(35, 32, 28, 0.35);
 }
 
 /* ===== Forme des bulles ===== */
+/* Les sélecteurs passent par .message pour gagner sur les bulles de base de conversation.css */
 
-.bulle-arrondie .bulle,
-.bulle-arrondie .apercu-bulle,
+.bulle-arrondie .message .bulle,
 .bulle-arrondie .message.moi .bulle {
   border-radius: 22px;
 }
 
-/* Style bande dessinée : gros contour noir et ombre décalée */
-.bulle-bd .bulle,
-.bulle-bd .apercu-bulle {
+/* Post-it : jaune pour les autres, rose pour moi, chacun penché un peu différemment */
+.bulle-post-it .message .bulle,
+.bulle-post-it .message.moi .bulle {
+  color: var(--couleur-texte);
+  background-color: #fbe58b;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: 0 3px 0 rgba(35, 32, 28, 0.12);
+  transform: rotate(-1.4deg);
+}
+
+.bulle-post-it .message.moi .bulle {
+  background-color: #f7c6cf;
+}
+
+.bulle-post-it .message:nth-child(even) .bulle {
+  transform: rotate(1.2deg);
+}
+
+.bulle-post-it .message .message-infos {
+  color: #5c4a12;
+}
+
+.bulle-post-it .message.moi .message-infos {
+  color: #6e2f3c;
+}
+
+/* Bande dessinée : gros contour et ombre décalée */
+.bulle-bd .message .bulle,
+.bulle-bd .message.moi .bulle {
   border: 2px solid var(--couleur-texte);
   box-shadow: 3px 3px 0 var(--couleur-texte);
 }
 
-.bulle-neon .bulle,
-.bulle-neon .apercu-bulle,
+/* Télégramme : papier beige, majuscules et STOP à la fin de chaque message */
+.bulle-telegramme .message .bulle,
+.bulle-telegramme .message.moi .bulle {
+  color: var(--couleur-texte);
+  background-color: #efe6cf;
+  border: 1px dashed #a8956a;
+  border-radius: 2px;
+}
+
+.bulle-telegramme .message.moi .bulle {
+  background-color: #e4d6ae;
+}
+
+.bulle-telegramme .message-contenu {
+  font-family: "Courier New", Courier, monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.bulle-telegramme .message-contenu::after {
+  content: " STOP";
+  font-weight: 700;
+}
+
+.bulle-telegramme .message .message-infos,
+.bulle-telegramme .message.moi .message-infos {
+  color: var(--couleur-texte-secondaire);
+}
+
+/* 8 bits : quatre ombres pleines font des coins en escalier */
+.bulle-pixel .message .bulle,
+.bulle-pixel .message.moi .bulle {
+  --bord: var(--couleur-texte);
+  margin: 4px;
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    0 -4px 0 0 var(--bord),
+    0 4px 0 0 var(--bord),
+    -4px 0 0 0 var(--bord),
+    4px 0 0 0 var(--bord);
+}
+
+.bulle-pixel .message.moi .bulle {
+  --bord: #0b1020;
+}
+
+/* Néon : bulle noire avec un contour qui brille et qui grésille à l'arrivée */
+.bulle-neon .message .bulle,
 .bulle-neon .message.moi .bulle {
   color: #e9fbf8;
   background-color: #1c1a22;
@@ -117,50 +260,154 @@
   box-shadow: 0 0 10px rgba(95, 211, 196, 0.45);
 }
 
+.bulle-neon .message.arrivee .bulle {
+  animation: gresille 0.6s steps(1);
+}
+
+@keyframes gresille {
+  0% { opacity: 0.2; }
+  15% { opacity: 1; }
+  30% { opacity: 0.4; }
+  45% { opacity: 1; }
+  70% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
 /* Le nom et l'heure doivent rester lisibles sur la bulle noire */
 .bulle-neon .message-auteur {
   color: #5fd3c4;
 }
 
-.bulle-neon .message-infos,
+.bulle-neon .message .message-infos,
 .bulle-neon .message.moi .message-infos {
   color: #a9e6dd;
 }
 
-.bulle-doree .bulle,
-.bulle-doree .apercu-bulle,
+/* Parchemin : bords pas tout à fait réguliers */
+.bulle-parchemin .message .bulle,
+.bulle-parchemin .message.moi .bulle {
+  color: #3d2f17;
+  background-color: #efe2c2;
+  border: 1px solid #c9b48a;
+  border-radius: 3px 12px 4px 14px / 12px 3px 14px 4px;
+}
+
+.bulle-parchemin .message.moi .bulle {
+  background-color: #e6d3a3;
+}
+
+.bulle-parchemin .message .message-infos,
+.bulle-parchemin .message.moi .message-infos {
+  color: #6b5a3a;
+}
+
+/* Dorée : un reflet passe sur la bulle quand le message arrive */
+.bulle-doree .message .bulle,
 .bulle-doree .message.moi .bulle {
   color: #3b2a00;
   background: linear-gradient(180deg, #f7e3a1, #e2b33c);
   border: 1px solid #b8860b;
 }
 
+.bulle-doree .message.arrivee .bulle {
+  background:
+    linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.75) 50%, transparent 65%) 100% 0 / 300% 100%,
+    linear-gradient(180deg, #f7e3a1, #e2b33c);
+  animation: reflet 1.1s ease-out;
+}
+
+@keyframes reflet {
+  to { background-position: 0 0, 0 0; }
+}
+
 /* L'heure en brun foncé, sinon elle ne se lit pas sur l'or */
-.bulle-doree .message-infos,
+.bulle-doree .message .message-infos,
 .bulle-doree .message.moi .message-infos {
   color: #4a3700;
 }
 
 /* ===== Cadre des photos de profil ===== */
 
-.cadre-anneau .avatar,
-.article-apercu.cadre-anneau .avatar {
+.cadre-anneau .avatar {
   box-shadow: 0 0 0 2px var(--couleur-surface), 0 0 0 4px var(--couleur-principale);
 }
 
-.cadre-story .avatar,
-.article-apercu.cadre-story .avatar {
+/* Timbre-poste : photo carrée et bord pointillé */
+.cadre-tampon .avatar {
+  border-radius: 3px;
+  box-shadow: 0 0 0 3px var(--couleur-surface);
+  outline: 2px dashed var(--couleur-or-texte);
+  outline-offset: 3px;
+}
+
+.cadre-story .avatar {
   box-shadow: 0 0 0 2px var(--couleur-surface), 0 0 0 4px #f58529, 0 0 0 6px #dd2a7b;
 }
 
-.cadre-halo .avatar,
-.article-apercu.cadre-halo .avatar {
-  box-shadow: 0 0 0 3px var(--couleur-or-claire), 0 0 12px 2px rgba(200, 146, 58, 0.6);
+/* Polaroïd : bord blanc plus épais en bas, un peu de travers */
+/* Fait avec des ombres pleines pour ne pas rétrécir la photo */
+.cadre-polaroid .avatar {
+  border-radius: 1px;
+  box-shadow:
+    0 0 0 3px #fffcf6,
+    0 6px 0 3px #fffcf6,
+    0 2px 6px 3px rgba(35, 32, 28, 0.3);
+  transform: rotate(-4deg);
 }
 
-/* Une couronne posée au-dessus de la photo */
-.cadre-couronne .avatar::before,
-.article-apercu.cadre-couronne .avatar::before {
+/* Halo : une lueur dorée qui grandit et rétrécit */
+.cadre-halo .avatar {
+  animation: respire 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes respire {
+  from { box-shadow: 0 0 0 2px var(--couleur-or-claire), 0 0 4px 1px rgba(200, 146, 58, 0.4); }
+  to { box-shadow: 0 0 0 3px var(--couleur-or-claire), 0 0 14px 4px rgba(200, 146, 58, 0.7); }
+}
+
+/* Orbite : un grain de sable fait le tour de la photo */
+.cadre-orbite .avatar::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
+  border-radius: 50%;
+  background-color: var(--couleur-or);
+  animation: orbite 3.5s linear infinite;
+}
+
+/* Le rayon dépend de la taille de la photo */
+.cadre-orbite .avatar {
+  --rayon: 25px;
+}
+
+.cadre-orbite .message-avatar,
+.cadre-orbite .avatar-petit {
+  --rayon: 19px;
+}
+
+@keyframes orbite {
+  from { transform: rotate(0deg) translateX(var(--rayon)); }
+  to { transform: rotate(360deg) translateX(var(--rayon)); }
+}
+
+/* Cadran : un anneau de sable qui se vide comme le minuteur */
+/* Le masque ne garde que le bord du rond pour faire un anneau */
+.cadre-cadran .avatar::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: conic-gradient(var(--couleur-or) calc((1 - var(--progression)) * 360deg), var(--couleur-piste-minuteur) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+}
+
+/* Couronne posée au-dessus de la photo */
+.cadre-couronne .avatar::before {
   content: "♛";
   position: absolute;
   top: -15px;
@@ -172,55 +419,136 @@
 }
 
 /* ===== Polices ===== */
+/* Les polices viennent de Google Fonts, effets.js les charge seulement quand on s'en sert */
 
-/* Polices déjà installées sur les ordinateurs, rien à télécharger */
-.police-manuscrite .liste-messages,
-.article-apercu.police-manuscrite {
-  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+.police-arrondie .liste-messages {
+  font-family: "Fredoka", ui-rounded, "Trebuchet MS", sans-serif;
 }
 
-.police-machine .liste-messages,
-.article-apercu.police-machine {
-  font-family: "Courier New", Courier, monospace;
+.police-manuscrite .liste-messages {
+  font-family: "Caveat", "Segoe Print", cursive;
+  font-size: 1.2em;
 }
 
-.police-arrondie .liste-messages,
-.article-apercu.police-arrondie {
-  font-family: ui-rounded, "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+.police-pixel .liste-messages {
+  font-family: "Press Start 2P", "Courier New", monospace;
+  font-size: 0.7em;
+  line-height: 1.9;
+}
+
+/* Machine à écrire : un curseur clignote pendant que le texte s'écrit */
+.police-machine .liste-messages {
+  font-family: "Special Elite", "Courier New", monospace;
+}
+
+.police-machine .en-frappe::after {
+  content: "▌";
+  animation: curseur 0.5s steps(1) infinite;
+}
+
+@keyframes curseur {
+  50% { opacity: 0; }
+}
+
+/* Grimoire : écriture gothique avec une grande lettrine */
+.police-grimoire .liste-messages {
+  font-family: "UnifrakturMaguntia", Georgia, serif;
+  font-size: 1.05em;
+}
+
+.police-grimoire .message-contenu::first-letter {
+  font-size: 1.8em;
+  line-height: 1;
+  color: var(--couleur-or-texte);
+}
+
+.police-grimoire .message.moi .message-contenu::first-letter {
+  color: var(--couleur-or-claire);
 }
 
 /* ===== Couleur de mes bulles ===== */
 /* Couleurs assez foncées pour que le texte blanc se lise (4,5:1 minimum) */
 
-.couleur-emeraude .message.moi .bulle,
-.article-apercu.couleur-emeraude .apercu-bulle {
+.couleur-emeraude .message.moi .bulle {
   color: #ffffff;
-  background-color: #1f7a5a;
+  background: #1f7a5a;
   border-color: #1f7a5a;
 }
 
-.couleur-corail .message.moi .bulle,
-.article-apercu.couleur-corail .apercu-bulle {
+.couleur-corail .message.moi .bulle {
   color: #ffffff;
-  background-color: #b8403c;
+  background: #b8403c;
   border-color: #b8403c;
 }
 
-.couleur-saphir .message.moi .bulle,
-.article-apercu.couleur-saphir .apercu-bulle {
+.couleur-saphir .message.moi .bulle {
   color: #ffffff;
-  background-color: #2457a6;
+  background: #2457a6;
   border-color: #2457a6;
 }
 
-.couleur-arc-en-ciel .message.moi .bulle,
-.article-apercu.couleur-arc-en-ciel .apercu-bulle {
+/* Assortie : la couleur de mon avatar, le JS choisit un texte blanc ou foncé selon la couleur */
+.couleur-assortie .message.moi .bulle {
+  color: var(--texte-perso);
+  background: var(--couleur-perso);
+  border-color: var(--couleur-perso);
+}
+
+.couleur-assortie .message.moi .message-infos {
+  color: var(--texte-perso);
+}
+
+/* Caméléon : quatre couleurs qui tournent d'un message à l'autre */
+.couleur-cameleon .message.moi .bulle {
+  color: #ffffff;
+  background: #2f6b4a;
+  border-color: transparent;
+}
+
+.couleur-cameleon .message.moi:nth-child(4n+1) .bulle {
+  background: #2457a6;
+}
+
+.couleur-cameleon .message.moi:nth-child(4n+2) .bulle {
+  background: #b8403c;
+}
+
+.couleur-cameleon .message.moi:nth-child(4n+3) .bulle {
+  background: #6b4a12;
+}
+
+/* Humeur : le JS met data-humeur sur mes messages (question, cri ou rire) */
+.couleur-humeur .message.moi[data-humeur="question"] .bulle {
+  color: #ffffff;
+  background: #2457a6;
+  border-color: #2457a6;
+}
+
+.couleur-humeur .message.moi[data-humeur="cri"] .bulle {
+  color: #ffffff;
+  background: #b8403c;
+  border-color: #b8403c;
+}
+
+.couleur-humeur .message.moi[data-humeur="rire"] .bulle {
+  color: var(--couleur-principale);
+  background: var(--couleur-or);
+  border-color: var(--couleur-or);
+}
+
+.couleur-humeur .message.moi[data-humeur="rire"] .message-infos {
+  color: var(--couleur-principale);
+}
+
+.couleur-arc-en-ciel .message.moi .bulle {
   color: #ffffff;
   background: linear-gradient(90deg, #b8403c, #a4661a, #2f6b4a, #2457a6, #1f2a44);
   border-color: transparent;
 }
 
 /* L'heure en blanc sur les bulles de couleur pour garder assez de contraste */
-:is(.couleur-emeraude, .couleur-corail, .couleur-saphir, .couleur-arc-en-ciel) .message.moi .message-infos {
+:is(.couleur-emeraude, .couleur-corail, .couleur-saphir, .couleur-cameleon, .couleur-arc-en-ciel)
+  .message.moi .message-infos,
+.couleur-humeur .message.moi:is([data-humeur="question"], [data-humeur="cri"]) .message-infos {
   color: #ffffff;
 }

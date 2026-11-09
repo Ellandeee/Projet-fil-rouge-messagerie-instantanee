@@ -46,7 +46,7 @@ function nomEtAvatar(salon) {
     if (autre) return { nom: autre.profils.nom_utilisateur, profil: autre.profils };
   }
   const nom = salon.nom || "Groupe";
-  return { nom, profil: { id: null, nom_utilisateur: nom, couleur_avatar: "#3f2a6b" } };
+  return { nom, profil: { id: null, nom_utilisateur: nom, couleur_avatar: "#6b4a12" } };
 }
 
 // Lien vers la discussion avec son nom
@@ -79,11 +79,27 @@ function afficherPodium(premiers) {
 
     const pts = document.createElement("span");
     pts.className = "points";
-    pts.textContent = ligne.gagnes + " grains";
+    compterJusqua(pts, ligne.gagnes);
 
     li.append(rang, avatar, nom, pts);
     podium.append(li);
   });
+}
+
+// Les grains du podium défilent de 0 jusqu'au total
+function compterJusqua(element, total) {
+  const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduit) {
+    element.textContent = total + " grains";
+    return;
+  }
+  const debut = performance.now();
+  function etape(maintenant) {
+    const avancee = Math.min(1, (maintenant - debut) / 900);
+    element.textContent = Math.round(total * avancee) + " grains";
+    if (avancee < 1) requestAnimationFrame(etape);
+  }
+  requestAnimationFrame(etape);
 }
 
 function afficherTableau(lignes) {

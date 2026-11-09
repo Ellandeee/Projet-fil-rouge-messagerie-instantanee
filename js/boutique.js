@@ -1,8 +1,9 @@
 /*
   Boutique de personnalisation
-  On achète des articles avec les points gagnés dans une discussion (privée ou de groupe)
+  On achète des articles avec les grains gagnés dans une discussion (privée ou de groupe)
   Un article acheté vaut seulement pour cette discussion et seule la personne qui l'a acheté le voit
   Le nom de chaque article (id) est aussi sa classe CSS dans personnalisation.css
+  En haut de la boutique une vitrine montre l'article qu'on essaie avant de l'acheter
 */
 
 const NOMS_CATEGORIES = {
@@ -10,13 +11,17 @@ const NOMS_CATEGORIES = {
   bulle: "Bulles",
   cadre: "Cadres",
   police: "Polices",
-  couleur: "Couleurs"
+  couleur: "Couleurs",
+  effet: "Effets",
+  son: "Sons"
 };
 
 const fenetreBoutique = document.querySelector("#boutique");
 const zoneOnglets = document.querySelector("#boutique-onglets");
 const listeArticles = document.querySelector("#boutique-articles");
 const messageBoutique = document.querySelector("#message-boutique");
+const vitrine = document.querySelector("#boutique-vitrine");
+const legendeVitrine = document.querySelector("#vitrine-legende");
 
 // Liste de tous les articles (chargée une seule fois)
 let articles = [];
@@ -30,30 +35,34 @@ let etatBoutique = { solde: 0, achetes: new Set(), equipes: new Set() };
 
 async function chargerArticles() {
   if (articles.length > 0) return articles;
-  const { data, error } = await client.from("articles").select("*").order("prix");
+  const { data, error } = await client.from("articles").select("*").order("ordre");
   if (!error) articles = data;
   return articles;
+}
+
+// Met les classes des articles sur un élément (discussion, vitrine ou carte)
+function mettreClassesArticles(element, ids) {
+  for (const article of articles) {
+    element.classList.remove(article.id);
+  }
+  for (const id of ids) {
+    element.classList.add(id);
+    chargerPolice(id); // effets.js : ne fait rien si ce n'est pas une police
+  }
+  preparerConteneur(element);
 }
 
 // ===== Appliquer les articles équipés sur la discussion =====
 
 async function appliquerPersonnalisation(salonId) {
   await chargerArticles();
-  const discussion = document.querySelector("#discussion-ouverte");
-
-  // On enlève d'abord tous les thèmes de la discussion d'avant
-  for (const article of articles) {
-    discussion.classList.remove(article.id);
-  }
-
   const { data } = await client
     .from("personnalisations")
     .select("article_id")
     .eq("salon_id", salonId);
 
-  for (const ligne of data || []) {
-    discussion.classList.add(ligne.article_id);
-  }
+  const ids = (data || []).map((ligne) => ligne.article_id);
+  mettreClassesArticles(document.querySelector("#discussion-ouverte"), ids);
 }
 
 // ===== Ouvrir la boutique =====
@@ -64,6 +73,8 @@ async function ouvrirBoutique(salon) {
   document.querySelector("#boutique-nom-contact").textContent = salon.nom;
   afficherEtatBoutique("");
   await chargerEtatBoutique();
+  remplirVitrine();
+  dessinerVitrine(null);
   dessinerOnglets();
   dessinerArticles();
   fenetreBoutique.showModal();
@@ -94,6 +105,85 @@ async function chargerEtatBoutique() {
   afficherSolde(etatBoutique.solde); // met aussi à jour le bouton dans la discussion
 }
 
+// ===== Mini discussion (vitrine et aperçu des cartes) =====
+
+// Un faux message avec la même structure que les vrais pour que le CSS des articles marche
+function creerMiniMessage(texte, deMoi, profil) {
+  const ligne = document.createElement("li");
+  ligne.className = deMoi ? "message moi" : "message";
+  if (deMoi) ligne.dataset.humeur = humeurMessage(texte); // pour voir l'article Humeur
+
+  const avatar = document.createElement("span");
+  avatar.className = "avatar message-avatar";
+  if (!deMoi) remplirAvatar(avatar, profil);
+
+  const bulle = document.createElement("div");
+  bulle.className = "bulle";
+  const contenu = document.createElement("p");
+  contenu.className = "message-contenu";
+  contenu.textContent = texte;
+  const infos = document.createElement("p");
+  infos.className = "message-infos";
+  infos.textContent = deMoi ? "14:32 Lu" : "14:31";
+  bulle.append(contenu, infos);
+
+  ligne.append(avatar, bulle);
+  return ligne;
+}
+
+// La vitrine montre trois messages de la discussion
+function remplirVitrine() {
+  const liste = vitrine.querySelector(".liste-messages");
+  liste.textContent = "";
+  liste.append(
+    creerMiniMessage("Tu as vu ma nouvelle déco ?", false, salonBoutique.profil),
+    creerMiniMessage("Oui, ça change tout !", true),
+    creerMiniMessage("On se retrouve à la pause ?", true)
+  );
+}
+
+// articleEssaye = null pour voir la discussion telle qu'elle est maintenant
+function dessinerVitrine(articleEssaye) {
+  let ids = [...etatBoutique.equipes];
+  if (articleEssaye) {
+    // L'article essayé remplace celui de la même catégorie
+    const memeCategorie = articles.filter((a) => a.categorie === articleEssaye.categorie).map((a) => a.id);
+    ids = ids.filter((id) => !memeCategorie.includes(id)).concat(articleEssaye.id);
+    legendeVitrine.textContent = "Essai : " + articleEssaye.nom;
+  } else {
+    legendeVitrine.textContent = "Votre discussion en ce moment";
+  }
+  mettreClassesArticles(vitrine, ids);
+  vitrine.style.setProperty("--progression", "0.55"); // pour la dune et le cadran
+}
+
+// Rejoue l'arrivée des messages de la vitrine pour voir les articles qui bougent
+function rejouerVitrine(article) {
+  const messages = vitrine.querySelectorAll(".message");
+  messages.forEach((ligne) => {
+    ligne.classList.remove("arrivee");
+    void ligne.offsetWidth; // force le navigateur à repartir de zéro
+    ligne.classList.add("arrivee");
+  });
+  const dernier = messages[messages.length - 1];
+  if (article.id === "police-machine") {
+    ecrireLettreParLettre(dernier.querySelector(".message-contenu"), "On se retrouve à la pause ?");
+  }
+  if (article.categorie === "effet") {
+    jouerEffetEnvoi(dernier, vitrine);
+  }
+}
+
+function essayerArticle(article) {
+  if (article.categorie === "son") {
+    jouerSonArticle(article.id);
+    legendeVitrine.textContent = "Écoute : " + article.nom;
+    return;
+  }
+  dessinerVitrine(article);
+  rejouerVitrine(article);
+}
+
 // ===== Affichage =====
 
 function dessinerOnglets() {
@@ -108,6 +198,7 @@ function dessinerOnglets() {
       categorieChoisie = categorie;
       dessinerOnglets();
       dessinerArticles();
+      dessinerVitrine(null);
     });
     zoneOnglets.append(onglet);
   }
@@ -120,11 +211,30 @@ function dessinerArticles() {
   }
 }
 
+// Petit texte dans l'aperçu de la carte (les effets et les sons ont chacun le leur)
+const TEXTES_APERCU = {
+  "effet-tampon": "Paf !",
+  "effet-encre": "Splash",
+  "effet-grains": "Fiou !",
+  "effet-avion": "Décollage",
+  "effet-confettis": "Youpi !",
+  "son-goutte": "Ploc",
+  "son-coucou": "Coucou",
+  "son-carillon": "Ding ding ding",
+  "son-8bits": "Bling",
+  "son-sablier": "Shhh"
+};
+
+function texteApercu(article) {
+  return TEXTES_APERCU[article.id] || "Salut !";
+}
+
 function creerCarteArticle(article) {
   const modele = document.querySelector("#modele-article").content.cloneNode(true);
   const carte = modele.querySelector(".article");
   const apercu = modele.querySelector(".article-apercu");
   const bouton = modele.querySelector(".article-action");
+  const essayer = modele.querySelector(".article-essayer");
   const prix = modele.querySelector(".article-prix");
   const achete = etatBoutique.achetes.has(article.id);
   const equipe = etatBoutique.equipes.has(article.id);
@@ -132,19 +242,17 @@ function creerCarteArticle(article) {
   modele.querySelector(".article-nom").textContent = article.nom;
   modele.querySelector(".article-description").textContent = article.description;
 
-  // Aperçu : la classe de l'article sur un petit faux message (ou un avatar pour les cadres)
-  apercu.classList.add(article.id);
-  if (article.categorie === "cadre") {
-    const avatar = document.createElement("span");
-    avatar.className = "avatar";
-    remplirAvatar(avatar, salonBoutique.profil);
-    apercu.append(avatar);
-  } else {
-    const bulle = document.createElement("span");
-    bulle.className = "apercu-bulle";
-    bulle.textContent = "Salut !";
-    apercu.append(bulle);
-  }
+  // Aperçu : un faux message avec la classe de l'article
+  // (les couleurs et les effets se voient sur mes bulles, le reste sur une bulle reçue)
+  const deMoi = article.categorie === "couleur" || article.categorie === "effet";
+  apercu.querySelector(".liste-messages").append(
+    creerMiniMessage(texteApercu(article), deMoi, salonBoutique.profil)
+  );
+  mettreClassesArticles(apercu, [article.id]);
+  apercu.style.setProperty("--progression", "0.55");
+
+  essayer.textContent = article.categorie === "son" ? "Écouter" : "Essayer";
+  essayer.addEventListener("click", () => essayerArticle(article));
 
   if (equipe) {
     carte.classList.add("equipe");
@@ -160,10 +268,11 @@ function creerCarteArticle(article) {
     prix.textContent = article.prix + " grains";
     bouton.textContent = "Acheter";
     bouton.classList.add("bouton-or");
-    bouton.addEventListener("click", () => acheterArticle(article));
+    bouton.addEventListener("click", (evenement) => acheterArticle(article, evenement.currentTarget));
   } else {
-    prix.textContent = article.prix + " grains";
-    bouton.textContent = "Encore " + (article.prix - etatBoutique.solde) + " grains";
+    // Pas assez de grains : on dit combien il en manque et le bouton reste grisé
+    prix.textContent = article.prix + " grains, il en manque " + (article.prix - etatBoutique.solde);
+    bouton.textContent = "Acheter";
     bouton.disabled = true;
   }
 
@@ -177,11 +286,14 @@ async function apresAction(texte) {
   afficherEtatBoutique(texte, "succes");
   await chargerEtatBoutique();
   dessinerArticles();
+  dessinerVitrine(null);
   await appliquerPersonnalisation(salonBoutique.id);
+  await chargerSonsEquipes(); // effets.js : le son choisi peut avoir changé
 }
 
 // Les vérifications (solde, prix) sont faites par la base dans acheter_article
-async function acheterArticle(article) {
+async function acheterArticle(article, bouton) {
+  const ancienSolde = etatBoutique.solde;
   const { error } = await client.rpc("acheter_article", {
     p_salon: salonBoutique.id,
     p_article: article.id
@@ -190,9 +302,12 @@ async function acheterArticle(article) {
     afficherEtatBoutique(error.message, "erreur");
     return;
   }
+  feterAchat(bouton);
+
   // Un article qu'on vient d'acheter est équipé directement
   await client.rpc("equiper_article", { p_salon: salonBoutique.id, p_article: article.id });
   await apresAction(article.nom + " acheté et équipé.");
+  animerNombre(document.querySelector("#boutique-solde"), ancienSolde, etatBoutique.solde);
 }
 
 async function equiperArticle(article) {

@@ -29,6 +29,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="js/config.js" defer></script>
   <script src="js/commun.js" defer></script>
+  <script src="js/effets.js" defer></script>
   <script src="js/points.js" defer></script>
   <script src="js/boutique.js" defer></script>
   <script src="js/conversation.js" defer></script>
@@ -117,7 +118,11 @@
         <!-- Les messages sont ajoutés ici par conversation.js -->
         <ol id="liste-messages" class="liste-messages" aria-live="polite"></ol>
 
-        <p id="indicateur-ecriture" class="indicateur-ecriture" hidden></p>
+        <!-- Trois points qui sautillent puis « X est en train d'écrire » -->
+        <p id="indicateur-ecriture" class="indicateur-ecriture" hidden>
+          <span class="points-ecriture" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span id="texte-ecriture"></span>
+        </p>
 
         <!-- Zone pour écrire (500 caractères max contre la triche) -->
         <form id="form-message" class="form-message">
@@ -169,8 +174,16 @@
       <button type="button" id="bouton-fermer-boutique" class="bouton-icone" aria-label="Fermer la boutique">✕</button>
     </header>
 
-    <!-- Un onglet par catégorie (fond, bulles, cadres, police, couleur) -->
+    <!-- Un onglet par catégorie (fonds, bulles, cadres, polices, couleurs, effets, sons) -->
     <div id="boutique-onglets" class="boutique-onglets"></div>
+
+    <!-- Vitrine : une mini discussion pour essayer un article avant de l'acheter -->
+    <figure class="vitrine-cadre">
+      <div id="boutique-vitrine" class="vitrine" aria-hidden="true">
+        <ol class="liste-messages"></ol>
+      </div>
+      <figcaption id="vitrine-legende" class="vitrine-legende"></figcaption>
+    </figure>
 
     <!-- Les articles de la catégorie choisie, créés par boutique.js -->
     <ul id="boutique-articles" class="liste-articles"></ul>
@@ -217,11 +230,14 @@
   <!-- Un article de la boutique -->
   <template id="modele-article">
     <li class="article">
-      <div class="article-apercu" aria-hidden="true"></div>
+      <div class="article-apercu" aria-hidden="true"><ol class="liste-messages"></ol></div>
       <h3 class="article-nom"></h3>
       <p class="article-description"></p>
       <p class="article-prix"></p>
-      <button type="button" class="bouton bouton-petit article-action"></button>
+      <div class="article-actions">
+        <button type="button" class="bouton bouton-petit bouton-secondaire article-essayer"></button>
+        <button type="button" class="bouton bouton-petit article-action"></button>
+      </div>
     </li>
   </template>
 

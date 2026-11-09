@@ -5,6 +5,7 @@
   - indicateurs en ligne, en train d'écrire et envoyé / reçu / lu
   - fenêtre pour créer une nouvelle discussion
   Le chrono et les points sont dans points.js, la boutique dans boutique.js
+  Les animations et les sons sont dans effets.js
 */
 
 // ===== État de la page =====
@@ -34,6 +35,7 @@ const etatVide = document.querySelector("#etat-vide");
 const discussionOuverte = document.querySelector("#discussion-ouverte");
 const listeMessages = document.querySelector("#liste-messages");
 const indicateurEcriture = document.querySelector("#indicateur-ecriture");
+const texteEcriture = document.querySelector("#texte-ecriture");
 const formMessage = document.querySelector("#form-message");
 const champMessage = document.querySelector("#champ-message");
 const compteurCaracteres = document.querySelector("#compteur-caracteres");
@@ -45,6 +47,7 @@ async function demarrer() {
   if (!utilisateur) return;
 
   await chargerSalons();
+  await chargerSonsEquipes(); // effets.js : le son choisi dans chaque discussion
   ecouterTempsReel();
 
   // Quand quelqu'un se connecte ou part on met à jour les pastilles et les statuts
@@ -167,7 +170,7 @@ function afficherSalons() {
 // Avatar d'un salon : la personne en privé, le nom du salon en groupe
 function profilAffiche(salon) {
   if (salon.autre) return salon.autre;
-  return { id: null, nom_utilisateur: salon.nom, couleur_avatar: "#3f2a6b" };
+  return { id: null, nom_utilisateur: salon.nom, couleur_avatar: "#6b4a12" };
 }
 
 function apercuSalon(salon) {
@@ -297,7 +300,8 @@ async function chargerMessages(salonId) {
   descendreEnBas();
 }
 
-function afficherMessage(message) {
+// nouveau = true pour un message qui arrive maintenant (il a droit aux animations)
+function afficherMessage(message, nouveau = false) {
   if (messagesAffiches.has(message.id)) return;
   messagesAffiches.add(message.id);
 
@@ -331,6 +335,7 @@ function afficherMessage(message) {
   ligne.dataset.date = message.cree_le;
   if (deMoi) {
     ligne.classList.add("moi");
+    ligne.dataset.humeur = humeurMessage(message.contenu); // effets.js, pour la couleur Humeur
   } else {
     remplirAvatar(modele.querySelector(".message-avatar"), auteur);
     // En groupe on écrit le nom de l'auteur au-dessus du message
@@ -350,6 +355,17 @@ function afficherMessage(message) {
   }
 
   listeMessages.append(modele);
+
+  if (nouveau) animerArrivee(ligne, message.contenu, deMoi);
+}
+
+// Le message glisse en place, et les articles équipés ajoutent leur petit effet
+function animerArrivee(ligne, contenu, deMoi) {
+  ligne.classList.add("arrivee");
+  if (discussionOuverte.classList.contains("police-machine")) {
+    ecrireLettreParLettre(ligne.querySelector(".message-contenu"), contenu);
+  }
+  if (deMoi) jouerEffetEnvoi(ligne, discussionOuverte);
 }
 
 function descendreEnBas() {
@@ -441,7 +457,7 @@ formMessage.addEventListener("submit", async (evenement) => {
   compteurCaracteres.textContent = "";
   compteurCaracteres.classList.remove("limite");
 
-  afficherMessage(data);
+  afficherMessage(data, true);
   descendreEnBas();
   salonOuvert.dernier = data;
   afficherSalons();
@@ -455,7 +471,7 @@ function ecouterEcriture(salonId) {
   canalEcriture = client.channel("ecriture-" + salonId);
   canalEcriture.on("broadcast", { event: "ecrit" }, ({ payload }) => {
     if (payload.id === utilisateur.id) return;
-    indicateurEcriture.textContent = payload.nom + " est en train d'écrire…";
+    texteEcriture.textContent = payload.nom + " est en train d'écrire";
     indicateurEcriture.hidden = false;
     // Si on ne reçoit plus rien pendant 3 s on cache l'indicateur
     clearTimeout(minuterieEcriture);
@@ -508,7 +524,7 @@ async function recevoirMessage(message) {
   const deMoi = message.auteur_id === utilisateur.id;
 
   if (salonOuvert && salonOuvert.id === salon.id) {
-    afficherMessage(message);
+    afficherMessage(message, true);
     descendreEnBas();
     if (!deMoi) {
       indicateurEcriture.hidden = true;
@@ -518,12 +534,12 @@ async function recevoirMessage(message) {
     salon.nonLus++;
     const auteur = await obtenirProfil(message.auteur_id);
     if (auteur) afficherNotification(auteur, message.contenu, "conversation.html?salon=" + salon.id);
-    jouerSon();
+    jouerSonDuSalon(salon.id); // effets.js : le son acheté pour cette discussion
   }
 
   // Son aussi si la discussion est ouverte mais que l'onglet est caché
   if (!deMoi && salonOuvert && salonOuvert.id === salon.id && document.visibilityState !== "visible") {
-    jouerSon();
+    jouerSonDuSalon(salon.id);
   }
 
   afficherSalons();

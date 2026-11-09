@@ -3,10 +3,11 @@
   Règles :
   - la discussion se ferme toute seule après 60 s sans message envoyé
   - écrire au clavier garde aussi la discussion ouverte
-  - dans chaque discussion (privée ou de groupe) on gagne 1 point toutes les 10 s si l'onglet est visible
-  - le temps gagné grâce à la frappe donne des points en attente
+  - dans chaque discussion (privée ou de groupe) on gagne 1 grain toutes les 10 s si l'onglet est visible
+  - le temps gagné grâce à la frappe donne des grains en attente
     qui sont ajoutés seulement quand on envoie le message (12 max)
-  La base vérifie aussi de son côté (1 point par 10 s max) donc on ne peut pas tricher
+  La base vérifie aussi de son côté (1 grain par 10 s max) donc on ne peut pas tricher
+  Dans le code et la base on parle encore de « points », sur le site on dit « grains »
 */
 
 const DUREE_OUVERTURE = 60; // secondes sans message avant la fermeture
@@ -88,6 +89,7 @@ async function crediterPoints(nombre) {
   });
   if (!error && data) {
     afficherSolde(data.solde);
+    if (data.credites > 0) animerGain(data.credites); // effets.js
   }
 }
 
@@ -120,6 +122,12 @@ function mettreAJourMinuteur() {
   const bientot = restant <= 10;
 
   barreMinuteur.style.width = (restant / DUREE_OUVERTURE) * 100 + "%";
+
+  // Part de la minute déjà passée (0 au début, 1 à la fermeture)
+  // Sert aux articles qui suivent le minuteur (fond Dune et cadre Cadran)
+  const discussion = document.querySelector("#discussion-ouverte");
+  discussion.style.setProperty("--progression", (1 - restant / DUREE_OUVERTURE).toFixed(3));
+  discussion.dataset.moment = momentDeLaJournee(); // effets.js, pour le fond Ciel du moment
   barreMinuteur.classList.toggle("bientot", bientot);
   texteMinuteur.classList.toggle("bientot", bientot);
   texteMinuteur.classList.toggle("ecriture", prolongeParFrappe && !bientot);
@@ -139,6 +147,11 @@ function afficherSolde(solde) {
 }
 
 function afficherAttente() {
-  document.querySelector("#points-attente-zone").hidden = chrono.enAttente === 0;
+  const zone = document.querySelector("#points-attente-zone");
+  zone.hidden = chrono.enAttente === 0;
   document.querySelector("#points-attente").textContent = chrono.enAttente;
+  // Petit bond à chaque grain mis de côté
+  if (chrono.enAttente > 0 && !moinsDAnimations.matches) {
+    zone.animate([{ transform: "scale(1.4)" }, { transform: "scale(1)" }], { duration: 300 });
+  }
 }

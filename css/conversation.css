@@ -179,6 +179,16 @@
   color: var(--couleur-texte-secondaire);
 }
 
+/* Le logo se retourne de temps en temps, comme un sablier */
+.etat-vide img {
+  animation: retourner 8s ease-in-out infinite;
+}
+
+@keyframes retourner {
+  0%, 85% { transform: rotate(0deg); }
+  95%, 100% { transform: rotate(180deg); }
+}
+
 /* Phrase qui explique pourquoi la discussion vient de se fermer */
 .info-fermeture {
   margin-top: var(--espace-2);
@@ -194,6 +204,13 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  animation: ouvrir-discussion 0.25s ease-out;
+}
+
+/* La discussion apparaît en glissant un peu quand on l'ouvre */
+/* Pas de fondu : si l'animation ne se joue pas, la discussion reste visible */
+@keyframes ouvrir-discussion {
+  from { transform: translateX(12px); }
 }
 
 .discussion-entete {
@@ -244,6 +261,7 @@
   color: var(--couleur-or-texte);
   background-color: var(--couleur-or-claire);
   cursor: pointer;
+  position: relative; /* pour placer le +1 qui s'envole */
 }
 
 .bouton-points:hover {
@@ -260,8 +278,20 @@
 
 /* Grains gagnés pendant l'écriture, ajoutés à l'envoi */
 .points-attente {
+  display: inline-block;
   font-size: 0.8125rem;
   font-weight: 700;
+}
+
+/* Le +1 qui s'envole du bouton quand on gagne un grain (créé par effets.js) */
+.grain-gagne {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  font-family: var(--police-titre);
+  font-size: 1rem;
+  color: var(--couleur-or-texte);
+  pointer-events: none;
 }
 
 .bouton-points-texte {
@@ -301,9 +331,14 @@
   border-bottom: 1px solid var(--couleur-bordure);
 }
 
-/* Moins de 10 secondes (classe bientot ajoutée par le JS) : tout passe en brique */
+/* Moins de 10 secondes (classe bientot ajoutée par le JS) : tout passe en brique et la barre bat */
 .minuteur-barre.bientot {
   background-color: var(--couleur-danger);
+  animation: battement 1s ease-in-out infinite;
+}
+
+@keyframes battement {
+  50% { opacity: 0.45; }
 }
 
 .minuteur-texte.bientot {
@@ -356,6 +391,23 @@
   max-width: 72%;
 }
 
+/* Un message qui vient d'arriver glisse en place (classe arrivee ajoutée par le JS) */
+.message.arrivee {
+  animation: arrivee 0.32s ease-out;
+}
+
+.message.moi.arrivee {
+  animation-name: arrivee-moi;
+}
+
+@keyframes arrivee {
+  from { opacity: 0.3; transform: translate(-10px, 6px); }
+}
+
+@keyframes arrivee-moi {
+  from { opacity: 0.3; transform: translate(10px, 6px); }
+}
+
 /* Mes messages sont à droite (classe moi ajoutée par le JS) */
 .message.moi {
   flex-direction: row-reverse;
@@ -366,6 +418,7 @@
   width: 28px;
   height: 28px;
   font-size: 0.6875rem;
+  font-family: var(--police); /* les initiales gardent la police du site même avec une police de la boutique */
 }
 
 .message.moi .message-avatar {
@@ -452,10 +505,44 @@
 }
 
 .indicateur-ecriture {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
   padding: 0 var(--espace-8) var(--espace-2);
   font-size: 0.875rem;
   font-style: italic;
   color: var(--couleur-texte-secondaire);
+}
+
+/* Les trois points du logo qui sautillent l'un après l'autre */
+.points-ecriture {
+  display: inline-flex;
+  gap: 3px;
+  padding: 6px 8px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: 2px 10px 10px 10px;
+  background-color: var(--couleur-surface);
+}
+
+.points-ecriture span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--couleur-texte-secondaire);
+  animation: sautille 1.1s ease-in-out infinite;
+}
+
+.points-ecriture span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.points-ecriture span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes sautille {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
 }
 
 /* ===== Zone d'écriture ===== */
@@ -601,7 +688,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--espace-3);
-  max-height: 55vh;
+  max-height: 38vh;
   margin: var(--espace-4) 0;
   padding: 0;
   overflow-y: auto;
@@ -639,9 +726,118 @@
   color: var(--couleur-or-texte);
 }
 
-/* Le bouton reste en bas même si la description est courte */
-.article-action {
+/* Les boutons restent en bas même si la description est courte */
+.article-actions {
+  display: flex;
+  gap: 6px;
   margin-top: auto;
+}
+
+.article-actions .bouton {
+  flex: 1;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+/* ===== Vitrine et aperçus de la boutique ===== */
+
+/* Mini discussion où on essaie un article avant de l'acheter */
+.vitrine-cadre {
+  margin-top: var(--espace-4);
+}
+
+.vitrine,
+.article-apercu {
+  overflow: hidden;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--arrondi-moyen);
+  background-color: var(--couleur-fond);
+}
+
+.vitrine {
+  height: 210px;
+}
+
+/* Messages un peu plus petits dans la vitrine pour que les trois tiennent */
+.vitrine .liste-messages {
+  font-size: 0.875rem;
+}
+
+.vitrine .bulle {
+  padding: 6px 12px;
+}
+
+.article-apercu {
+  height: 84px;
+  border-radius: var(--arrondi-petit);
+}
+
+/* Même liste que dans la vraie discussion mais en petit et sans défilement */
+.vitrine .liste-messages,
+.article-apercu .liste-messages {
+  justify-content: flex-end;
+  height: 100%;
+  padding: var(--espace-3) var(--espace-4);
+  overflow: hidden;
+  gap: var(--espace-2);
+}
+
+.article-apercu .liste-messages {
+  justify-content: center;
+  padding: var(--espace-2) var(--espace-3);
+  font-size: 0.8125rem;
+}
+
+.article-apercu .message {
+  max-width: 100%;
+}
+
+.article-apercu .bulle {
+  padding: 4px 10px;
+}
+
+.article-apercu .message-avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 0.625rem;
+}
+
+.article-apercu .message-infos {
+  display: none;
+}
+
+.vitrine-legende {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* ===== Particules des effets (créées par effets.js) ===== */
+
+/* Calque qui couvre l'écran sans bloquer les clics */
+.calque-effets {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particule {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.particule-confetti {
+  border-radius: 1px;
+}
+
+/* Avion en papier dessiné en SVG */
+.avion-papier {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 11 22 3 15 21 11 13Z' fill='%23fffcf6' stroke='%231f2a44' stroke-width='1.4' stroke-linejoin='round'/%3E%3Cpath d='M22 3 11 13' stroke='%231f2a44' stroke-width='1.4'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 /* ===== Téléphone ===== */
@@ -722,6 +918,15 @@
 
   .liste-articles {
     grid-template-columns: 1fr 1fr;
-    max-height: 60vh;
+    max-height: 42vh;
+  }
+
+  .vitrine {
+    height: 170px;
+  }
+
+  /* Sur téléphone les deux boutons d'une carte passent l'un sous l'autre */
+  .article-actions {
+    flex-direction: column;
   }
 }

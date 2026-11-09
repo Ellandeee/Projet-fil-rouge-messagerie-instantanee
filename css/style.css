@@ -164,6 +164,11 @@ a:hover {
   background-color: #d4d9e4;
 }
 
+/* Le bouton s'enfonce un peu quand on appuie dessus */
+.bouton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
 /* Action principale de la page */
 .bouton-plein {
   color: var(--couleur-fond);
@@ -582,6 +587,15 @@ input[type="checkbox"] {
   background-color: rgba(20, 28, 48, 0.5);
 }
 
+/* La fenêtre monte un peu en apparaissant */
+.dialogue[open] {
+  animation: ouvrir-fenetre 0.2s ease-out;
+}
+
+@keyframes ouvrir-fenetre {
+  from { transform: translateY(12px); }
+}
+
 .actions-dialogue {
   display: flex;
   justify-content: flex-end;
@@ -605,6 +619,12 @@ input[type="checkbox"] {
   border-radius: var(--arrondi-moyen);
   background-color: var(--couleur-surface);
   box-shadow: 0 8px 24px rgba(20, 28, 48, 0.15);
+  animation: arrivee-notification 0.3s ease-out;
+}
+
+/* La notification arrive par la droite */
+@keyframes arrivee-notification {
+  from { transform: translateX(24px); }
 }
 
 .notification-textes {

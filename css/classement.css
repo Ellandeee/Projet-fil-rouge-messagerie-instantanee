@@ -34,6 +34,13 @@
   padding: var(--espace-4) var(--espace-3);
   text-align: center;
   background-color: var(--couleur-surface-douce);
+  /* Les marches montent du sol à l'arrivée sur la page, la 1re en dernier */
+  transform-origin: bottom;
+  animation: monter-marche 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes monter-marche {
+  from { transform: scaleY(0); }
 }
 
 /* La 1re marche, la plus haute, en encre */
@@ -47,11 +54,17 @@
 .podium-place:nth-child(2) {
   order: 1;
   min-height: 190px;
+  animation-delay: 0.1s;
 }
 
 .podium-place:nth-child(3) {
   order: 3;
   min-height: 165px;
+  animation-delay: 0.2s;
+}
+
+.podium-place:nth-child(1) {
+  animation-delay: 0.35s;
 }
 
 /* Grand chiffre en Young Serif, sans médaille */
