@@ -1,5 +1,9 @@
 # Projet fil-rouge - TimeChat, messagerie instantanée
 
+**Site en ligne : https://ellandeee.github.io/Projet-fil-rouge-messagerie-instantanee/**
+
+La conception du site (besoins, arborescence, règles des grains, choix visuels) est dans [docs/conception.md](docs/conception.md).
+
 ## Membres du projet
 * **CROS Ellande**
 * **AUBERT Émeric**

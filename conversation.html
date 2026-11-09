@@ -10,7 +10,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2a44">
   <meta name="description" content="Vos discussions sur TimeChat : messages en temps réel, grains et personnalisation.">
   <title>Discussions | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
@@ -28,6 +29,7 @@
   <!-- defer pour lancer les scripts dans l'ordre une fois la page chargée -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="js/config.js" defer></script>
+  <script src="js/interface.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/effets.js" defer></script>
   <script src="js/points.js" defer></script>
@@ -69,12 +71,25 @@
         <input type="search" id="recherche-discussion" placeholder="Rechercher">
       </p>
 
-      <!-- La liste est remplie par conversation.js -->
-      <ul id="liste-salons" class="liste-salons"></ul>
+      <!-- Filtres de la liste -->
+      <div class="filtres-salons" role="group" aria-label="Filtrer les discussions">
+        <button type="button" class="filtre" data-filtre="toutes" aria-pressed="true">Toutes</button>
+        <button type="button" class="filtre" data-filtre="non-lues" aria-pressed="false">Non lues</button>
+        <button type="button" class="filtre" data-filtre="groupes" aria-pressed="false">Groupes</button>
+      </div>
 
-      <p id="aucune-discussion" class="aide" hidden>
-        Pas encore de discussion. <a href="contact.html">Ajoutez un contact</a> pour commencer.
-      </p>
+      <!-- La liste est remplie par conversation.js, en attendant on montre des lignes qui brillent -->
+      <ul id="liste-salons" class="liste-salons" aria-busy="true">
+        <li class="salon-squelette" aria-hidden="true"><span class="squelette rond"></span><span class="squelette ligne"></span></li>
+        <li class="salon-squelette" aria-hidden="true"><span class="squelette rond"></span><span class="squelette ligne"></span></li>
+        <li class="salon-squelette" aria-hidden="true"><span class="squelette rond"></span><span class="squelette ligne"></span></li>
+      </ul>
+
+      <div id="aucune-discussion" class="vide-illustre" hidden>
+        <img src="images/logo.svg" alt="" width="56" height="56">
+        <p>Pas encore de discussion.</p>
+        <a href="contact.html" class="bouton bouton-petit">Ajouter un contact</a>
+      </div>
     </aside>
 
     <!-- Colonne de droite avec la discussion ouverte -->
@@ -82,9 +97,9 @@
 
       <!-- Affiché quand aucune discussion n'est ouverte -->
       <div id="etat-vide" class="etat-vide">
-        <img src="images/logo.svg" alt="" width="72" height="72">
+        <img src="images/sablier.svg" alt="" width="150" height="150">
         <h2>Choisissez une discussion</h2>
-        <p>Une discussion ouverte vous rapporte 1 grain toutes les 10 secondes.</p>
+        <p>Tant qu'une discussion est ouverte, le sable coule : 1&nbsp;grain toutes les 10&nbsp;secondes, à dépenser dans la boutique.</p>
         <!-- Rempli quand une discussion vient de se fermer toute seule -->
         <p id="info-fermeture" class="info-fermeture" role="status" hidden></p>
       </div>
@@ -101,7 +116,7 @@
           </div>
 
           <!-- Nos grains dans cette discussion, un clic ouvre la boutique -->
-          <button type="button" id="bouton-boutique" class="bouton-points" aria-label="Ouvrir la boutique">
+          <button type="button" id="bouton-boutique" class="bouton-points" aria-label="Vos grains dans cette discussion, ouvrir la boutique" title="Vos grains dans cette discussion. Cliquez pour ouvrir la boutique.">
             <span><strong id="solde-points">0</strong> grains</span>
             <span id="points-attente-zone" class="points-attente" title="Grains ajoutés à l'envoi du message" hidden>+<span id="points-attente">0</span></span>
             <span class="bouton-points-texte">Boutique</span>
@@ -116,7 +131,11 @@
         <p id="texte-minuteur" class="minuteur-texte" role="status"></p>
 
         <!-- Les messages sont ajoutés ici par conversation.js -->
-        <ol id="liste-messages" class="liste-messages" aria-live="polite"></ol>
+        <div class="zone-messages">
+          <ol id="liste-messages" class="liste-messages" aria-live="polite"></ol>
+          <!-- Apparaît quand un message arrive pendant qu'on lit plus haut -->
+          <button type="button" id="bouton-bas" class="bouton-bas" hidden>Nouveau message</button>
+        </div>
 
         <!-- Trois points qui sautillent puis « X est en train d'écrire » -->
         <p id="indicateur-ecriture" class="indicateur-ecriture" hidden>
@@ -128,7 +147,8 @@
         <form id="form-message" class="form-message">
           <label for="champ-message" class="visuellement-cache">Votre message</label>
           <textarea id="champ-message" name="message" rows="1" maxlength="500"
-                    placeholder="Écrivez un message" aria-describedby="compteur-caracteres" required></textarea>
+                    placeholder="Écrivez un message" aria-describedby="compteur-caracteres"
+                    title="Entrée pour envoyer, Maj + Entrée pour aller à la ligne" required></textarea>
           <span id="compteur-caracteres" class="compteur-caracteres"></span>
           <button type="submit" class="bouton bouton-plein">Envoyer</button>
         </form>
@@ -188,7 +208,6 @@
     <!-- Les articles de la catégorie choisie, créés par boutique.js -->
     <ul id="boutique-articles" class="liste-articles"></ul>
 
-    <p id="message-boutique" class="message-etat" role="status" aria-live="polite"></p>
   </dialog>
 
   <!-- Modèles que le JavaScript copie pour créer les éléments -->
@@ -205,6 +224,7 @@
           </span>
           <span class="salon-ligne">
             <span class="salon-apercu"></span>
+            <span class="salon-grains"></span>
             <span class="salon-badge" hidden></span>
           </span>
         </span>

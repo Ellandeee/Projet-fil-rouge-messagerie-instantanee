@@ -9,7 +9,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2a44">
   <meta name="description" content="Classement de TimeChat : vos discussions triées selon les grains gagnés.">
   <title>Classement | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
@@ -24,6 +25,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="js/config.js" defer></script>
+  <script src="js/interface.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/classement.js" defer></script>
 </head>
@@ -52,6 +54,13 @@
     <h1>Classement</h1>
     <p class="introduction">Vos discussions rangées selon les grains que vous y avez gagnés.</p>
 
+    <!-- Les totaux de toutes les discussions -->
+    <div id="resume-classement" class="resume" hidden>
+      <p><strong id="total-gagnes">0</strong> grains gagnés en tout</p>
+      <p><strong id="total-solde">0</strong> grains à dépenser</p>
+      <p><strong id="total-articles">0</strong> articles achetés</p>
+    </div>
+
     <!-- Podium des 3 premiers -->
     <ol id="podium" class="podium" aria-label="Les trois discussions où vous avez le plus de grains"></ol>
 
@@ -71,9 +80,11 @@
         </thead>
         <tbody id="corps-classement"></tbody>
       </table>
-      <p id="classement-vide" class="aide" hidden>
-        Pas encore de grains. <a href="conversation.html">Ouvrez une discussion</a> pour en gagner.
-      </p>
+      <div id="classement-vide" class="vide-illustre" hidden>
+        <img src="images/logo.svg" alt="" width="56" height="56">
+        <p>Pas encore de grains. Ouvrez une discussion pour faire couler le sable.</p>
+        <a href="conversation.html" class="bouton bouton-petit">Aller aux discussions</a>
+      </div>
     </section>
   </main>
 

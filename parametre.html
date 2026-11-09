@@ -8,7 +8,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2a44">
   <meta name="description" content="Votre profil sur TimeChat.">
   <title>Mon profil | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
@@ -23,6 +24,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="js/config.js" defer></script>
+  <script src="js/interface.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/parametre.js" defer></script>
 </head>
@@ -53,6 +55,13 @@
       <button type="button" id="bouton-deconnexion" class="bouton bouton-secondaire">Se déconnecter</button>
     </div>
 
+    <!-- Quelques chiffres sur mon compte, remplis par parametre.js -->
+    <div class="resume">
+      <p><strong id="stat-inscription">…</strong> date d'inscription</p>
+      <p><strong id="stat-grains">…</strong> grains gagnés</p>
+      <p><strong id="stat-articles">…</strong> articles achetés</p>
+    </div>
+
     <!-- Affiché quand on arrive depuis l'e-mail de mot de passe oublié -->
     <p id="bandeau-recuperation" class="bandeau" role="alert" hidden>
       Choisissez votre nouveau mot de passe juste en dessous.
@@ -76,10 +85,48 @@
           <small id="aide-profil-nom" class="aide">3 à 20 caractères : lettres, chiffres, _ ou -</small>
         </p>
 
-        <p class="champ champ-couleur">
-          <label for="profil-couleur">Couleur de l'avatar</label>
-          <input type="color" id="profil-couleur" name="couleur-avatar" value="#1f2a44">
-        </p>
+        <!-- Huit couleurs de la charte en un clic, ou n'importe quelle couleur avec « Autre » -->
+        <fieldset class="champ-couleur">
+          <legend>Couleur de l'avatar</legend>
+          <div class="nuancier">
+            <label class="pastille-couleur" style="--couleur: #1f2a44" title="Encre">
+              <input type="radio" name="couleur-choix" value="#1f2a44">
+              <span class="visuellement-cache">Encre</span>
+            </label>
+            <label class="pastille-couleur" style="--couleur: #2f6b4a" title="Sauge">
+              <input type="radio" name="couleur-choix" value="#2f6b4a">
+              <span class="visuellement-cache">Sauge</span>
+            </label>
+            <label class="pastille-couleur" style="--couleur: #b5442e" title="Brique">
+              <input type="radio" name="couleur-choix" value="#b5442e">
+              <span class="visuellement-cache">Brique</span>
+            </label>
+            <label class="pastille-couleur" style="--couleur: #6b4a12" title="Sable foncé">
+              <input type="radio" name="couleur-choix" value="#6b4a12">
+              <span class="visuellement-cache">Sable foncé</span>
+            </label>
+            <label class="pastille-couleur" style="--couleur: #2457a6" title="Saphir">
+              <input type="radio" name="couleur-choix" value="#2457a6">
+              <span class="visuellement-cache">Saphir</span>
+            </label>
+            <label class="pastille-couleur" style="--couleur: #1f6f78" title="Pétrole">
+              <input type="radio" name="couleur-choix" value="#1f6f78">
+              <span class="visuellement-cache">Pétrole</span>
+            </label>
+            <label class="pastille-couleur" style="--couleur: #6b3a6b" title="Prune">
+              <input type="radio" name="couleur-choix" value="#6b3a6b">
+              <span class="visuellement-cache">Prune</span>
+            </label>
+            <label class="pastille-couleur" style="--couleur: #4a4f5c" title="Ardoise">
+              <input type="radio" name="couleur-choix" value="#4a4f5c">
+              <span class="visuellement-cache">Ardoise</span>
+            </label>
+            <label class="couleur-autre">
+              <input type="color" id="profil-couleur" name="couleur-avatar" value="#1f2a44">
+              Autre
+            </label>
+          </div>
+        </fieldset>
 
         <button type="submit" class="bouton bouton-plein">Enregistrer</button>
         <p id="message-profil" class="message-etat" role="status" aria-live="polite"></p>
@@ -92,11 +139,17 @@
       <form id="form-mdp" class="formulaire">
         <p class="champ">
           <label for="nouveau-mdp">Nouveau mot de passe</label>
-          <input type="password" id="nouveau-mdp" name="nouveau-mdp" autocomplete="new-password" minlength="6" required>
+          <span class="champ-mdp">
+            <input type="password" id="nouveau-mdp" name="nouveau-mdp" autocomplete="new-password" minlength="6" required>
+            <button type="button" class="bouton-voir" aria-pressed="false" aria-label="Afficher le mot de passe">Afficher</button>
+          </span>
         </p>
         <p class="champ">
           <label for="nouveau-mdp-confirmation">Confirmation</label>
-          <input type="password" id="nouveau-mdp-confirmation" name="nouveau-mdp-confirmation" autocomplete="new-password" minlength="6" required>
+          <span class="champ-mdp">
+            <input type="password" id="nouveau-mdp-confirmation" name="nouveau-mdp-confirmation" autocomplete="new-password" minlength="6" required>
+            <button type="button" class="bouton-voir" aria-pressed="false" aria-label="Afficher le mot de passe">Afficher</button>
+          </span>
         </p>
         <button type="submit" class="bouton bouton-plein">Changer le mot de passe</button>
         <p id="message-mdp" class="message-etat" role="status" aria-live="polite"></p>

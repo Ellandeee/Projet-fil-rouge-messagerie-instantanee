@@ -7,7 +7,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2a44">
   <meta name="description" content="TimeChat, la messagerie instantanée où le temps passé à discuter rapporte des grains pour personnaliser chaque conversation.">
   <title>Connexion | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
@@ -31,107 +32,126 @@
   <!-- defer pour lancer les scripts dans l'ordre une fois la page chargée -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="js/config.js" defer></script>
+  <script src="js/interface.js" defer></script>
   <script src="js/connexion.js" defer></script>
 </head>
 <body class="page-connexion">
 
-  <main class="carte-connexion">
+  <div class="accueil">
 
-    <!-- Logo et nom du site -->
-    <header class="carte-connexion-entete">
-      <img src="images/logo.svg" alt="" class="logo-image" width="64" height="64">
-      <h1>TimeChat</h1>
-      <p class="slogan">La minute qui rapporte.</p>
-    </header>
+    <!-- Présentation du site avec le grand sablier qui s'écoule -->
+    <section class="accueil-presentation" aria-labelledby="titre-site">
+      <div class="medaillon">
+        <img src="images/sablier.svg" alt="" width="150" height="150">
+      </div>
+      <div class="accueil-titres">
+        <h1 id="titre-site">TimeChat</h1>
+        <p class="slogan">La minute qui rapporte.</p>
+      </div>
+      <p class="accueil-texte">
+        Chaque minute passée à discuter fait couler des grains dans votre sablier.
+        Dépensez-les pour décorer vos conversations : un fond étoilé, des bulles post-it,
+        des confettis à chaque envoi.
+      </p>
+    </section>
 
-    <!-- Onglets pour passer de la connexion à l'inscription -->
-    <div class="onglets">
-      <button type="button" id="onglet-connexion" class="onglet actif" aria-controls="form-connexion" aria-pressed="true">Se connecter</button>
-      <button type="button" id="onglet-inscription" class="onglet" aria-controls="form-inscription" aria-pressed="false">S'inscrire</button>
-    </div>
+    <main class="carte-connexion">
 
-    <!-- Formulaire de connexion -->
-    <form id="form-connexion" class="formulaire" autocomplete="on" novalidate>
-      <fieldset>
-        <legend>Connexion à votre compte</legend>
+      <!-- Onglets pour passer de la connexion à l'inscription -->
+      <div class="onglets">
+        <button type="button" id="onglet-connexion" class="onglet actif" aria-controls="form-connexion" aria-pressed="true">Se connecter</button>
+        <button type="button" id="onglet-inscription" class="onglet" aria-controls="form-inscription" aria-pressed="false">S'inscrire</button>
+      </div>
 
-        <p class="champ">
-          <label for="connexion-email">Adresse e-mail</label>
-          <input type="email" id="connexion-email" name="email" autocomplete="email" placeholder="prenom@exemple.com" required>
-        </p>
+      <!-- Formulaire de connexion -->
+      <form id="form-connexion" class="formulaire" autocomplete="on" novalidate>
+        <fieldset>
+          <legend>Connexion à votre compte</legend>
 
-        <p class="champ">
-          <label for="connexion-mdp">Mot de passe</label>
-          <input type="password" id="connexion-mdp" name="mdp" autocomplete="current-password" minlength="6" required>
-        </p>
+          <p class="champ">
+            <label for="connexion-email">Adresse e-mail</label>
+            <input type="email" id="connexion-email" name="email" autocomplete="email" placeholder="prenom@exemple.com" required>
+          </p>
 
-        <!-- Si c'est coché on reste connecté même après avoir fermé le navigateur -->
-        <p class="champ champ-case">
-          <label>
-            <input type="checkbox" id="se-souvenir" name="se-souvenir" checked>
-            Se souvenir de moi
-          </label>
-        </p>
+          <p class="champ">
+            <label for="connexion-mdp">Mot de passe</label>
+            <span class="champ-mdp">
+              <input type="password" id="connexion-mdp" name="mdp" autocomplete="current-password" minlength="6" required>
+              <button type="button" class="bouton-voir" aria-pressed="false" aria-label="Afficher le mot de passe">Afficher</button>
+            </span>
+          </p>
 
-        <button type="submit" class="bouton bouton-plein">Se connecter</button>
-        <button type="button" id="bouton-mdp-oublie" class="bouton-lien">Mot de passe oublié ?</button>
-      </fieldset>
-    </form>
+          <!-- Si c'est coché on reste connecté même après avoir fermé le navigateur -->
+          <p class="champ champ-case">
+            <label>
+              <input type="checkbox" id="se-souvenir" name="se-souvenir" checked>
+              Se souvenir de moi
+            </label>
+          </p>
 
-    <!-- Formulaire d'inscription (caché au départ) -->
-    <form id="form-inscription" class="formulaire" autocomplete="on" novalidate hidden>
-      <fieldset>
-        <legend>Création d'un compte</legend>
+          <button type="submit" class="bouton bouton-plein">Se connecter</button>
+          <button type="button" id="bouton-mdp-oublie" class="bouton-lien">Mot de passe oublié ?</button>
+        </fieldset>
+      </form>
 
-        <p class="champ">
-          <label for="inscription-nom">Nom d'utilisateur</label>
-          <input type="text" id="inscription-nom" name="nom-utilisateur" autocomplete="username"
-                 minlength="3" maxlength="20" pattern="[A-Za-z0-9_\-]{3,20}"
-                 aria-describedby="aide-inscription-nom" required>
-          <small id="aide-inscription-nom" class="aide">3 à 20 caractères : lettres, chiffres, « _ » ou « - ».</small>
-        </p>
+      <!-- Formulaire d'inscription (caché au départ) -->
+      <form id="form-inscription" class="formulaire" autocomplete="on" novalidate hidden>
+        <fieldset>
+          <legend>Création d'un compte</legend>
 
-        <p class="champ">
-          <label for="inscription-email">Adresse e-mail</label>
-          <input type="email" id="inscription-email" name="email" autocomplete="email" placeholder="prenom@exemple.com" required>
-        </p>
+          <p class="champ">
+            <label for="inscription-nom">Nom d'utilisateur</label>
+            <input type="text" id="inscription-nom" name="nom-utilisateur" autocomplete="username"
+                   minlength="3" maxlength="20" pattern="[A-Za-z0-9_\-]{3,20}"
+                   aria-describedby="aide-inscription-nom" required>
+            <small id="aide-inscription-nom" class="aide">3 à 20 caractères : lettres, chiffres, « _ » ou « - ».</small>
+          </p>
 
-        <p class="champ">
-          <label for="inscription-mdp">Mot de passe</label>
-          <input type="password" id="inscription-mdp" name="mdp" autocomplete="new-password" minlength="6"
-                 aria-describedby="aide-inscription-mdp" required>
-          <small id="aide-inscription-mdp" class="aide">6 caractères minimum.</small>
-        </p>
+          <p class="champ">
+            <label for="inscription-email">Adresse e-mail</label>
+            <input type="email" id="inscription-email" name="email" autocomplete="email" placeholder="prenom@exemple.com" required>
+          </p>
 
-        <p class="champ">
-          <label for="inscription-mdp-confirmation">Confirmation du mot de passe</label>
-          <input type="password" id="inscription-mdp-confirmation" name="mdp-confirmation" autocomplete="new-password" minlength="6" required>
-        </p>
+          <p class="champ">
+            <label for="inscription-mdp">Mot de passe</label>
+            <span class="champ-mdp">
+              <input type="password" id="inscription-mdp" name="mdp" autocomplete="new-password" minlength="6" aria-describedby="aide-inscription-mdp" required>
+              <button type="button" class="bouton-voir" aria-pressed="false" aria-label="Afficher le mot de passe">Afficher</button>
+            </span>
+            <small id="aide-inscription-mdp" class="aide">6 caractères minimum.</small>
+          </p>
 
-        <button type="submit" class="bouton bouton-plein">Créer mon compte</button>
-      </fieldset>
-    </form>
+          <p class="champ">
+            <label for="inscription-mdp-confirmation">Confirmation du mot de passe</label>
+            <input type="password" id="inscription-mdp-confirmation" name="mdp-confirmation" autocomplete="new-password" minlength="6" required>
+          </p>
 
-    <!-- Formulaire mot de passe oublié (caché au départ) -->
-    <form id="form-mdp-oublie" class="formulaire" novalidate hidden>
-      <fieldset>
-        <legend>Mot de passe oublié</legend>
-        <p class="aide">Indiquez votre adresse e-mail : vous recevrez un lien pour choisir un nouveau mot de passe.</p>
+          <button type="submit" class="bouton bouton-plein">Créer mon compte</button>
+        </fieldset>
+      </form>
 
-        <p class="champ">
-          <label for="mdp-oublie-email">Adresse e-mail</label>
-          <input type="email" id="mdp-oublie-email" name="email" autocomplete="email" required>
-        </p>
+      <!-- Formulaire mot de passe oublié (caché au départ) -->
+      <form id="form-mdp-oublie" class="formulaire" novalidate hidden>
+        <fieldset>
+          <legend>Mot de passe oublié</legend>
+          <p class="aide">Indiquez votre adresse e-mail : vous recevrez un lien pour choisir un nouveau mot de passe.</p>
 
-        <button type="submit" class="bouton bouton-plein">Envoyer le lien</button>
-        <button type="button" id="bouton-retour-connexion" class="bouton-lien">Retour à la connexion</button>
-      </fieldset>
-    </form>
+          <p class="champ">
+            <label for="mdp-oublie-email">Adresse e-mail</label>
+            <input type="email" id="mdp-oublie-email" name="email" autocomplete="email" required>
+          </p>
 
-    <!-- Ici on affiche les erreurs et les confirmations -->
-    <p id="message-connexion" class="message-etat" role="status" aria-live="polite"></p>
+          <button type="submit" class="bouton bouton-plein">Envoyer le lien</button>
+          <button type="button" id="bouton-retour-connexion" class="bouton-lien">Retour à la connexion</button>
+        </fieldset>
+      </form>
 
-  </main>
+      <!-- Ici on affiche les erreurs et les confirmations -->
+      <p id="message-connexion" class="message-etat" role="status" aria-live="polite"></p>
+
+    </main>
+
+  </div>
 
   <!-- Pied de page (le même partout) -->
   <footer class="pied-page">

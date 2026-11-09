@@ -8,7 +8,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2a44">
   <meta name="description" content="Vos contacts sur TimeChat : invitations, recherche et liste de contacts.">
   <title>Contacts | TimeChat</title>
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
@@ -23,6 +24,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="js/config.js" defer></script>
+  <script src="js/interface.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/contact.js" defer></script>
 </head>
@@ -56,8 +58,7 @@
       <form id="form-recherche-contact" class="form-ligne" role="search">
         <label for="recherche-contact" class="visuellement-cache">Nom d'utilisateur à rechercher</label>
         <input type="search" id="recherche-contact" name="recherche" maxlength="20"
-               placeholder="Nom d'utilisateur" autocomplete="off">
-        <button type="submit" class="bouton bouton-plein">Rechercher</button>
+               placeholder="Nom d'utilisateur, 2 lettres minimum" autocomplete="off">
       </form>
       <p id="message-recherche" class="message-etat" role="status" aria-live="polite"></p>
       <ul id="resultats-recherche" class="liste-contacts"></ul>
@@ -73,7 +74,10 @@
     <section class="carte" aria-labelledby="titre-contacts">
       <h2 id="titre-contacts">Mes contacts <span id="nombre-contacts" class="titre-nombre"></span></h2>
       <ul id="liste-contacts" class="liste-contacts"></ul>
-      <p id="aucun-contact" class="aide">Pas encore de contact. Cherchez le nom d'utilisateur d'un ami juste au-dessus.</p>
+      <div id="aucun-contact" class="vide-illustre">
+        <img src="images/logo.svg" alt="" width="56" height="56">
+        <p>Pas encore de contact. Cherchez le nom d'utilisateur d'un ami juste au-dessus.</p>
+      </div>
     </section>
 
     <!-- Invitations envoyées (cachées s'il n'y en a pas) -->
